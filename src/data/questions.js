@@ -1,4 +1,4 @@
-export const questionsData = {
+export const initialQuestionsData = {
   python: {
     arrays: []
   },
@@ -27,12 +27,14 @@ public class Solution {
 }
 `,
         testcases: [
-          { input: "4\n2 7 11 15\n9", expectedOutput: "[0, 1]" },
-          { input: "3\n3 2 4\n6", expectedOutput: "[1, 2]" },
-          { input: "2\n3 3\n6", expectedOutput: "[0, 1]" }
+          { input: "4\n2 7 11 15\n9", expectedOutput: "[0, 1]", isHidden: false },
+          { input: "3\n3 2 4\n6", expectedOutput: "[1, 2]", isHidden: false },
+          { input: "2\n3 3\n6", expectedOutput: "[0, 1]", isHidden: true },
+          { input: "4\n1 5 8 11\n13", expectedOutput: "[1, 2]", isHidden: true },
+          { input: "5\n-1 -8 0 4 10\n2", expectedOutput: "[0, 3]", isHidden: true },
+          { input: "4\n100 200 500 1000\n700", expectedOutput: "[1, 2]", isHidden: true }
         ],
-        testerCode: `
-import java.util.Scanner;
+        testerCode: `import java.util.Scanner;
 import java.util.Arrays;
 
 class Main {
@@ -60,4 +62,20 @@ class Main {
   c: {
     arrays: []
   }
+};
+
+export const getQuestionsData = () => {
+  const saved = localStorage.getItem('custom_questions_data');
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error("Failed to parse custom questions data", e);
+    }
+  }
+  return initialQuestionsData;
+};
+
+export const saveQuestionsData = (data) => {
+  localStorage.setItem('custom_questions_data', JSON.stringify(data));
 };

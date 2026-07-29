@@ -1,11 +1,12 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { questionsData } from '../data/questions';
+import { getQuestionsData } from '../data/questions';
 
 export default function QuestionList() {
   const { language, topic } = useParams();
   const navigate = useNavigate();
 
+  const questionsData = getQuestionsData();
   const langData = questionsData[language];
   const questions = langData ? langData[topic] : null;
 
