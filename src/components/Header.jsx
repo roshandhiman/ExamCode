@@ -7,7 +7,7 @@ export default function Header() {
     <header className="header">
       <Link to="/" className="header-logo">
         <Code2 color="#ffa116" size={28} />
-        Code<span>Practice</span>
+        exam<span>CODE</span>
       </Link>
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <Link to="/" className="btn">Home</Link>
