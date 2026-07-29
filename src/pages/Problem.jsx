@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Play, CheckCircle, XCircle, Loader } from 'lucide-react';
+import { Play, CheckCircle, XCircle, Loader, Terminal as TerminalIcon, AlertTriangle } from 'lucide-react';
 import { questionsData } from '../data/questions';
 import { executeCode } from '../services/piston';
 
@@ -10,6 +10,7 @@ export default function Problem() {
   
   const [question, setQuestion] = useState(null);
   const [code, setCode] = useState('');
+  const [activeTab, setActiveTab] = useState(0);
   const [results, setResults] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -36,30 +37,44 @@ export default function Problem() {
   const handleRun = async () => {
     setIsRunning(true);
     setResults(null);
+    setActiveTab(0);
     
     try {
       const hasMain = code.includes('public static void main') || code.includes('public static void main(String[]');
-      const fullCode = (!hasMain && question.testerCode) ? code + '\\n' + question.testerCode : code;
+      const fullCode = (!hasMain && question.testerCode) ? code + '\n' + question.testerCode : code;
+      
       const testResults = [];
       let passedAll = true;
       let passCount = 0;
+      let globalCompileError = null;
 
       for (let i = 0; i < question.testcases.length; i++) {
         const tc = question.testcases[i];
-        
         const response = await executeCode(language, fullCode, tc.input);
         
-        let actualOutput = response.run?.stdout?.trim() || '';
+        let actualOutput = '';
         let errorOutput = false;
-        
-        if (response.compile?.code !== 0 && response.compile?.stderr) {
-          actualOutput = response.compile.stderr.trim();
+        let errorMessage = '';
+
+        if (response.message) {
           errorOutput = true;
-        } else if (response.run?.stderr) {
-          actualOutput = response.run.stderr.trim();
+          errorMessage = response.message;
+          globalCompileError = errorMessage;
+        } else if (response.compile && response.compile.code !== 0) {
           errorOutput = true;
-        } else if (response.run?.code !== 0) {
-           errorOutput = true;
+          errorMessage = (response.compile.stderr || response.compile.output || response.compile.stdout || 'Compilation Failed').trim();
+          globalCompileError = errorMessage;
+        } else if (response.run && response.run.code !== 0) {
+          errorOutput = true;
+          errorMessage = (response.run.stderr || response.run.output || response.run.stdout || `Runtime Error (Exit Code ${response.run.code})`).trim();
+        } else if (response.run) {
+          actualOutput = response.run.stdout ? response.run.stdout.trim() : '';
+          if (response.run.stderr) {
+            actualOutput = (actualOutput + '\n' + response.run.stderr).trim();
+          }
+        } else {
+          errorOutput = true;
+          errorMessage = 'Unknown execution response from server';
         }
 
         const isPass = !errorOutput && actualOutput === tc.expectedOutput;
@@ -69,24 +84,30 @@ export default function Problem() {
         testResults.push({
           input: tc.input,
           expected: tc.expectedOutput,
-          actual: actualOutput,
+          actual: errorOutput ? errorMessage : actualOutput,
           pass: isPass,
           error: errorOutput
         });
+
+        if (globalCompileError) break;
       }
 
       setResults({ 
-         tests: testResults, 
-         passedAll, 
-         passCount,
-         totalCount: question.testcases.length
+        tests: testResults, 
+        passedAll, 
+        passCount,
+        totalCount: question.testcases.length,
+        compileError: globalCompileError
       });
     } catch (err) {
-      setResults({ error: err.message || 'Execution failed' });
+      setResults({ compileError: err.message || 'Execution failed' });
     } finally {
       setIsRunning(false);
     }
   };
+
+  const activeTestCase = question.testcases[activeTab] || question.testcases[0];
+  const activeTestResult = results?.tests ? results.tests[activeTab] : null;
 
   return (
     <div className="problem-layout">
@@ -117,6 +138,7 @@ export default function Problem() {
           <div className="pre-formatted">{question.constraints}</div>
         </div>
       </div>
+
       <div className="problem-right">
         <div className="editor-container">
           <div className="editor-toolbar">
@@ -144,62 +166,100 @@ export default function Problem() {
             }}
           />
         </div>
+
         <div className="results-container">
-          <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            Test Results
-            {results && results.tests && (
-              <span style={{ color: results.passedAll ? 'var(--success)' : 'var(--fail)', fontSize: '0.9rem' }}>
-                ({results.passCount}/{results.totalCount} Passed)
-              </span>
-            )}
-          </h3>
-          
-          {!results && !isRunning && (
-            <div style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '2rem' }}>
-              Run your code to see results here.
-            </div>
-          )}
-
           {isRunning && (
-            <div style={{ color: 'var(--accent-primary)', textAlign: 'center', marginTop: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <Loader size={20} className="spinner" /> Executing...
+            <div className="status-banner" style={{ backgroundColor: 'rgba(255, 161, 22, 0.1)', color: 'var(--accent-primary)', border: '1px solid var(--accent-primary)' }}>
+              <Loader size={20} className="spinner" /> Executing test cases...
             </div>
           )}
 
-          {results?.error && (
-            <div style={{ color: 'var(--fail)' }}>
-              <strong>Execution Error:</strong> {results.error}
-            </div>
+          {!isRunning && results && (
+            <>
+              {results.compileError ? (
+                <div className="status-banner wrong">
+                  <AlertTriangle size={20} /> Compile Error
+                </div>
+              ) : results.passedAll ? (
+                <div className="status-banner accepted">
+                  <CheckCircle size={20} /> Accepted ({results.passCount}/{results.totalCount} Passed)
+                </div>
+              ) : (
+                <div className="status-banner wrong">
+                  <XCircle size={20} /> Wrong Answer ({results.passCount}/{results.totalCount} Passed)
+                </div>
+              )}
+            </>
           )}
 
-          {results?.tests && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {results.tests.map((test, idx) => (
-                <div key={idx} className="card" style={{ padding: '1rem', borderColor: test.pass ? 'var(--success)' : 'var(--fail)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontWeight: '600', color: test.pass ? 'var(--success)' : 'var(--fail)' }}>
-                    {test.pass ? <CheckCircle size={18} /> : <XCircle size={18} />}
-                    Test Case {idx + 1}
+          <div className="tabs-header">
+            {question.testcases.map((tc, idx) => {
+              const res = results?.tests ? results.tests[idx] : null;
+              let tabClass = 'tab-btn';
+              if (activeTab === idx) tabClass += ' active';
+              if (res) {
+                tabClass += res.pass ? ' pass' : ' fail';
+              }
+
+              return (
+                <button
+                  key={idx}
+                  className={tabClass}
+                  onClick={() => setActiveTab(idx)}
+                >
+                  {res && (res.pass ? <CheckCircle size={14} color="var(--success)" /> : <XCircle size={14} color="var(--fail)" />)}
+                  Case {idx + 1}
+                </button>
+              );
+            })}
+          </div>
+
+          {results?.compileError ? (
+            <div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--fail)', fontWeight: '600', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <TerminalIcon size={16} /> Compilation Error Log:
+              </div>
+              <div className="terminal-box">
+                {results.compileError}
+              </div>
+            </div>
+          ) : (
+            <div>
+              {activeTestResult?.error ? (
+                <div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--fail)', fontWeight: '600', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <TerminalIcon size={16} /> Runtime Exception / Error Output:
                   </div>
-                  
+                  <div className="terminal-box">
+                    {activeTestResult.actual}
+                  </div>
+                </div>
+              ) : (
+                <>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Input:</div>
-                      <div className="pre-formatted" style={{ marginTop: '0.2rem', padding: '0.5rem' }}>{test.input}</div>
+                      <div className="pre-formatted">{activeTestCase.input}</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Expected:</div>
-                      <div className="pre-formatted" style={{ marginTop: '0.2rem', padding: '0.5rem' }}>{test.expected}</div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Expected Output:</div>
+                      <div className="pre-formatted">{activeTestCase.expectedOutput}</div>
                     </div>
                   </div>
-                  
-                  <div style={{ marginTop: '1rem' }}>
+
+                  <div style={{ marginTop: '0.8rem' }}>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Actual Output:</div>
-                    <div className="pre-formatted" style={{ marginTop: '0.2rem', padding: '0.5rem', color: test.error ? 'var(--fail)' : 'inherit' }}>
-                      {test.actual || '(No output)'}
+                    <div 
+                      className="pre-formatted" 
+                      style={{ 
+                        color: activeTestResult ? (activeTestResult.pass ? 'var(--success)' : 'var(--fail)') : 'var(--text-muted)'
+                      }}
+                    >
+                      {activeTestResult ? (activeTestResult.actual || '(No Output)') : 'Run code to see output'}
                     </div>
                   </div>
-                </div>
-              ))}
+                </>
+              )}
             </div>
           )}
         </div>
