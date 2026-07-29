@@ -16,12 +16,28 @@ export const getRuntimes = async () => {
 };
 
 export const executeCode = async (language, code, stdin = "") => {
+    // 1. Try Local Execution Plugin first (Unlimited, Free, Instant, No API keys/limits)
+    try {
+        const localResponse = await fetch('/api/execute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ language, code, stdin })
+        });
+        if (localResponse.ok) {
+            const data = await localResponse.json();
+            if (!data.error && !data.message) {
+                return data;
+            }
+        }
+    } catch (e) {
+        console.log("Local execution server not available, falling back...", e);
+    }
+
+    // 2. Fallback to external API
     const runtimes = await getRuntimes();
     const runtime = runtimes.find(r => r.language === language || r.aliases.includes(language));
-    
-    if (!runtime) {
-        throw new Error(`Runtime for ${language} not found`);
-    }
 
     let fileName = 'main';
     if (language === 'java') {
@@ -35,8 +51,8 @@ export const executeCode = async (language, code, stdin = "") => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            language: runtime.language,
-            version: runtime.version,
+            language: runtime ? runtime.language : language,
+            version: runtime ? runtime.version : '*',
             files: [
                 {
                     name: fileName,
