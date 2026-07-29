@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, Link } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import { Play, Send, CheckCircle, XCircle, Loader, Terminal as TerminalIcon, AlertTriangle, X } from 'lucide-react';
@@ -305,8 +306,8 @@ export default function Problem() {
         </div>
       </div>
 
-      {/* Submission Modal */}
-      {showSubmitModal && (
+      {/* Submission Modal via Portal directly attached to document.body */}
+      {showSubmitModal && createPortal(
         <div className="modal-overlay">
           <div className="modal-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -322,7 +323,7 @@ export default function Problem() {
 
             {isSubmitting && (
               <div style={{ padding: '2rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                <Loader size={36} className="spinner" color="var(--accent-primary)" />
+                <Loader size={42} className="spinner" color="var(--accent-primary)" />
                 <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)' }}>
                   Judging submission... Evaluating all {question.testcases.length} test cases.
                 </p>
@@ -333,7 +334,7 @@ export default function Problem() {
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
                 {submitResults.compileError ? (
                   <>
-                    <AlertTriangle size={48} color="var(--fail)" />
+                    <AlertTriangle size={56} color="var(--fail)" />
                     <h2 style={{ color: 'var(--fail)' }}>Compile Error</h2>
                     <div className="terminal-box" style={{ width: '100%', textAlign: 'left', marginTop: '0.5rem' }}>
                       {submitResults.compileError}
@@ -341,17 +342,17 @@ export default function Problem() {
                   </>
                 ) : submitResults.passedAll ? (
                   <>
-                    <CheckCircle size={56} color="var(--success)" />
-                    <h2 style={{ color: 'var(--success)', fontSize: '2rem' }}>Accepted</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
+                    <CheckCircle size={64} color="var(--success)" />
+                    <h2 style={{ color: 'var(--success)', fontSize: '2.2rem' }}>Accepted</h2>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>
                       Passed all <strong>{submitResults.passCount} / {submitResults.totalCount}</strong> test cases!
                     </p>
                   </>
                 ) : (
                   <>
-                    <XCircle size={56} color="var(--fail)" />
-                    <h2 style={{ color: 'var(--fail)', fontSize: '2rem' }}>Wrong Answer</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
+                    <XCircle size={64} color="var(--fail)" />
+                    <h2 style={{ color: 'var(--fail)', fontSize: '2.2rem' }}>Wrong Answer</h2>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>
                       Passed <strong>{submitResults.passCount} / {submitResults.totalCount}</strong> test cases.
                     </p>
                   </>
@@ -367,7 +368,8 @@ export default function Problem() {
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

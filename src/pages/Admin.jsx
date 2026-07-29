@@ -76,10 +76,20 @@ export default function Admin() {
     ]);
   }, [selectedLang, selectedTopic, selectedQId, data]);
 
-  const handleLogin = (e) => {
+  const hashPassword = async (password) => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  };
+
+  const ADMIN_HASH = '8f7035f1f5f46c4a227c4e0a9e334c33da14096f7e567c813e64f73025c21aff';
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const storedPass = localStorage.getItem('admin_pass') || 'admin123';
-    if (passcode === storedPass) {
+    const inputHash = await hashPassword(passcode);
+    if (inputHash === ADMIN_HASH) {
       setIsAuthenticated(true);
       sessionStorage.setItem('admin_authenticated', 'true');
       setAuthError('');
