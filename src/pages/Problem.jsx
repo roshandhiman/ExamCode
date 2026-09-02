@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
@@ -13,6 +13,7 @@ import { executeCode } from '../services/piston';
 export default function Problem() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const editorRef = useRef(null);
 
   const papers = getPracticePapers();
   const currentPaper = papers[0];
@@ -35,15 +36,23 @@ export default function Problem() {
     if (question) {
       const progress = getUserProgress();
       const saved = progress[question.id];
-      if (saved && saved.userCode !== undefined) {
-        setUserCode(saved.userCode);
-      } else {
-        setUserCode(question.starterUserCode || '        ');
+      const initialCode = (saved && saved.userCode !== undefined) ? saved.userCode : (question.starterUserCode || '        ');
+      setUserCode(initialCode);
+      if (editorRef.current) {
+        editorRef.current.setValue(initialCode);
       }
       setResults(null);
       setActiveTab(0);
     }
   }, [questionId]);
+
+  const handleEditorDidMount = (editor, monaco) => {
+    editorRef.current = editor;
+    // Command to prevent browser default Ctrl+S / Cmd+S saving dialog
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+      // Intentionally prevent browser save dialog
+    });
+  };
 
   if (!question) {
     return (
@@ -516,13 +525,14 @@ export default function Problem() {
             </div>
 
             {/* Middle Editable Monaco Editor for Student Logic */}
-            <div style={{ height: '170px', minHeight: '150px', position: 'relative' }}>
+            <div style={{ minHeight: '200px', flex: 1, position: 'relative' }}>
               <Editor
                 height="100%"
                 language="java"
                 theme="vs-dark"
                 value={userCode}
                 onChange={(val) => setUserCode(val || '')}
+                onMount={handleEditorDidMount}
                 options={{
                   minimap: { enabled: false },
                   fontSize: 14,
@@ -533,7 +543,13 @@ export default function Problem() {
                   automaticLayout: true,
                   tabSize: 4,
                   padding: { top: 8, bottom: 8 },
-                  renderLineHighlight: 'all'
+                  renderLineHighlight: 'all',
+                  quickSuggestions: false,
+                  suggestOnTriggerCharacters: false,
+                  acceptSuggestionOnEnter: "off",
+                  tabCompletion: "off",
+                  snippetSuggestions: "none",
+                  wordBasedSuggestions: "off"
                 }}
               />
             </div>
