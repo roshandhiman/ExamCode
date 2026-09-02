@@ -30,17 +30,23 @@ function localExecutorPlugin() {
               fs.writeFileSync(filePath, code);
 
               exec(`javac "${filePath}"`, { cwd: tmpDir }, (compileErr, stdout, stderr) => {
-                if (compileErr || stderr) {
+                if (compileErr) {
                   fs.rmSync(tmpDir, { recursive: true, force: true });
                   res.setHeader('Content-Type', 'application/json');
                   return res.end(JSON.stringify({
-                    compile: { code: 1, stderr: stderr || compileErr.message }
+                    compile: { code: 1, stderr: (stderr || compileErr.message).trim() }
                   }));
                 }
 
                 const child = spawn('java', ['-cp', tmpDir, className], { cwd: tmpDir });
                 let runStdout = '';
                 let runStderr = '';
+                let timedOut = false;
+
+                const timer = setTimeout(() => {
+                  timedOut = true;
+                  try { child.kill('SIGKILL'); } catch (err) {}
+                }, 5000);
 
                 if (stdin) {
                   child.stdin.write(stdin);
@@ -51,8 +57,15 @@ function localExecutorPlugin() {
                 child.stderr.on('data', d => { runStderr += d.toString(); });
 
                 child.on('close', exitCode => {
+                  clearTimeout(timer);
                   fs.rmSync(tmpDir, { recursive: true, force: true });
                   res.setHeader('Content-Type', 'application/json');
+                  if (timedOut) {
+                    return res.end(JSON.stringify({
+                      compile: { code: 0 },
+                      run: { code: 124, stdout: runStdout, stderr: 'Time Limit Exceeded (5s)' }
+                    }));
+                  }
                   return res.end(JSON.stringify({
                     compile: { code: 0 },
                     run: { code: exitCode, stdout: runStdout, stderr: runStderr }

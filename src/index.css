@@ -330,3 +330,35 @@ button {
 
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .spinner { animation: spin 1s linear infinite; }
+
+/* Question Row Hover */
+.question-row {
+  background-color: var(--bg-card);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.question-row:hover {
+  transform: translateY(-2px);
+  background-color: #2b2b2f;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #141416;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333338;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4a52;
+}
+

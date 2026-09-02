@@ -1,484 +1,327 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { getQuestionsData, saveQuestionsData } from '../data/questions';
-import { Lock, Plus, Trash2, Save, LogOut, CheckCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  Lock, Plus, Trash2, Save, LogOut, CheckCircle, Flame, 
+  RotateCcw, Download, Upload, BookOpen, Layers
+} from 'lucide-react';
+import { 
+  getPracticePapers, savePracticePapers, resetAllProgress, 
+  getUserProgress 
+} from '../data/questions';
 
 export default function Admin() {
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState('');
   const [authError, setAuthError] = useState('');
 
-  const [data, setData] = useState({});
-  const [selectedLang, setSelectedLang] = useState('java');
-  const [selectedTopic, setSelectedTopic] = useState('arrays');
-  const [selectedQId, setSelectedQId] = useState('new');
-
-  const [newTopicName, setNewTopicName] = useState('');
-  const [title, setTitle] = useState('');
-  const [difficulty, setDifficulty] = useState('Easy');
-  const [statement, setStatement] = useState('');
-  const [constraints, setConstraints] = useState('');
-  const [sampleInput, setSampleInput] = useState('');
-  const [sampleOutput, setSampleOutput] = useState('');
-  const [starterCode, setStarterCode] = useState('');
-  const [testerCode, setTesterCode] = useState('');
-  const [testcases, setTestcases] = useState([
-    { input: '', expectedOutput: '', isHidden: false }
-  ]);
-
+  const [papers, setPapers] = useState([]);
+  const [activePaperIdx, setActivePaperIdx] = useState(0);
   const [saveMessage, setSaveMessage] = useState('');
+
+  // New Paper form state
+  const [newDay, setNewDay] = useState('Day 2');
+  const [newTitle, setNewTitle] = useState('Practice Test Paper 2');
+  const [newSubtitle, setNewSubtitle] = useState('Hard Mixed & Scenario Questions (End Term Prep)');
 
   useEffect(() => {
     const auth = sessionStorage.getItem('admin_authenticated');
     if (auth === 'true') {
       setIsAuthenticated(true);
     }
-    const currentData = getQuestionsData();
-    setData(currentData);
+    setPapers(getPracticePapers());
   }, []);
 
-  // When language or topic or question selection changes, load existing question details
-  useEffect(() => {
-    if (data[selectedLang] && data[selectedLang][selectedTopic]) {
-      const qList = data[selectedLang][selectedTopic];
-      if (selectedQId !== 'new') {
-        const q = qList.find(item => item.id === parseInt(selectedQId));
-        if (q) {
-          setTitle(q.title || '');
-          setDifficulty(q.difficulty || 'Easy');
-          setStatement(q.statement || '');
-          setConstraints(q.constraints || '');
-          setSampleInput(q.sampleInput || '');
-          setSampleOutput(q.sampleOutput || '');
-          setStarterCode(q.starterCode || '');
-          setTesterCode(q.testerCode || '');
-          setTestcases(q.testcases || [{ input: '', expectedOutput: '', isHidden: false }]);
-          return;
-        }
-      }
-    }
-    // Default reset for 'new'
-    setTitle('');
-    setDifficulty('Easy');
-    setStatement('');
-    setConstraints('');
-    setSampleInput('');
-    setSampleOutput('');
-    setStarterCode(
-      selectedLang === 'java' 
-        ? `public class Solution {\n    public int[] solution(int[] nums) {\n        return new int[]{};\n    }\n}`
-        : `# Write your code here`
-    );
-    setTesterCode('');
-    setTestcases([
-      { input: '', expectedOutput: '', isHidden: false },
-      { input: '', expectedOutput: '', isHidden: true }
-    ]);
-  }, [selectedLang, selectedTopic, selectedQId, data]);
-
-  const hashPassword = async (password) => {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  };
-
-  const ADMIN_HASH = '8f7035f1f5f46c4a227c4e0a9e334c33da14096f7e567c813e64f73025c21aff';
-
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    const inputHash = await hashPassword(passcode);
-    if (inputHash === ADMIN_HASH) {
+    // Default passcodes
+    if (passcode === 'exam2026' || passcode === 'admin' || passcode === '1234') {
       setIsAuthenticated(true);
       sessionStorage.setItem('admin_authenticated', 'true');
       setAuthError('');
     } else {
-      setAuthError('Invalid Admin Passcode');
+      setAuthError('Incorrect passcode. Try "exam2026" or "admin".');
     }
   };
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
     sessionStorage.removeItem('admin_authenticated');
+    setIsAuthenticated(false);
   };
 
-  const handleAddTopic = () => {
-    if (!newTopicName.trim()) return;
-    const topicKey = newTopicName.trim().toLowerCase().replace(/\s+/g, '');
-    const updated = { ...data };
-    if (!updated[selectedLang]) updated[selectedLang] = {};
-    if (!updated[selectedLang][topicKey]) {
-      updated[selectedLang][topicKey] = [];
-    }
-    setData(updated);
-    saveQuestionsData(updated);
-    setSelectedTopic(topicKey);
-    setNewTopicName('');
-  };
-
-  const handleAddTestCase = () => {
-    if (testcases.length >= 6) {
-      alert('Maximum 6 test cases allowed per question.');
-      return;
-    }
-    setTestcases([...testcases, { input: '', expectedOutput: '', isHidden: true }]);
-  };
-
-  const handleRemoveTestCase = (index) => {
-    if (testcases.length <= 1) {
-      alert('At least one testcase is required.');
-      return;
-    }
-    setTestcases(testcases.filter((_, i) => i !== index));
-  };
-
-  const handleTestCaseChange = (index, field, value) => {
-    const updated = [...testcases];
-    updated[index][field] = value;
-    setTestcases(updated);
-  };
-
-  const handleSaveQuestion = (e) => {
+  const handleCreateNewPaper = (e) => {
     e.preventDefault();
-    if (!title.trim()) {
-      alert('Please enter a question title.');
-      return;
-    }
+    const newPaper = {
+      id: `paper-${papers.length + 1}`,
+      day: newDay,
+      title: newTitle,
+      subtitle: newSubtitle,
+      totalMarks: 80,
+      passingMarks: 32,
+      examDate: "Exam: 12th Sept",
+      instructions: [
+        "Complete method logic inside locked boilerplate templates.",
+        "Submit evaluates both visible and hidden test cases."
+      ],
+      questions: []
+    };
 
-    const updatedData = { ...data };
-    if (!updatedData[selectedLang]) updatedData[selectedLang] = {};
-    if (!updatedData[selectedLang][selectedTopic]) updatedData[selectedLang][selectedTopic] = [];
-
-    const topicQuestions = updatedData[selectedLang][selectedTopic];
-
-    if (selectedQId === 'new') {
-      const newId = topicQuestions.length > 0 ? Math.max(...topicQuestions.map(q => q.id)) + 1 : 1;
-      const newQ = {
-        id: newId,
-        title,
-        difficulty,
-        statement,
-        constraints,
-        sampleInput,
-        sampleOutput,
-        starterCode,
-        testerCode,
-        testcases
-      };
-      topicQuestions.push(newQ);
-      setSelectedQId(newId.toString());
-    } else {
-      const qIndex = topicQuestions.findIndex(q => q.id === parseInt(selectedQId));
-      if (qIndex !== -1) {
-        topicQuestions[qIndex] = {
-          id: parseInt(selectedQId),
-          title,
-          difficulty,
-          statement,
-          constraints,
-          sampleInput,
-          sampleOutput,
-          starterCode,
-          testerCode,
-          testcases
-        };
-      }
-    }
-
-    setData(updatedData);
-    saveQuestionsData(updatedData);
-    setSaveMessage('Question saved successfully!');
+    const updated = [...papers, newPaper];
+    setPapers(updated);
+    savePracticePapers(updated);
+    setActivePaperIdx(updated.length - 1);
+    setSaveMessage(`Successfully created ${newTitle}!`);
     setTimeout(() => setSaveMessage(''), 3000);
+  };
+
+  const handleResetProgress = () => {
+    if (window.confirm("Are you sure you want to reset all user test progress? This clears marks and solved status.")) {
+      resetAllProgress();
+      setSaveMessage("All user progress has been reset!");
+      setTimeout(() => setSaveMessage(''), 3000);
+    }
+  };
+
+  const handleExportJSON = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(papers, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `exam_practice_papers_${Date.now()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  const handleImportJSON = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        if (Array.isArray(parsed)) {
+          setPapers(parsed);
+          savePracticePapers(parsed);
+          setSaveMessage("Practice papers successfully imported!");
+          setTimeout(() => setSaveMessage(''), 3000);
+        } else {
+          alert("Invalid file format. Expected a JSON array of test papers.");
+        }
+      } catch (err) {
+        alert("Failed to parse JSON file: " + err.message);
+      }
+    };
+    reader.readAsText(file);
   };
 
   if (!isAuthenticated) {
     return (
-      <div className="container" style={{ maxWidth: '400px', marginTop: '6rem' }}>
-        <div className="card" style={{ textAlign: 'center', padding: '2.5rem' }}>
-          <Lock size={42} color="var(--accent-primary)" style={{ marginBottom: '1rem' }} />
-          <h2 style={{ marginBottom: '1.5rem' }}>Admin Portal</h2>
-          
-          {authError && (
-            <div style={{ color: 'var(--fail)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-              {authError}
-            </div>
-          )}
-
-          <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: '1.2rem' }}>
-              <input
-                type="password"
-                className="form-input"
-                placeholder="Enter Admin Passcode"
-                value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                style={{ width: '100%' }}
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+      <div className="container" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="card" style={{ width: '380px', textAlign: 'center', padding: '2.5rem' }}>
+          <div style={{ background: 'rgba(255, 161, 22, 0.1)', width: '56px', height: '56px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
+            <Lock size={26} color="var(--accent-primary)" />
+          </div>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Assignment Portal</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+            Manage daily practice papers leading up to 12th Sept End Term.
+          </p>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <input 
+              type="password" 
+              className="form-input" 
+              placeholder="Enter passcode (default: exam2026)" 
+              value={passcode} 
+              onChange={e => setPasscode(e.target.value)} 
+              autoFocus
+            />
+            {authError && <div style={{ color: 'var(--fail)', fontSize: '0.85rem' }}>{authError}</div>}
+            <button type="submit" className="btn btn-primary" style={{ justifyContent: 'center' }}>
               Unlock Portal
             </button>
           </form>
+          <Link to="/" style={{ display: 'inline-block', marginTop: '1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            ← Back to Practice Paper
+          </Link>
         </div>
       </div>
     );
   }
 
-  const currentTopics = data[selectedLang] ? Object.keys(data[selectedLang]) : [];
-  const currentQuestions = (data[selectedLang] && data[selectedLang][selectedTopic]) || [];
+  const activePaper = papers[activePaperIdx] || papers[0];
 
   return (
-    <div className="container" style={{ maxWidth: '1000px', flex: 1, paddingBottom: '4rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+    <div className="container" style={{ flex: 1, maxWidth: '1000px', paddingBottom: '4rem' }}>
+      {/* Admin Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
         <div>
-          <h1>Admin Management</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Add or edit topics, questions, and test cases.</p>
-        </div>
-        <button className="btn" onClick={handleLogout} style={{ color: 'var(--fail)', borderColor: 'var(--fail)' }}>
-          <LogOut size={16} /> Logout
-        </button>
-      </div>
-
-      {saveMessage && (
-        <div className="status-banner accepted" style={{ marginBottom: '1.5rem' }}>
-          <CheckCircle size={20} /> {saveMessage}
-        </div>
-      )}
-
-      {/* Selectors */}
-      <div className="card" style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>
-              Language
-            </label>
-            <select
-              className="form-select"
-              value={selectedLang}
-              onChange={(e) => {
-                setSelectedLang(e.target.value);
-                const topics = data[e.target.value] ? Object.keys(data[e.target.value]) : [];
-                setSelectedTopic(topics[0] || 'arrays');
-                setSelectedQId('new');
-              }}
-              style={{ width: '100%' }}
-            >
-              <option value="java">Java</option>
-              <option value="python">Python</option>
-              <option value="c">C Language</option>
-            </select>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: '800' }}>Daily Assignment Manager</h1>
+            <span style={{ background: 'rgba(0, 184, 163, 0.15)', color: 'var(--success)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: '700' }}>
+              Admin Mode
+            </span>
           </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>
-              Topic
-            </label>
-            <select
-              className="form-select"
-              value={selectedTopic}
-              onChange={(e) => {
-                setSelectedTopic(e.target.value);
-                setSelectedQId('new');
-              }}
-              style={{ width: '100%' }}
-            >
-              {currentTopics.map(t => (
-                <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>
-              Question
-            </label>
-            <select
-              className="form-select"
-              value={selectedQId}
-              onChange={(e) => setSelectedQId(e.target.value)}
-              style={{ width: '100%' }}
-            >
-              <option value="new">+ Add New Question</option>
-              {currentQuestions.map(q => (
-                <option key={q.id} value={q.id}>#{q.id} - {q.title}</option>
-              ))}
-            </select>
-          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+            Add new daily papers for you and your friends till 11th Sept.
+          </p>
         </div>
 
-        {/* Add New Topic Row */}
-        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-          <input
-            type="text"
-            className="form-input"
-            placeholder="New Topic Name (e.g. Recursion)"
-            value={newTopicName}
-            onChange={(e) => setNewTopicName(e.target.value)}
-            style={{ flex: 1 }}
-          />
-          <button type="button" className="btn" onClick={handleAddTopic}>
-            <Plus size={16} /> Add Topic
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className="btn" onClick={handleExportJSON} title="Download backup">
+            <Download size={15} /> Export JSON
+          </button>
+          <label className="btn" style={{ cursor: 'pointer' }} title="Import papers">
+            <Upload size={15} /> Import JSON
+            <input type="file" accept=".json" onChange={handleImportJSON} style={{ display: 'none' }} />
+          </label>
+          <button className="btn" onClick={handleLogout} style={{ color: 'var(--fail)' }}>
+            <LogOut size={15} /> Logout
           </button>
         </div>
       </div>
 
-      {/* Question Form */}
-      <form onSubmit={handleSaveQuestion} className="card">
-        <h2 style={{ marginBottom: '1.5rem' }}>
-          {selectedQId === 'new' ? 'Create New Question' : `Edit Question #${selectedQId}`}
-        </h2>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem', marginBottom: '1.2rem' }}>
-          <div>
-            <label className="form-group">
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Question Title</span>
-              <input
-                type="text"
-                className="form-input"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
-            </label>
-          </div>
-          <div>
-            <label className="form-group">
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Difficulty</span>
-              <select
-                className="form-select"
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value)}
-              >
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-              </select>
-            </label>
-          </div>
+      {saveMessage && (
+        <div style={{ background: 'rgba(0, 184, 163, 0.15)', color: 'var(--success)', border: '1px solid var(--success)', padding: '0.8rem 1rem', borderRadius: '6px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <CheckCircle size={18} /> {saveMessage}
         </div>
+      )}
 
-        <div className="form-group">
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Problem Statement</span>
-          <textarea
-            className="form-textarea"
-            value={statement}
-            onChange={(e) => setStatement(e.target.value)}
-            required
-          />
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div className="form-group">
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Sample Input Description</span>
-            <textarea
-              className="form-textarea"
-              value={sampleInput}
-              onChange={(e) => setSampleInput(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Sample Output Description</span>
-            <textarea
-              className="form-textarea"
-              value={sampleOutput}
-              onChange={(e) => setSampleOutput(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="form-group">
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Constraints</span>
-          <textarea
-            className="form-textarea"
-            value={constraints}
-            onChange={(e) => setConstraints(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Starter Code Template</span>
-          <textarea
-            className="form-textarea"
-            style={{ fontFamily: 'monospace' }}
-            value={starterCode}
-            onChange={(e) => setStarterCode(e.target.value)}
-          />
-        </div>
-
-        {/* Testcases Manager */}
-        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <div>
-              <h3>Test Cases (Max 6)</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                Sample test cases are executed on "Run Code". Hidden test cases are evaluated during "Submit".
-              </p>
-            </div>
-            <button
-              type="button"
-              className="btn"
-              onClick={handleAddTestCase}
-              disabled={testcases.length >= 6}
+      {/* Existing Papers List */}
+      <div style={{ marginBottom: '2.5rem' }}>
+        <h3 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>Active Practice Papers ({papers.length})</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+          {papers.map((p, idx) => (
+            <div 
+              key={p.id} 
+              className="card"
+              style={{ 
+                borderColor: activePaperIdx === idx ? 'var(--accent-primary)' : 'var(--border-color)',
+                cursor: 'pointer',
+                background: activePaperIdx === idx ? 'rgba(255, 161, 22, 0.05)' : 'var(--bg-card)'
+              }}
+              onClick={() => setActivePaperIdx(idx)}
             >
-              <Plus size={16} /> Add Testcase
-            </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <span style={{ color: 'var(--accent-primary)', fontWeight: '700', fontSize: '0.85rem' }}>{p.day}</span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{p.questions.length} Questions</span>
+              </div>
+              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.3rem' }}>{p.title}</h4>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>{p.subtitle}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Active Paper Details */}
+      {activePaper && (
+        <div className="card" style={{ marginBottom: '2.5rem', padding: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h3 style={{ fontSize: '1.2rem' }}>{activePaper.title} Questions ({activePaper.questions.length})</h3>
+            <Link to="/" className="btn btn-primary" style={{ fontSize: '0.85rem', padding: '0.3rem 0.8rem' }}>
+              View in Practice Portal →
+            </Link>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {testcases.map((tc, idx) => (
-              <div key={idx} className="card" style={{ padding: '1rem', background: 'var(--bg-main)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>Testcase #{idx + 1}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={tc.isHidden}
-                        onChange={(e) => handleTestCaseChange(idx, 'isHidden', e.target.checked)}
-                      />
-                      Hidden Testcase
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTestCase(idx)}
-                      style={{ color: 'var(--fail)', cursor: 'pointer' }}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {activePaper.questions.map((q, idx) => (
+              <div 
+                key={q.id} 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between', 
+                  padding: '0.7rem 1rem', 
+                  background: 'rgba(255, 255, 255, 0.03)', 
+                  borderRadius: '6px',
+                  border: '1px solid var(--border-color)'
+                }}
+              >
+                <div>
+                  <span style={{ fontWeight: '700', marginRight: '0.8rem', color: 'var(--accent-primary)' }}>{q.number}</span>
+                  <span style={{ fontWeight: '600' }}>{q.title}</span>
+                  <span style={{ marginLeft: '0.8rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>({q.category})</span>
                 </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Input stdin</span>
-                    <textarea
-                      className="form-textarea"
-                      style={{ fontFamily: 'monospace', minHeight: '60px' }}
-                      value={tc.input}
-                      onChange={(e) => handleTestCaseChange(idx, 'input', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Expected stdout</span>
-                    <textarea
-                      className="form-textarea"
-                      style={{ fontFamily: 'monospace', minHeight: '60px' }}
-                      value={tc.expectedOutput}
-                      onChange={(e) => handleTestCaseChange(idx, 'expectedOutput', e.target.value)}
-                    />
-                  </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: '700', color: q.marks === 10 ? 'var(--fail)' : 'var(--accent-primary)' }}>
+                    {q.marks} Marks
+                  </span>
+                  <Link to={`/problem/${q.id}`} className="btn" style={{ padding: '0.2rem 0.6rem', fontSize: '0.8rem' }}>
+                    Open
+                  </Link>
                 </div>
               </div>
             ))}
           </div>
         </div>
+      )}
 
-        <button type="submit" className="btn btn-primary" style={{ marginTop: '2rem', width: '100%', justifyContent: 'center' }}>
-          <Save size={18} /> Save Question & Testcases
+      {/* Add New Daily Assignment Paper Form */}
+      <div className="card" style={{ padding: '1.5rem', marginBottom: '2.5rem' }}>
+        <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Plus size={18} color="var(--accent-primary)" /> Add New Daily Practice Paper
+        </h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.2rem' }}>
+          Easily schedule Day 2, Day 3... Day 10 sets for end term practice.
+        </p>
+
+        <form onSubmit={handleCreateNewPaper} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1rem' }}>
+          <div className="form-group">
+            <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Day Label</label>
+            <input 
+              type="text" 
+              className="form-input" 
+              value={newDay} 
+              onChange={e => setNewDay(e.target.value)} 
+              placeholder="e.g. Day 2"
+              required 
+            />
+          </div>
+
+          <div className="form-group">
+            <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Paper Title</label>
+            <input 
+              type="text" 
+              className="form-input" 
+              value={newTitle} 
+              onChange={e => setNewTitle(e.target.value)} 
+              placeholder="e.g. Practice Test Paper 2"
+              required 
+            />
+          </div>
+
+          <div className="form-group" style={{ gridColumn: 'span 2' }}>
+            <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Subtitle / Topic Focus</label>
+            <input 
+              type="text" 
+              className="form-input" 
+              value={newSubtitle} 
+              onChange={e => setNewSubtitle(e.target.value)} 
+              placeholder="e.g. OOP, Classes, Comparator, Collections & File Handling"
+              required 
+            />
+          </div>
+
+          <div style={{ gridColumn: 'span 2' }}>
+            <button type="submit" className="btn btn-primary" style={{ padding: '0.5rem 1.2rem' }}>
+              <Plus size={16} /> Create Paper
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Dangerous Zone */}
+      <div className="card" style={{ borderColor: 'rgba(239, 71, 67, 0.4)', padding: '1.5rem' }}>
+        <h4 style={{ color: 'var(--fail)', fontSize: '1rem', marginBottom: '0.5rem' }}>Reset Progress</h4>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          Clear all submitted user code, scores, and test case pass records across all questions to retake the test from scratch.
+        </p>
+        <button 
+          onClick={handleResetProgress}
+          className="btn" 
+          style={{ borderColor: 'var(--fail)', color: 'var(--fail)' }}
+        >
+          <RotateCcw size={15} /> Reset All Test Progress
         </button>
-      </form>
+      </div>
     </div>
   );
 }
