@@ -14,30 +14,37 @@ export default function Problem() {
   const { id } = useParams();
   const navigate = useNavigate();
   const editorRef = useRef(null);
+  const codeRef = useRef('');
 
   const papers = getPracticePapers();
   const currentPaper = papers[0];
   const questionId = parseInt(id) || 1;
   const question = currentPaper.questions.find(q => q.id === questionId);
 
-  const [userCode, setUserCode] = useState('');
   const [activeTab, setActiveTab] = useState(0);
   const [results, setResults] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isTextareaMode, setIsTextareaMode] = useState(false);
 
   // Submit Modal States
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResults, setSubmitResults] = useState(null);
 
+  // Initial code getter
+  const getInitialCode = () => {
+    if (!question) return '        ';
+    const progress = getUserProgress();
+    const saved = progress[question.id];
+    return (saved && saved.userCode !== undefined) ? saved.userCode : (question.starterUserCode || '        ');
+  };
+
   // Load question and previous saved code if available
   useEffect(() => {
     if (question) {
-      const progress = getUserProgress();
-      const saved = progress[question.id];
-      const initialCode = (saved && saved.userCode !== undefined) ? saved.userCode : (question.starterUserCode || '        ');
-      setUserCode(initialCode);
+      const initialCode = getInitialCode();
+      codeRef.current = initialCode;
       if (editorRef.current) {
         editorRef.current.setValue(initialCode);
       }
@@ -112,8 +119,17 @@ export default function Problem() {
     return cleanLines.join('\n');
   };
 
+  const getCurrentUserCode = () => {
+    if (editorRef.current) {
+      return editorRef.current.getValue();
+    }
+    return codeRef.current || getInitialCode();
+  };
+
   const executeTestCases = async (testcasesToRun) => {
-    const fullCode = getFullCode(userCode);
+    const currentCode = getCurrentUserCode();
+    codeRef.current = currentCode;
+    const fullCode = getFullCode(currentCode);
     const testResults = [];
     let passedAll = true;
     let passCount = 0;
@@ -203,7 +219,6 @@ export default function Problem() {
       setSubmitResults(res);
 
       if (!res.compileError) {
-        // Calculate marks
         let marksEarned = 0;
         let status = 'failed';
         if (res.passCount === res.totalCount) {
@@ -214,9 +229,8 @@ export default function Problem() {
           status = 'partial';
         }
 
-        // Save progress to localStorage
         saveQuestionProgress(question.id, {
-          userCode,
+          userCode: getCurrentUserCode(),
           marksEarned,
           totalMarks: question.marks,
           passedCount: res.passCount,
@@ -232,14 +246,18 @@ export default function Problem() {
   };
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(getFullCode(userCode));
+    navigator.clipboard.writeText(getFullCode(getCurrentUserCode()));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleResetCode = () => {
     if (window.confirm("Reset your solution code to the blank template?")) {
-      setUserCode(question.starterUserCode || '        ');
+      const blankCode = question.starterUserCode || '        ';
+      codeRef.current = blankCode;
+      if (editorRef.current) {
+        editorRef.current.setValue(blankCode);
+      }
     }
   };
 
@@ -455,6 +473,15 @@ export default function Problem() {
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <button 
                 className="btn" 
+                onClick={() => setIsTextareaMode(!isTextareaMode)} 
+                style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem' }}
+                title="Toggle Simple Textarea / Monaco Editor"
+              >
+                {isTextareaMode ? '⚡ Monaco IDE' : '📝 Simple Textarea'}
+              </button>
+
+              <button 
+                className="btn" 
                 onClick={handleCopyCode} 
                 style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem' }}
                 title="Copy Full Code"
@@ -517,41 +544,65 @@ export default function Problem() {
               fontSize: '13.5px', 
               lineHeight: 1.5,
               whiteSpace: 'pre',
-              userSelect: 'none',
               background: '#151518',
               borderBottom: '1px dashed rgba(255, 255, 255, 0.08)'
             }}>
               {question.prefixCode}
             </div>
 
-            {/* Middle Editable Monaco Editor for Student Logic */}
-            <div style={{ minHeight: '200px', flex: 1, position: 'relative' }}>
-              <Editor
-                height="100%"
-                language="java"
-                theme="vs-dark"
-                value={userCode}
-                onChange={(val) => setUserCode(val || '')}
-                onMount={handleEditorDidMount}
-                options={{
-                  minimap: { enabled: false },
-                  fontSize: 14,
-                  fontFamily: "'Fira Code', 'JetBrains Mono', monospace",
-                  lineNumbers: (num) => (num + prefixLineCount).toString(),
-                  lineNumbersMinChars: 3,
-                  scrollBeyondLastLine: false,
-                  automaticLayout: true,
-                  tabSize: 4,
-                  padding: { top: 8, bottom: 8 },
-                  renderLineHighlight: 'all',
-                  quickSuggestions: false,
-                  suggestOnTriggerCharacters: false,
-                  acceptSuggestionOnEnter: "off",
-                  tabCompletion: "off",
-                  snippetSuggestions: "none",
-                  wordBasedSuggestions: "off"
-                }}
-              />
+            {/* Middle Editable Code Area */}
+            <div style={{ minHeight: '220px', flex: 1, position: 'relative' }}>
+              {isTextareaMode ? (
+                <textarea
+                  key={`textarea-${question.id}`}
+                  defaultValue={getInitialCode()}
+                  onChange={(e) => { codeRef.current = e.target.value; }}
+                  placeholder="Type your Java code logic here..."
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: '220px',
+                    background: '#121214',
+                    color: '#f8f8f2',
+                    border: 'none',
+                    outline: 'none',
+                    fontFamily: "'Fira Code', 'JetBrains Mono', monospace",
+                    fontSize: '14px',
+                    padding: '12px 16px',
+                    resize: 'none',
+                    lineHeight: '1.6',
+                    tabSize: 4
+                  }}
+                />
+              ) : (
+                <Editor
+                  key={`monaco-${question.id}`}
+                  height="100%"
+                  language="java"
+                  theme="vs-dark"
+                  defaultValue={getInitialCode()}
+                  onChange={(val) => { codeRef.current = val || ''; }}
+                  onMount={handleEditorDidMount}
+                  options={{
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    fontFamily: "'Fira Code', 'JetBrains Mono', monospace",
+                    lineNumbers: (num) => (num + prefixLineCount).toString(),
+                    lineNumbersMinChars: 3,
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true,
+                    tabSize: 4,
+                    padding: { top: 8, bottom: 8 },
+                    renderLineHighlight: 'all',
+                    quickSuggestions: false,
+                    suggestOnTriggerCharacters: false,
+                    acceptSuggestionOnEnter: "off",
+                    tabCompletion: "off",
+                    snippetSuggestions: "none",
+                    wordBasedSuggestions: "off"
+                  }}
+                />
+              )}
             </div>
 
             {/* Bottom Locked Code Block */}
@@ -561,7 +612,6 @@ export default function Problem() {
               fontSize: '13.5px', 
               lineHeight: 1.5,
               whiteSpace: 'pre',
-              userSelect: 'none',
               background: '#151518',
               borderTop: '1px dashed rgba(255, 255, 255, 0.08)'
             }}>
