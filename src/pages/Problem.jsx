@@ -36,6 +36,7 @@ export default function Problem() {
   const [copied, setCopied] = useState(false);
   const [isTextareaMode, setIsTextareaMode] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showMainModal, setShowMainModal] = useState(false);
 
   // Submit Modal States
   const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -500,6 +501,15 @@ export default function Problem() {
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <button 
                 className="btn" 
+                onClick={() => setShowMainModal(true)} 
+                style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem', color: 'var(--accent-primary)', borderColor: 'rgba(255,161,22,0.4)' }}
+                title="View locked main() function"
+              >
+                <Eye size={14} /> View Main()
+              </button>
+
+              <button 
+                className="btn" 
                 onClick={() => setIsFullscreen(!isFullscreen)} 
                 style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem', borderColor: isFullscreen ? 'var(--accent-primary)' : 'var(--border-color)' }}
                 title="Toggle Fullscreen Editor"
@@ -636,7 +646,10 @@ export default function Problem() {
                     acceptSuggestionOnEnter: "off",
                     tabCompletion: "off",
                     snippetSuggestions: "none",
-                    wordBasedSuggestions: "off"
+                    wordBasedSuggestions: "off",
+                    scrollbar: {
+                      alwaysConsumeMouseWheel: false
+                    }
                   }}
                 />
               )}
@@ -887,7 +900,7 @@ export default function Problem() {
                   </div>
                 )}
 
-                {/* Modal Buttons */}
+        {/* Modal Buttons */}
                 <div style={{ display: 'flex', gap: '0.8rem', width: '100%', marginTop: '1rem' }}>
                   <button 
                     className="btn" 
@@ -923,6 +936,53 @@ export default function Problem() {
                 </div>
               </div>
             )}
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Locked Main Function View Modal */}
+      {showMainModal && createPortal(
+        <div className="modal-overlay" onClick={() => setShowMainModal(false)}>
+          <div 
+            className="modal-card" 
+            onClick={e => e.stopPropagation()}
+            style={{ maxWidth: '650px', width: '90%', textAlign: 'left' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.8rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Lock color="var(--accent-primary)" size={20} />
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '700' }}>Locked Main Wrapper — {question.number}</h3>
+              </div>
+              <button className="btn" onClick={() => setShowMainModal(false)} style={{ padding: '0.3rem 0.6rem' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+              This is the locked driver code executed behind the scenes to test your solution logic.
+            </p>
+
+            <pre style={{ 
+              background: '#121214', 
+              color: '#8b949e', 
+              padding: '1.2rem', 
+              borderRadius: '8px', 
+              fontSize: '13.5px', 
+              lineHeight: 1.5,
+              overflowX: 'auto',
+              fontFamily: "'Fira Code', 'Courier New', monospace"
+            }}>
+              {question.prefixCode}
+              {'\n        // [YOUR SOLUTION CODE IS INJECTED HERE]\n'}
+              {question.suffixCode}
+            </pre>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.2rem' }}>
+              <button className="btn btn-primary" onClick={() => setShowMainModal(false)} style={{ padding: '0.45rem 1.2rem' }}>
+                Got it
+              </button>
+            </div>
           </div>
         </div>,
         document.body
