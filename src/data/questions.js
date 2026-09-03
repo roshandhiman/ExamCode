@@ -2639,7 +2639,8 @@ Remaining Balance: 3800.00`,
         methodSignature: "static void withdraw(double balance, double amount)",
         prefixCode: `import java.util.*;
 
-class InvalidAmountException extends Exception {
+// 👇 YOUR CODE STARTS HERE (Define Custom Exception classes & logic)`,
+        starterUserCode: `class InvalidAmountException extends Exception {
     public InvalidAmountException(String message) { super(message); }
 }
 class InsufficientBalanceException extends Exception {
@@ -2649,26 +2650,34 @@ class InvalidDenominationException extends Exception {
     public InvalidDenominationException(String message) { super(message); }
 }
 
-public class Main {
-
+class ProcessHelper {
     static void withdraw(double balance, double amount) {
-
-        // 👇 YOUR CODE STARTS HERE`,
-        starterUserCode: `        `,
-        suffixCode: `        // 👆 YOUR CODE ENDS HERE
-    }
-
-    public static void main(String[] args) {
-
-        Scanner sc = new Scanner(System.in);
-
-        double balance = sc.nextDouble();
-        double amount = sc.nextDouble();
-
-        withdraw(balance, amount);
+        // Write validation & withdrawal logic here
     }
 }`,
-        referenceSolution: `        try {
+        suffixCode: `// 👆 YOUR CODE ENDS HERE
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        double balance = sc.nextDouble();
+        double amount = sc.nextDouble();
+        ProcessHelper.withdraw(balance, amount);
+    }
+}`,
+        referenceSolution: `class InvalidAmountException extends Exception {
+    public InvalidAmountException(String message) { super(message); }
+}
+class InsufficientBalanceException extends Exception {
+    public InsufficientBalanceException(String message) { super(message); }
+}
+class InvalidDenominationException extends Exception {
+    public InvalidDenominationException(String message) { super(message); }
+}
+
+class ProcessHelper {
+    static void withdraw(double balance, double amount) {
+        try {
             if (amount <= 0) throw new InvalidAmountException("Invalid Amount");
             if (amount > balance) throw new InsufficientBalanceException("Insufficient Balance");
             if (amount % 100 != 0) throw new InvalidDenominationException("Invalid Denomination");
@@ -2677,7 +2686,9 @@ public class Main {
             System.out.printf(Locale.US, "Remaining Balance: %.2f\\n", rem);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-        }`,
+        }
+    }
+}`,
         testcases: [
           {
             id: 1,
@@ -2717,14 +2728,14 @@ public class Main {
         category: "OOP",
         difficulty: "Hard",
         marks: 10,
-        tagline: "Tera kaam: Sirf process(String[] types, String[] brands, double[] distances) ke andar code likhna.",
+        tagline: "Tera kaam: Vehicle abstract class, Car/Bike subclasses aur process logic likhna.",
         concept: "Abstract classes, inheritance, method overriding, object array scanning",
         statement: `Given vehicle arrays of types (\`Car\` / \`Bike\`), brands, and distances:
 
-1. \`Car\`: travel cost = \`distance * 12\`
-2. \`Bike\`: travel cost = \`distance * 5\`
-
-Instantiate the appropriate subclass objects and print the vehicle with the **maximum travel cost**.
+1. Create \`abstract class Vehicle\` with private field \`brand\`, constructor, getter \`getBrand()\`, and \`abstract double calculateCost()\`.
+2. Create \`class Car extends Vehicle\` with cost = \`distance * 12\`.
+3. Create \`class Bike extends Vehicle\` with cost = \`distance * 5\`.
+4. Implement process logic in \`ProcessHelper.process(types, brands, distances)\` to instantiate objects and print the vehicle with maximum travel cost.
 
 ⚠️ **Tie-breaker**: Choose the **first** vehicle if maximum cost occurs multiple times.
 
@@ -2743,10 +2754,62 @@ Bike Yamaha 150`,
 Cost: 1200.00
 Index: 0`,
         constraints: `1 <= n <= 10^4`,
-        methodSignature: "static void process(String[] types, String[] brands, double[] distances)",
+        methodSignature: "abstract class Vehicle + Car/Bike subclasses + process()",
         prefixCode: `import java.util.*;
 
-abstract class Vehicle {
+// 👇 YOUR CODE STARTS HERE (Define abstract Vehicle, Car, Bike & ProcessHelper)`,
+        starterUserCode: `abstract class Vehicle {
+    private String brand;
+    public Vehicle(String brand) { this.brand = brand; }
+    public String getBrand() { return brand; }
+    public abstract double calculateCost();
+}
+
+class Car extends Vehicle {
+    private double distance;
+    public Car(String brand, double distance) {
+        super(brand);
+        this.distance = distance;
+    }
+    public double calculateCost() {
+        return distance * 12;
+    }
+}
+
+class Bike extends Vehicle {
+    private double distance;
+    public Bike(String brand, double distance) {
+        super(brand);
+        this.distance = distance;
+    }
+    public double calculateCost() {
+        return distance * 5;
+    }
+}
+
+class ProcessHelper {
+    static void process(String[] types, String[] brands, double[] distances) {
+        // Instantiate Vehicle objects & calculate maximum cost
+    }
+}`,
+        suffixCode: `// 👆 YOUR CODE ENDS HERE
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        String[] types = new String[n];
+        String[] brands = new String[n];
+        double[] distances = new double[n];
+        for (int i = 0; i < n; i++) {
+            types[i] = sc.next();
+            brands[i] = sc.next();
+            distances[i] = sc.nextDouble();
+        }
+        ProcessHelper.process(types, brands, distances);
+    }
+}`,
+        referenceSolution: `abstract class Vehicle {
     private String brand;
     public Vehicle(String brand) { this.brand = brand; }
     public String getBrand() { return brand; }
@@ -2765,33 +2828,9 @@ class Bike extends Vehicle {
     public double calculateCost() { return distance * 5; }
 }
 
-public class Main {
-
+class ProcessHelper {
     static void process(String[] types, String[] brands, double[] distances) {
-
-        // 👇 YOUR CODE STARTS HERE`,
-        starterUserCode: `        `,
-        suffixCode: `        // 👆 YOUR CODE ENDS HERE
-    }
-
-    public static void main(String[] args) {
-
-        Scanner sc = new Scanner(System.in);
-
-        int n = sc.nextInt();
-        String[] types = new String[n];
-        String[] brands = new String[n];
-        double[] distances = new double[n];
-        for (int i = 0; i < n; i++) {
-            types[i] = sc.next();
-            brands[i] = sc.next();
-            distances[i] = sc.nextDouble();
-        }
-
-        process(types, brands, distances);
-    }
-}`,
-        referenceSolution: `        int n = types.length;
+        int n = types.length;
         Vehicle[] vehicles = new Vehicle[n];
         for (int i = 0; i < n; i++) {
             if (types[i].equalsIgnoreCase("Car")) {
@@ -2811,7 +2850,9 @@ public class Main {
         }
         System.out.println("Maximum Cost Vehicle: " + vehicles[maxIdx].getBrand());
         System.out.printf(Locale.US, "Cost: %.2f\\n", maxCost);
-        System.out.println("Index: " + maxIdx);`,
+        System.out.println("Index: " + maxIdx);
+    }
+}`,
         testcases: [
           {
             id: 1,
@@ -2844,20 +2885,21 @@ public class Main {
         category: "OOP",
         difficulty: "Hard",
         marks: 10,
-        tagline: "Tera kaam: Sirf process(String[] names, int[] ids) ke andar code likhna.",
+        tagline: "Tera kaam: Employee class private fields/getters aur email generator logic likhna.",
         concept: "Encapsulation, private fields, getters, String manipulation",
-        statement: `Given employee names and IDs, construct \`Employee\` objects.
+        statement: `Given employee names and IDs:
 
-For each employee, generate an email address formatted as:
-\`\`\`
-<first_letter_lowercase><id>@company.com
-\`\`\`
+1. Define \`class Employee\` with private fields \`name\` and \`id\`, constructor, and getters \`getName()\` and \`getId()\`.
+2. Implement email generator logic in \`ProcessHelper.process(names, ids)\`.
+3. For each employee, generate email as \`<first_letter_lowercase><id>@company.com\`.
+4. Print the employee with the **longest original name**.
 
-Print each email on a separate line.
-
-Finally, print the employee name having the **longest original name**:
+Output format:
 \`\`\`
-Longest Name: <original_name>
+a101@company.com
+r202@company.com
+k303@company.com
+Longest Name: KaRaN
 \`\`\``,
         sampleInput: `3
 aMan 101
@@ -2868,30 +2910,31 @@ r202@company.com
 k303@company.com
 Longest Name: KaRaN`,
         constraints: `1 <= n <= 10^4`,
-        methodSignature: "static void process(String[] names, int[] ids)",
+        methodSignature: "class Employee + getters + process()",
         prefixCode: `import java.util.*;
 
-class Employee {
+// 👇 YOUR CODE STARTS HERE (Define class Employee with private fields/getters & ProcessHelper)`,
+        starterUserCode: `class Employee {
     private String name;
     private int id;
-    public Employee(String name, int id) { this.name = name; this.id = id; }
+    public Employee(String name, int id) {
+        this.name = name;
+        this.id = id;
+    }
     public String getName() { return name; }
     public int getId() { return id; }
 }
 
-public class Main {
-
+class ProcessHelper {
     static void process(String[] names, int[] ids) {
-
-        // 👇 YOUR CODE STARTS HERE`,
-        starterUserCode: `        `,
-        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+        // Instantiate Employee objects, generate emails, & find longest name
     }
+}`,
+        suffixCode: `// 👆 YOUR CODE ENDS HERE
 
+public class Main {
     public static void main(String[] args) {
-
         Scanner sc = new Scanner(System.in);
-
         int n = sc.nextInt();
         String[] names = new String[n];
         int[] ids = new int[n];
@@ -2899,11 +2942,20 @@ public class Main {
             names[i] = sc.next();
             ids[i] = sc.nextInt();
         }
-
-        process(names, ids);
+        ProcessHelper.process(names, ids);
     }
 }`,
-        referenceSolution: `        int n = names.length;
+        referenceSolution: `class Employee {
+    private String name;
+    private int id;
+    public Employee(String name, int id) { this.name = name; this.id = id; }
+    public String getName() { return name; }
+    public int getId() { return id; }
+}
+
+class ProcessHelper {
+    static void process(String[] names, int[] ids) {
+        int n = names.length;
         Employee[] emps = new Employee[n];
         for (int i = 0; i < n; i++) {
             emps[i] = new Employee(names[i], ids[i]);
@@ -2917,7 +2969,9 @@ public class Main {
                 longestName = name;
             }
         }
-        System.out.println("Longest Name: " + longestName);`,
+        System.out.println("Longest Name: " + longestName);
+    }
+}`,
         testcases: [
           {
             id: 1,
