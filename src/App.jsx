@@ -6,25 +6,62 @@ import Problem from './pages/Problem';
 import Admin from './pages/Admin';
 import ScorecardModal from './components/ScorecardModal';
 import LockScreen from './components/LockScreen';
+import { validateSessionToken } from './services/security';
 
 function App() {
   const [showScorecard, setShowScorecard] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return sessionStorage.getItem('site_auth') === 'true';
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = sessionStorage.getItem('examcode_secure_token');
+      if (token) {
+        const isValid = await validateSessionToken(token);
+        setIsAuthenticated(isValid);
+        if (!isValid) {
+          sessionStorage.removeItem('examcode_secure_token');
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+      setIsCheckingAuth(false);
+    };
+    checkToken();
+  }, []);
 
   const handleLockSite = () => {
-    sessionStorage.removeItem('site_auth');
+    sessionStorage.removeItem('examcode_secure_token');
     setIsAuthenticated(false);
   };
+
+  const handleUnlock = () => {
+    setIsAuthenticated(true);
+  };
+
+  if (isCheckingAuth) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#0a0a0c',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'var(--text-muted)'
+      }}>
+        <div style={{ fontSize: '0.9rem' }}>Verifying secure session...</div>
+      </div>
+    );
+  }
+
+  // If not authenticated, do not even render the app or routes in DOM!
+  if (!isAuthenticated) {
+    return <LockScreen onUnlock={handleUnlock} />;
+  }
 
   return (
     <BrowserRouter>
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-main)' }}>
-        {!isAuthenticated && (
-          <LockScreen onUnlock={() => setIsAuthenticated(true)} />
-        )}
-
         <Header 
           onOpenScorecard={() => setShowScorecard(true)} 
           onLockSite={handleLockSite}

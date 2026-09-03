@@ -107,6 +107,47 @@ function localExecutorPlugin() {
           }
         });
       });
+
+      server.middlewares.use('/api/auth', (req, res) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405;
+          return res.end(JSON.stringify({ error: 'Method not allowed' }));
+        }
+
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', async () => {
+          try {
+            const { password } = JSON.parse(body);
+            const crypto = await import('crypto');
+            const SALT = 'examCODE_s4lt_x99';
+            const DEFAULT_HASH = 'd520d7b92b0ab61184b8b0ac6ffb0f01591a4a3fb25c93fa4078b7f682c46103';
+
+            const serverPass = process.env.APP_PASSWORD || process.env.VITE_APP_PASSWORD;
+            let isValid = false;
+            if (serverPass) {
+              isValid = (password === serverPass);
+            } else {
+              const hash = crypto.createHash('sha256').update((password || '') + SALT).digest('hex');
+              isValid = (hash === DEFAULT_HASH);
+            }
+
+            res.setHeader('Content-Type', 'application/json');
+            if (isValid) {
+              const timestamp = Date.now();
+              const token = Buffer.from(JSON.stringify({ t: timestamp, s: 'auth_' + timestamp })).toString('base64');
+              return res.end(JSON.stringify({ success: true, token }));
+            } else {
+              res.statusCode = 401;
+              return res.end(JSON.stringify({ success: false, error: 'Invalid password' }));
+            }
+          } catch (e) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            return res.end(JSON.stringify({ error: e.message }));
+          }
+        });
+      });
     }
   };
 }

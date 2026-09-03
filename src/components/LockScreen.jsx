@@ -1,23 +1,58 @@
 import React, { useState } from 'react';
-import { Flame, Lock, KeyRound, Eye, EyeOff, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Flame, Lock, KeyRound, Eye, EyeOff, ShieldAlert, Loader } from 'lucide-react';
+import { authenticatePassword } from '../services/security';
 
 export default function LockScreen({ onUnlock }) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState(0);
 
-  const SITE_PASSWORD = import.meta.env.VITE_APP_PASSWORD || 'roshan@2024';
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (password.trim() === SITE_PASSWORD) {
-      sessionStorage.setItem('site_auth', 'true');
-      setError(false);
-      onUnlock();
-    } else {
+
+    const now = Date.now();
+    if (lockoutUntil > now) {
+      const waitSec = Math.ceil((lockoutUntil - now) / 1000);
       setError(true);
-      setErrorMessage('Incorrect password. Access denied!');
+      setErrorMessage(`Too many failed attempts. Please wait ${waitSec}s.`);
+      return;
+    }
+
+    if (!password.trim()) {
+      setError(true);
+      setErrorMessage('Please enter the access password.');
+      return;
+    }
+
+    setLoading(true);
+    setError(false);
+
+    try {
+      const result = await authenticatePassword(password.trim());
+      if (result.success && result.token) {
+        sessionStorage.setItem('site_auth_token', result.token);
+        setAttempts(0);
+        onUnlock(result.token);
+      } else {
+        const nextAttempts = attempts + 1;
+        setAttempts(nextAttempts);
+        setError(true);
+        if (nextAttempts >= 5) {
+          setLockoutUntil(Date.now() + 30000);
+          setErrorMessage('Too many failed attempts. Locked for 30 seconds.');
+        } else {
+          setErrorMessage('Access Denied: Incorrect password.');
+        }
+      }
+    } catch (err) {
+      setError(true);
+      setErrorMessage('Authentication error. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -26,21 +61,21 @@ export default function LockScreen({ onUnlock }) {
       position: 'fixed',
       inset: 0,
       zIndex: 99999,
-      background: 'radial-gradient(circle at center, #1f1f23 0%, #0d0d0e 100%)',
+      background: 'radial-gradient(circle at center, #1f1f23 0%, #0a0a0c 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '1.5rem',
-      backdropFilter: 'blur(10px)'
+      backdropFilter: 'blur(15px)'
     }}>
       <div style={{
         maxWidth: '440px',
         width: '100%',
-        background: '#161618',
-        border: '1px solid rgba(255, 161, 22, 0.3)',
+        background: '#141416',
+        border: '1px solid rgba(255, 161, 22, 0.35)',
         borderRadius: '20px',
         padding: '2.5rem 2rem',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 161, 22, 0.1)',
+        boxShadow: '0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 161, 22, 0.15)',
         textAlign: 'center'
       }}>
         {/* Logo */}
@@ -90,9 +125,10 @@ export default function LockScreen({ onUnlock }) {
               }}
               placeholder="Enter Access Password..."
               autoFocus
+              disabled={loading}
               style={{
                 width: '100%',
-                backgroundColor: '#0d0d0e',
+                backgroundColor: '#0a0a0c',
                 border: error ? '1px solid var(--fail)' : '1px solid rgba(255, 255, 255, 0.15)',
                 borderRadius: '12px',
                 padding: '0.85rem 2.8rem 0.85rem 2.8rem',
@@ -143,21 +179,24 @@ export default function LockScreen({ onUnlock }) {
 
           <button 
             type="submit"
+            disabled={loading}
             className="btn btn-primary"
             style={{
               padding: '0.85rem',
               fontSize: '1rem',
               fontWeight: '700',
               borderRadius: '12px',
-              boxShadow: '0 4px 20px rgba(255, 161, 22, 0.3)'
+              boxShadow: '0 4px 20px rgba(255, 161, 22, 0.3)',
+              justifyContent: 'center'
             }}
           >
-            <Lock size={18} /> Unlock Practice Portal
+            {loading ? <Loader size={18} className="spinner" /> : <Lock size={18} />}
+            {loading ? 'Verifying...' : 'Unlock Practice Portal'}
           </button>
         </form>
 
         <div style={{ marginTop: '1.8rem', fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.3)' }}>
-          🔒 End Term Exam Portal • Secret Protected Access
+          🔒 End Term Exam Portal • Cryptographically Protected Access
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import {
   getPracticePapers, savePracticePapers, resetAllProgress, 
   getUserProgress 
 } from '../data/questions';
+import { authenticatePassword, validateSessionToken } from '../services/security';
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -25,22 +26,26 @@ export default function Admin() {
   const [newSubtitle, setNewSubtitle] = useState('Hard Mixed & Scenario Questions (End Term Prep)');
 
   useEffect(() => {
-    const auth = sessionStorage.getItem('admin_authenticated');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-    }
+    const checkAdmin = async () => {
+      const auth = sessionStorage.getItem('admin_authenticated');
+      if (auth) {
+        const valid = await validateSessionToken(auth);
+        if (valid) setIsAuthenticated(true);
+      }
+    };
+    checkAdmin();
     setPapers(getPracticePapers());
   }, []);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Default passcodes
-    if (passcode === 'exam2026' || passcode === 'admin' || passcode === '1234') {
+    const result = await authenticatePassword(passcode);
+    if (result.success && result.token) {
       setIsAuthenticated(true);
-      sessionStorage.setItem('admin_authenticated', 'true');
+      sessionStorage.setItem('admin_authenticated', result.token);
       setAuthError('');
     } else {
-      setAuthError('Incorrect passcode. Try "exam2026" or "admin".');
+      setAuthError('Incorrect passcode. Access denied.');
     }
   };
 
