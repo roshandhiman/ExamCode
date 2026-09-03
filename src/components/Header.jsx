@@ -1,25 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Flame, Award, Settings, CheckCircle2, ChevronDown } from 'lucide-react';
-import { getPracticePapers, getUserProgress } from '../data/questions';
+import { getPracticePapers, getUserProgress, getActivePaperId, setActivePaperId } from '../data/questions';
 
 export default function Header({ onOpenScorecard }) {
   const navigate = useNavigate();
   const location = useLocation();
   const papers = getPracticePapers();
-  const currentPaper = papers[0];
+  const [activeId, setActiveId] = useState(getActivePaperId());
   const [progress, setProgress] = useState(getUserProgress());
 
-  // Listen to storage events or route changes to update live score
+  const currentPaper = papers.find(p => p.id === activeId) || papers[0];
+
   useEffect(() => {
     const updateProgress = () => {
       setProgress(getUserProgress());
+      setActiveId(getActivePaperId());
     };
     window.addEventListener('storage', updateProgress);
-    // also update when location changes
     updateProgress();
     return () => window.removeEventListener('storage', updateProgress);
   }, [location]);
+
+  const handlePaperChange = (e) => {
+    const newId = e.target.value;
+    setActivePaperId(newId);
+    setActiveId(newId);
+    navigate('/');
+    window.dispatchEvent(new Event('storage'));
+  };
 
   let totalEarned = 0;
   let fullSolvedCount = 0;
@@ -50,20 +59,37 @@ export default function Header({ onOpenScorecard }) {
           </span>
         </Link>
 
-        {/* Paper indicator pill */}
+        {/* Paper selector dropdown */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: '0.4rem', 
           background: 'rgba(255, 255, 255, 0.05)', 
-          border: '1px solid var(--border-color)',
+          border: '1px solid var(--accent-primary)',
           borderRadius: '20px',
-          padding: '0.3rem 0.8rem',
+          padding: '0.2rem 0.6rem 0.2rem 0.8rem',
           fontSize: '0.85rem'
         }}>
-          <span style={{ color: 'var(--accent-primary)', fontWeight: '700' }}>{currentPaper.day}</span>
-          <span style={{ color: 'var(--border-color)' }}>•</span>
-          <span style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>{currentPaper.title}</span>
+          <span style={{ color: 'var(--accent-primary)', fontWeight: '700' }}>{currentPaper.day}:</span>
+          <select 
+            value={currentPaper.id}
+            onChange={handlePaperChange}
+            style={{
+              background: 'transparent',
+              color: '#fff',
+              border: 'none',
+              outline: 'none',
+              fontWeight: '600',
+              cursor: 'pointer',
+              fontSize: '0.85rem'
+            }}
+          >
+            {papers.map(p => (
+              <option key={p.id} value={p.id} style={{ background: '#1c1c1f', color: '#fff' }}>
+                {p.title} ({p.questions.length} Qs • {p.totalMarks}M)
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 

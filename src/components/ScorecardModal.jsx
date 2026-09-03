@@ -2,12 +2,13 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { X, Award, CheckCircle2, AlertCircle, HelpCircle, ArrowRight, RotateCcw } from 'lucide-react';
-import { getPracticePapers, getUserProgress, resetAllProgress } from '../data/questions';
+import { getPracticePapers, getUserProgress, resetAllProgress, getActivePaperId } from '../data/questions';
 
 export default function ScorecardModal({ onClose }) {
   const navigate = useNavigate();
   const papers = getPracticePapers();
-  const paper = papers[0]; // Active test paper
+  const activeId = getActivePaperId();
+  const paper = papers.find(p => p.id === activeId) || papers[0];
   const progress = getUserProgress();
 
   let totalEarned = 0;

@@ -17,9 +17,18 @@ export default function Problem() {
   const codeRef = useRef('');
 
   const papers = getPracticePapers();
-  const currentPaper = papers[0];
   const questionId = parseInt(id) || 1;
-  const question = currentPaper.questions.find(q => q.id === questionId);
+
+  let currentPaper = papers[0];
+  let question = null;
+  for (const p of papers) {
+    const q = p.questions.find(item => item.id === questionId);
+    if (q) {
+      question = q;
+      currentPaper = p;
+      break;
+    }
+  }
 
   const [activeTab, setActiveTab] = useState(0);
   const [results, setResults] = useState(null);
@@ -66,7 +75,7 @@ export default function Problem() {
       <div className="container" style={{ textAlign: 'center', marginTop: '5rem' }}>
         <h2>Question not found</h2>
         <Link to="/" className="btn btn-primary" style={{ marginTop: '1rem' }}>
-          Back to Practice Test Paper 1
+          Back to Practice Test Dashboard
         </Link>
       </div>
     );
@@ -75,8 +84,10 @@ export default function Problem() {
   const sampleCases = question.testcases.filter(tc => !tc.isHidden);
   const totalHiddenCount = question.testcases.filter(tc => tc.isHidden).length;
 
-  const prevQuestion = currentPaper.questions.find(q => q.id === questionId - 1);
-  const nextQuestion = currentPaper.questions.find(q => q.id === questionId + 1);
+  const currentQuestions = currentPaper.questions;
+  const currentIndex = currentQuestions.findIndex(q => q.id === question.id);
+  const prevQuestion = currentIndex > 0 ? currentQuestions[currentIndex - 1] : null;
+  const nextQuestion = currentIndex < currentQuestions.length - 1 ? currentQuestions[currentIndex + 1] : null;
 
   // Combine locked prefix + user code + locked suffix
   const getFullCode = (codeToRun) => {

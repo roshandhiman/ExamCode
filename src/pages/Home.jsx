@@ -4,20 +4,32 @@ import {
   Flame, Award, CheckCircle, Clock, AlertTriangle, ArrowRight, 
   Sparkles, Layers, Code2, Compass, CheckCircle2, BookOpen
 } from 'lucide-react';
-import { getPracticePapers, getUserProgress } from '../data/questions';
+import { getPracticePapers, getUserProgress, getActivePaperId, setActivePaperId } from '../data/questions';
 
 export default function Home({ onOpenScorecard }) {
   const navigate = useNavigate();
   const papers = getPracticePapers();
-  const currentPaper = papers[0];
+  const [activePaperId, setActivePaperIdState] = useState(getActivePaperId());
   const [progress, setProgress] = useState(getUserProgress());
   const [selectedCategory, setSelectedCategory] = useState('All');
 
+  const currentPaper = papers.find(p => p.id === activePaperId) || papers[0];
+
   useEffect(() => {
-    const handleStorage = () => setProgress(getUserProgress());
+    const handleStorage = () => {
+      setProgress(getUserProgress());
+      setActivePaperIdState(getActivePaperId());
+    };
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
+
+  const handleSwitchPaper = (id) => {
+    setActivePaperId(id);
+    setActivePaperIdState(id);
+    setSelectedCategory('All');
+    window.dispatchEvent(new Event('storage'));
+  };
 
   let totalEarned = 0;
   let fullSolved = 0;
@@ -32,7 +44,8 @@ export default function Home({ onOpenScorecard }) {
     }
   });
 
-  const categories = ['All', 'Strings', 'Arrays', '2D Arrays', 'Collections', 'Set & Map', 'Mixed Hard'];
+  // Extract unique categories for current paper
+  const categories = ['All', ...new Set(currentPaper.questions.map(q => q.category))];
 
   const filteredQuestions = selectedCategory === 'All' 
     ? currentPaper.questions 
@@ -42,9 +55,71 @@ export default function Home({ onOpenScorecard }) {
 
   return (
     <div className="container" style={{ flex: 1, paddingBottom: '4rem', maxWidth: '1100px' }}>
+      {/* Paper Switcher Tabs */}
+      <div style={{ 
+        display: 'flex', 
+        gap: '0.8rem', 
+        marginTop: '1.2rem', 
+        marginBottom: '1rem',
+        overflowX: 'auto',
+        paddingBottom: '0.3rem'
+      }}>
+        {papers.map((p) => {
+          const isActive = p.id === currentPaper.id;
+          let pEarned = 0;
+          let pSolved = 0;
+          p.questions.forEach(q => {
+            const prog = progress[q.id];
+            if (prog) {
+              pEarned += (prog.marksEarned || 0);
+              if (prog.status === 'passed') pSolved++;
+            }
+          });
+
+          return (
+            <button
+              key={p.id}
+              onClick={() => handleSwitchPaper(p.id)}
+              style={{
+                background: isActive ? 'linear-gradient(135deg, rgba(255,161,22,0.15) 0%, rgba(26,26,26,0.9) 100%)' : 'var(--bg-card)',
+                border: isActive ? '2px solid var(--accent-primary)' : '1px solid var(--border-color)',
+                borderRadius: '12px',
+                padding: '0.75rem 1.2rem',
+                cursor: 'pointer',
+                textAlign: 'left',
+                minWidth: '240px',
+                transition: 'all 0.2s ease',
+                boxShadow: isActive ? '0 4px 15px rgba(255, 161, 22, 0.15)' : 'none'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
+                <span style={{ 
+                  fontSize: '0.75rem', 
+                  fontWeight: '800', 
+                  color: isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  {p.day}
+                </span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  {pSolved}/{p.questions.length} Solved
+                </span>
+              </div>
+              <div style={{ fontWeight: '700', fontSize: '1rem', color: isActive ? '#fff' : 'var(--text-secondary)' }}>
+                {p.title}
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: '600', marginTop: '0.2rem' }}>
+                Score: {pEarned} / {p.totalMarks} Marks
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Hero Exam Header */}
       <div style={{ 
-        marginTop: '1rem',
+        marginTop: '0.5rem',
         marginBottom: '2rem',
         background: 'linear-gradient(180deg, rgba(255, 161, 22, 0.08) 0%, rgba(26, 26, 26, 0) 100%)',
         border: '1px solid var(--border-color)',

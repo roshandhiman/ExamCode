@@ -1567,10 +1567,1571 @@ public class Main {
         ]
       }
     ]
+  },
+  {
+    id: "paper-2",
+    day: "Day 2",
+    title: "Practice Test Paper 2",
+    subtitle: "New Logic & Harder Building Blocks (No Repeats • Lectures 1–30)",
+    totalMarks: 120,
+    passingMarks: 48,
+    examDate: "Exam: 12th Sept",
+    instructions: [
+      "15 NEW non-repeating logic challenges: Prefix sums, Frequency maps, Range deletions, Abstract classes, Exception handling & Full Parsers.",
+      "Method headers, Scanner parsing, and Main wrapper classes are LOCKED. Write logic inside the designated method body.",
+      "Q1 to Q6 carry 5 Marks each; Q7 to Q15 carry 10 Marks each (Total: 120 Marks).",
+      "Run Code tests sample cases. Submit judges all public and hidden edge test cases."
+    ],
+    questions: [
+      {
+        id: 101,
+        paperId: "paper-2",
+        number: "Q1",
+        title: "Q1 — First Non-Repeating Character",
+        category: "Strings",
+        difficulty: "Easy",
+        marks: 5,
+        tagline: "Tera kaam: Sirf process(String s) ke andar code likhna.",
+        concept: "Character frequency map + string traversal",
+        statement: `Given a string \`s\`, find and print the **first character** that occurs exactly once in the string.
+
+Case-sensitive inspection.
+
+If a unique character exists:
+\`\`\`
+First Non-Repeating: <char>
+\`\`\`
+
+If no character is unique:
+\`\`\`
+No Unique Character
+\`\`\``,
+        sampleInput: `swiss`,
+        sampleOutput: `First Non-Repeating: w`,
+        constraints: `1 <= s.length() <= 10^5`,
+        methodSignature: "static void process(String s)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(String s) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        String s = sc.nextLine();
+
+        process(s);
+    }
+}`,
+        referenceSolution: `        Map<Character, Integer> map = new LinkedHashMap<>();
+        for (char c : s.toCharArray()) map.put(c, map.getOrDefault(c, 0) + 1);
+        char ans = ' ';
+        boolean found = false;
+        for (char c : s.toCharArray()) {
+            if (map.get(c) == 1) {
+                ans = c;
+                found = true;
+                break;
+            }
+        }
+        if (found) System.out.println("First Non-Repeating: " + ans);
+        else System.out.println("No Unique Character");`,
+        testcases: [
+          {
+            id: 1,
+            input: "swiss",
+            expectedOutput: "First Non-Repeating: w",
+            isHidden: false,
+            explanation: "'s' appears 3 times, 'w' appears 1 time (first unique)"
+          },
+          {
+            id: 2,
+            input: "aabbcc",
+            expectedOutput: "No Unique Character",
+            isHidden: false,
+            explanation: "All characters appear twice"
+          },
+          {
+            id: 3,
+            input: "leetcode",
+            expectedOutput: "First Non-Repeating: l",
+            isHidden: true,
+            explanation: "First character is unique"
+          },
+          {
+            id: 4,
+            input: "z",
+            expectedOutput: "First Non-Repeating: z",
+            isHidden: true,
+            explanation: "Single character input"
+          }
+        ]
+      },
+      {
+        id: 102,
+        paperId: "paper-2",
+        number: "Q2",
+        title: "Q2 — Remove Consecutive Duplicate Characters",
+        category: "Strings",
+        difficulty: "Easy",
+        marks: 5,
+        tagline: "Tera kaam: Sirf process(String s) ke andar code likhna.",
+        concept: "Adjacent character filtering, StringBuilder",
+        statement: `Remove repeated consecutive characters from the string \`s\`, keeping only one instance of each consecutive run.
+
+⚠️ **Note**: This is NOT character compression. Do NOT output numbers.
+
+Example:
+\`aaabbccdaa\` → \`abcda\`
+
+Output format:
+\`\`\`
+<result_string>
+\`\`\``,
+        sampleInput: `aaabbccdaa`,
+        sampleOutput: `abcda`,
+        constraints: `1 <= s.length() <= 10^5`,
+        methodSignature: "static void process(String s)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(String s) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        String s = sc.nextLine();
+
+        process(s);
+    }
+}`,
+        referenceSolution: `        if (s == null || s.length() == 0) return;
+        StringBuilder sb = new StringBuilder();
+        sb.append(s.charAt(0));
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) != s.charAt(i - 1)) {
+                sb.append(s.charAt(i));
+            }
+        }
+        System.out.println(sb.toString());`,
+        testcases: [
+          {
+            id: 1,
+            input: "aaabbccdaa",
+            expectedOutput: "abcda",
+            isHidden: false,
+            explanation: "Runs of a, b, c, d, a reduced to 1 each"
+          },
+          {
+            id: 2,
+            input: "hello",
+            expectedOutput: "helo",
+            isHidden: false,
+            explanation: "ll reduced to single l"
+          },
+          {
+            id: 3,
+            input: "aaaaa",
+            expectedOutput: "a",
+            isHidden: true,
+            explanation: "All identical characters"
+          },
+          {
+            id: 4,
+            input: "abcdef",
+            expectedOutput: "abcdef",
+            isHidden: true,
+            explanation: "No consecutive duplicates"
+          }
+        ]
+      },
+      {
+        id: 103,
+        paperId: "paper-2",
+        number: "Q3",
+        title: "Q3 — Equilibrium Index",
+        category: "Arrays",
+        difficulty: "Medium",
+        marks: 5,
+        tagline: "Tera kaam: Sirf process(int[] a) ke andar code likhna.",
+        concept: "Prefix sum logic, linear scan optimization",
+        statement: `An index \`i\` is an equilibrium index if:
+\`\`\`
+sum of elements before i = sum of elements after i
+\`\`\`
+Find and print the **first** 0-based equilibrium index in array \`a\`.
+
+If an equilibrium index exists:
+\`\`\`
+Equilibrium Index: <idx>
+\`\`\`
+
+If no equilibrium index exists:
+\`\`\`
+No Equilibrium Index
+\`\`\``,
+        sampleInput: `7
+-7 1 5 2 -4 3 0`,
+        sampleOutput: `Equilibrium Index: 3`,
+        constraints: `1 <= a.length <= 10^5
+-10^6 <= a[i] <= 10^6`,
+        methodSignature: "static void process(int[] a)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(int[] a) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) {
+            a[i] = sc.nextInt();
+        }
+
+        process(a);
+    }
+}`,
+        referenceSolution: `        long totalSum = 0;
+        for (int x : a) totalSum += x;
+        long leftSum = 0;
+        int eqIdx = -1;
+        for (int i = 0; i < a.length; i++) {
+            long rightSum = totalSum - leftSum - a[i];
+            if (leftSum == rightSum) {
+                eqIdx = i;
+                break;
+            }
+            leftSum += a[i];
+        }
+        if (eqIdx != -1) System.out.println("Equilibrium Index: " + eqIdx);
+        else System.out.println("No Equilibrium Index");`,
+        testcases: [
+          {
+            id: 1,
+            input: "7\n-7 1 5 2 -4 3 0",
+            expectedOutput: "Equilibrium Index: 3",
+            isHidden: false,
+            explanation: "At index 3 (val=2), left sum = -7+1+5=1, right sum = -4+3+0=1"
+          },
+          {
+            id: 2,
+            input: "3\n1 2 3",
+            expectedOutput: "No Equilibrium Index",
+            isHidden: false,
+            explanation: "No equilibrium index exists"
+          },
+          {
+            id: 3,
+            input: "3\n1 2 1",
+            expectedOutput: "Equilibrium Index: 1",
+            isHidden: true,
+            explanation: "Index 1 left sum=1, right sum=1"
+          },
+          {
+            id: 4,
+            input: "1\n100",
+            expectedOutput: "Equilibrium Index: 0",
+            isHidden: true,
+            explanation: "Single element array index 0 left=0, right=0"
+          }
+        ]
+      },
+      {
+        id: 104,
+        paperId: "paper-2",
+        number: "Q4",
+        title: "Q4 — Move All Zeros to End",
+        category: "Arrays",
+        difficulty: "Easy",
+        marks: 5,
+        tagline: "Tera kaam: Sirf process(int[] a) ke andar code likhna.",
+        concept: "Two-pointer write index, in-place reordering",
+        statement: `Given an integer array \`a\`, move all \`0\` elements to the end of the array while **maintaining the relative order** of all non-zero elements.
+
+⚠️ Do NOT sort the array!
+
+Output format:
+\`\`\`
+<val1> <val2> ...
+\`\`\``,
+        sampleInput: `8
+0 5 0 3 12 0 7 0`,
+        sampleOutput: `5 3 12 7 0 0 0 0`,
+        constraints: `1 <= a.length <= 10^5`,
+        methodSignature: "static void process(int[] a)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(int[] a) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) {
+            a[i] = sc.nextInt();
+        }
+
+        process(a);
+    }
+}`,
+        referenceSolution: `        int idx = 0;
+        for (int x : a) {
+            if (x != 0) a[idx++] = x;
+        }
+        while (idx < a.length) a[idx++] = 0;
+        for (int i = 0; i < a.length; i++) {
+            System.out.print(a[i] + (i == a.length - 1 ? "" : " "));
+        }
+        System.out.println();`,
+        testcases: [
+          {
+            id: 1,
+            input: "8\n0 5 0 3 12 0 7 0",
+            expectedOutput: "5 3 12 7 0 0 0 0",
+            isHidden: false,
+            explanation: "Zeros moved to end preserving order 5 3 12 7"
+          },
+          {
+            id: 2,
+            input: "4\n1 2 3 4",
+            expectedOutput: "1 2 3 4",
+            isHidden: false,
+            explanation: "No zeros in array"
+          },
+          {
+            id: 3,
+            input: "3\n0 0 0",
+            expectedOutput: "0 0 0",
+            isHidden: true,
+            explanation: "All elements are zero"
+          },
+          {
+            id: 4,
+            input: "5\n10 0 0 20 0",
+            expectedOutput: "10 20 0 0 0",
+            isHidden: true,
+            explanation: "Zeros in middle and end"
+          }
+        ]
+      },
+      {
+        id: 105,
+        paperId: "paper-2",
+        number: "Q5",
+        title: "Q5 — Longest Word With Vowels",
+        category: "Strings",
+        difficulty: "Medium",
+        marks: 5,
+        tagline: "Tera kaam: Sirf process(String s) ke andar code likhna.",
+        concept: "split() + loop + condition + String methods",
+        statement: `Given a sentence \`s\`, find the **longest word** that contains at least one vowel (\`a, e, i, o, u\`, case-insensitive).
+
+⚠️ **Tie-breaker**: If multiple words share the maximum length, choose the **first** one that appears.
+
+If a word containing a vowel exists:
+\`\`\`
+Longest: <word>
+\`\`\`
+
+If no word contains any vowel:
+\`\`\`
+No Such Word
+\`\`\``,
+        sampleInput: `Java is an amazing programming language`,
+        sampleOutput: `Longest: programming`,
+        constraints: `1 <= words <= 1000`,
+        methodSignature: "static void process(String s)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(String s) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        String s = sc.nextLine();
+
+        process(s);
+    }
+}`,
+        referenceSolution: `        String[] words = s.split("\\\\s+");
+        String longest = null;
+        for (String w : words) {
+            String lower = w.toLowerCase();
+            boolean hasVowel = false;
+            for (int i = 0; i < lower.length(); i++) {
+                char c = lower.charAt(i);
+                if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+                    hasVowel = true;
+                    break;
+                }
+            }
+            if (hasVowel) {
+                if (longest == null || w.length() > longest.length()) {
+                    longest = w;
+                }
+            }
+        }
+        if (longest != null) System.out.println("Longest: " + longest);
+        else System.out.println("No Such Word");`,
+        testcases: [
+          {
+            id: 1,
+            input: "Java is an amazing programming language",
+            expectedOutput: "Longest: programming",
+            isHidden: false,
+            explanation: "'programming' has length 11 with vowels"
+          },
+          {
+            id: 2,
+            input: "fly dry rhythm",
+            expectedOutput: "No Such Word",
+            isHidden: false,
+            explanation: "No words contain a e i o u"
+          },
+          {
+            id: 3,
+            input: "cat and dog",
+            expectedOutput: "Longest: cat",
+            isHidden: true,
+            explanation: "All have length 3 with vowels, first is cat"
+          },
+          {
+            id: 4,
+            input: "my sky blue sky",
+            expectedOutput: "Longest: blue",
+            isHidden: true,
+            explanation: "Only 'blue' contains a vowel"
+          }
+        ]
+      },
+      {
+        id: 106,
+        paperId: "paper-2",
+        number: "Q6",
+        title: "Q6 — Insert After Every Even Number",
+        category: "Collections",
+        difficulty: "Medium",
+        marks: 5,
+        tagline: "Tera kaam: Sirf process(ArrayList<Integer> list) ke andar code likhna.",
+        concept: "Modifying ArrayList while traversing (index pointer adjustment)",
+        statement: `Given an \`ArrayList<Integer>\`, iterate through the list and after **every even number**, insert its **double value** (\`val * 2\`).
+
+⚠️ **Warning**: List size grows dynamically during iteration. Adjust loop index properly so you don't repeatedly double the newly inserted number!
+
+Output format:
+\`\`\`
+<val1> <val2> ...
+\`\`\``,
+        sampleInput: `5
+3 4 7 6 9`,
+        sampleOutput: `3 4 8 7 6 12 9`,
+        constraints: `1 <= list.size() <= 10^5`,
+        methodSignature: "static void process(ArrayList<Integer> list)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(ArrayList<Integer> list) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            list.add(sc.nextInt());
+        }
+
+        process(list);
+    }
+}`,
+        referenceSolution: `        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) % 2 == 0) {
+                list.add(i + 1, list.get(i) * 2);
+                i++;
+            }
+        }
+        for (int i = 0; i < list.size(); i++) {
+            System.out.print(list.get(i) + (i == list.size() - 1 ? "" : " "));
+        }
+        System.out.println();`,
+        testcases: [
+          {
+            id: 1,
+            input: "5\n3 4 7 6 9",
+            expectedOutput: "3 4 8 7 6 12 9",
+            isHidden: false,
+            explanation: "4 followed by 8, 6 followed by 12"
+          },
+          {
+            id: 2,
+            input: "3\n1 3 5",
+            expectedOutput: "1 3 5",
+            isHidden: false,
+            explanation: "No even numbers"
+          },
+          {
+            id: 3,
+            input: "2\n2 4",
+            expectedOutput: "2 4 4 8",
+            isHidden: true,
+            explanation: "All even numbers"
+          },
+          {
+            id: 4,
+            input: "1\n0",
+            expectedOutput: "0 0",
+            isHidden: true,
+            explanation: "0 is even, doubled is 0"
+          }
+        ]
+      },
+      {
+        id: 107,
+        paperId: "paper-2",
+        number: "Q7",
+        title: "Q7 — Remove Elements Between Two Values",
+        category: "Collections",
+        difficulty: "Medium",
+        marks: 10,
+        tagline: "Tera kaam: Sirf process(LinkedList<Integer> list, int x, int y) ke andar code likhna.",
+        concept: "LinkedList removal condition with range filtering (min < val < max)",
+        statement: `Given a \`LinkedList<Integer>\` and two boundary values \`x\` and \`y\`, remove all elements strictly **between** \`x\` and \`y\`.
+
+That is, remove elements where:
+\`\`\`
+min(x, y) < element < max(x, y)
+\`\`\`
+
+Print the remaining elements of the list separated by spaces.
+
+Output format:
+\`\`\`
+<val1> <val2> ...
+\`\`\``,
+        sampleInput: `8
+10 20 30 40 50 60 70 80
+25 65`,
+        sampleOutput: `10 20 70 80`,
+        constraints: `1 <= list.size() <= 10^5`,
+        methodSignature: "static void process(LinkedList<Integer> list, int x, int y)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(LinkedList<Integer> list, int x, int y) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        LinkedList<Integer> list = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            list.add(sc.nextInt());
+        }
+        int x = sc.nextInt();
+        int y = sc.nextInt();
+
+        process(list, x, y);
+    }
+}`,
+        referenceSolution: `        int min = Math.min(x, y);
+        int max = Math.max(x, y);
+        list.removeIf(val -> val > min && val < max);
+        for (int i = 0; i < list.size(); i++) {
+            System.out.print(list.get(i) + (i == list.size() - 1 ? "" : " "));
+        }
+        System.out.println();`,
+        testcases: [
+          {
+            id: 1,
+            input: "8\n10 20 30 40 50 60 70 80\n25 65",
+            expectedOutput: "10 20 70 80",
+            isHidden: false,
+            explanation: "Elements between 25 and 65 (30,40,50,60) removed"
+          },
+          {
+            id: 2,
+            input: "4\n10 20 30 40\n65 25",
+            expectedOutput: "10 20 40",
+            isHidden: false,
+            explanation: "x and y order swapped: min=25, max=65"
+          },
+          {
+            id: 3,
+            input: "3\n5 10 15\n100 200",
+            expectedOutput: "5 10 15",
+            isHidden: true,
+            explanation: "No elements fall between 100 and 200"
+          },
+          {
+            id: 4,
+            input: "5\n1 2 3 4 5\n0 6",
+            expectedOutput: "",
+            isHidden: true,
+            explanation: "All elements fall between 0 and 6"
+          }
+        ]
+      },
+      {
+        id: 108,
+        paperId: "paper-2",
+        number: "Q8",
+        title: "Q8 — Elements Appearing in Exactly One Array",
+        category: "Set & Map",
+        difficulty: "Hard",
+        marks: 10,
+        tagline: "Tera kaam: Sirf process(int[] a, int[] b) ke andar code likhna.",
+        concept: "Symmetric set difference (A \\ B) ∪ (B \\ A) using HashSet & TreeSet",
+        statement: `Given two integer arrays \`a\` and \`b\`, print all unique elements that appear in **only one** of the arrays, but **not in both**.
+
+Print each qualifying element **only once** in **sorted ascending order**.
+
+Output format:
+\`\`\`
+<val1> <val2> ...
+\`\`\``,
+        sampleInput: `5
+10 20 30 40 50
+5
+30 40 60 70 80`,
+        sampleOutput: `10 20 50 60 70 80`,
+        constraints: `1 <= a.length, b.length <= 10^5`,
+        methodSignature: "static void process(int[] a, int[] b)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(int[] a, int[] b) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) a[i] = sc.nextInt();
+
+        int m = sc.nextInt();
+        int[] b = new int[m];
+        for (int i = 0; i < m; i++) b[i] = sc.nextInt();
+
+        process(a, b);
+    }
+}`,
+        referenceSolution: `        Set<Integer> setA = new HashSet<>();
+        Set<Integer> setB = new HashSet<>();
+        for (int x : a) setA.add(x);
+        for (int x : b) setB.add(x);
+
+        Set<Integer> diff = new TreeSet<>();
+        for (int x : setA) if (!setB.contains(x)) diff.add(x);
+        for (int x : setB) if (!setA.contains(x)) diff.add(x);
+
+        int i = 0;
+        for (int val : diff) {
+            System.out.print(val + (i == diff.size() - 1 ? "" : " "));
+            i++;
+        }
+        System.out.println();`,
+        testcases: [
+          {
+            id: 1,
+            input: "5\n10 20 30 40 50\n5\n30 40 60 70 80",
+            expectedOutput: "10 20 50 60 70 80",
+            isHidden: false,
+            explanation: "30 and 40 appear in both, excluded"
+          },
+          {
+            id: 2,
+            input: "3\n1 2 3\n3\n1 2 3",
+            expectedOutput: "",
+            isHidden: false,
+            explanation: "Identical arrays, symmetric difference empty"
+          },
+          {
+            id: 3,
+            input: "2\n5 10\n2\n15 20",
+            expectedOutput: "5 10 15 20",
+            isHidden: true,
+            explanation: "Completely disjoint arrays"
+          },
+          {
+            id: 4,
+            input: "4\n1 1 2 2\n3\n2 3 4",
+            expectedOutput: "1 3 4",
+            isHidden: true,
+            explanation: "Duplicates handled cleanly"
+          }
+        ]
+      },
+      {
+        id: 109,
+        paperId: "paper-2",
+        number: "Q9",
+        title: "Q9 — Closest Value to X",
+        category: "Set & Map",
+        difficulty: "Hard",
+        marks: 10,
+        tagline: "Tera kaam: Sirf process(int[] a, int x) ke andar code likhna.",
+        concept: "TreeSet floor() and ceiling() navigation",
+        statement: `Store unique numbers from array \`a\` in a \`TreeSet<Integer>\`.
+Given a target integer \`x\`, find the value in the set that is **closest to x**.
+
+⚠️ **Tie-breaker**: If two values have equal absolute distance to \`x\`, choose the **smaller** value.
+
+Output format:
+\`\`\`
+Closest: <val>
+\`\`\``,
+        sampleInput: `7
+10 20 30 40 50 60 70
+36`,
+        sampleOutput: `Closest: 40`,
+        constraints: `1 <= a.length <= 10^5`,
+        methodSignature: "static void process(int[] a, int x)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(int[] a, int x) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) a[i] = sc.nextInt();
+
+        int x = sc.nextInt();
+
+        process(a, x);
+    }
+}`,
+        referenceSolution: `        TreeSet<Integer> set = new TreeSet<>();
+        for (int num : a) set.add(num);
+        Integer f = set.floor(x);
+        Integer c = set.ceiling(x);
+        if (f == null) System.out.println("Closest: " + c);
+        else if (c == null) System.out.println("Closest: " + f);
+        else {
+            int distF = Math.abs(x - f);
+            int distC = Math.abs(c - x);
+            if (distF <= distC) System.out.println("Closest: " + f);
+            else System.out.println("Closest: " + c);
+        }`,
+        testcases: [
+          {
+            id: 1,
+            input: "7\n10 20 30 40 50 60 70\n36",
+            expectedOutput: "Closest: 40",
+            isHidden: false,
+            explanation: "30 is dist 6, 40 is dist 4 -> 40 is closer"
+          },
+          {
+            id: 2,
+            input: "7\n10 20 30 40 50 60 70\n35",
+            expectedOutput: "Closest: 30",
+            isHidden: false,
+            explanation: "30 and 40 are dist 5 -> tie breaker chooses smaller value 30"
+          },
+          {
+            id: 3,
+            input: "3\n100 200 300\n50",
+            expectedOutput: "Closest: 100",
+            isHidden: true,
+            explanation: "Target smaller than all elements (floor is null)"
+          },
+          {
+            id: 4,
+            input: "3\n100 200 300\n500",
+            expectedOutput: "Closest: 300",
+            isHidden: true,
+            explanation: "Target larger than all elements (ceiling is null)"
+          }
+        ]
+      },
+      {
+        id: 110,
+        paperId: "paper-2",
+        number: "Q10",
+        title: "Q10 — Character With Maximum Frequency",
+        category: "Set & Map",
+        difficulty: "Hard",
+        marks: 10,
+        tagline: "Tera kaam: Sirf process(String s) ke andar code likhna.",
+        concept: "HashMap / LinkedHashMap frequency accumulation + tie breaker",
+        statement: `Using \`HashMap<Character, Integer>\` (or \`LinkedHashMap\`), find the character that appears with the **maximum frequency** in string \`s\`.
+
+⚠️ **Tie-breaker**: If multiple characters have the exact same maximum frequency, select the one that appears **first** in the string.
+
+Output format:
+\`\`\`
+Most Frequent: <char>
+Frequency: <count>
+\`\`\``,
+        sampleInput: `banana`,
+        sampleOutput: `Most Frequent: a
+Frequency: 3`,
+        constraints: `1 <= s.length() <= 10^5`,
+        methodSignature: "static void process(String s)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(String s) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        String s = sc.nextLine();
+
+        process(s);
+    }
+}`,
+        referenceSolution: `        Map<Character, Integer> map = new LinkedHashMap<>();
+        for (char c : s.toCharArray()) {
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+        char maxChar = s.charAt(0);
+        int maxFreq = 0;
+        for (Map.Entry<Character, Integer> entry : map.entrySet()) {
+            if (entry.getValue() > maxFreq) {
+                maxFreq = entry.getValue();
+                maxChar = entry.getKey();
+            }
+        }
+        System.out.println("Most Frequent: " + maxChar);
+        System.out.println("Frequency: " + maxFreq);`,
+        testcases: [
+          {
+            id: 1,
+            input: "banana",
+            expectedOutput: "Most Frequent: a\nFrequency: 3",
+            isHidden: false,
+            explanation: "'a' appears 3 times"
+          },
+          {
+            id: 2,
+            input: "aabbcc",
+            expectedOutput: "Most Frequent: a\nFrequency: 2",
+            isHidden: false,
+            explanation: "a, b, c all freq 2, first is 'a'"
+          },
+          {
+            id: 3,
+            input: "z",
+            expectedOutput: "Most Frequent: z\nFrequency: 1",
+            isHidden: true,
+            explanation: "Single character"
+          },
+          {
+            id: 4,
+            input: "mississippi",
+            expectedOutput: "Most Frequent: i\nFrequency: 4",
+            isHidden: true,
+            explanation: "'i' appears 4 times, 's' appears 4 times, 'i' appears first"
+          }
+        ]
+      },
+      {
+        id: 111,
+        paperId: "paper-2",
+        number: "Q11",
+        title: "Q11 — Anagram Check",
+        category: "Set & Map",
+        difficulty: "Hard",
+        marks: 10,
+        tagline: "Tera kaam: Sirf process(String s1, String s2) ke andar code likhna.",
+        concept: "HashMap character frequency counting (ignore case)",
+        statement: `Determine whether two strings \`s1\` and \`s2\` are **anagrams** of each other using a **frequency map**.
+
+Ignore case differences.
+
+If anagrams:
+\`\`\`
+Anagram
+\`\`\`
+
+If not anagrams:
+\`\`\`
+Not Anagram
+\`\`\``,
+        sampleInput: `listen
+silent`,
+        sampleOutput: `Anagram`,
+        constraints: `1 <= s1.length(), s2.length() <= 10^5`,
+        methodSignature: "static void process(String s1, String s2)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(String s1, String s2) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        String s1 = sc.next();
+        String s2 = sc.next();
+
+        process(s1, s2);
+    }
+}`,
+        referenceSolution: `        String str1 = s1.toLowerCase();
+        String str2 = s2.toLowerCase();
+        if (str1.length() != str2.length()) {
+            System.out.println("Not Anagram");
+            return;
+        }
+        Map<Character, Integer> map = new HashMap<>();
+        for (char c : str1.toCharArray()) map.put(c, map.getOrDefault(c, 0) + 1);
+        for (char c : str2.toCharArray()) map.put(c, map.getOrDefault(c, 0) - 1);
+        boolean isAnagram = true;
+        for (int count : map.values()) {
+            if (count != 0) {
+                isAnagram = false;
+                break;
+            }
+        }
+        if (isAnagram) System.out.println("Anagram");
+        else System.out.println("Not Anagram");`,
+        testcases: [
+          {
+            id: 1,
+            input: "listen silent",
+            expectedOutput: "Anagram",
+            isHidden: false,
+            explanation: "Rearranging letters of listen forms silent"
+          },
+          {
+            id: 2,
+            input: "hello world",
+            expectedOutput: "Not Anagram",
+            isHidden: false,
+            explanation: "Different character frequencies"
+          },
+          {
+            id: 3,
+            input: "Triangle Integral",
+            expectedOutput: "Anagram",
+            isHidden: true,
+            explanation: "Case insensitive anagram check"
+          },
+          {
+            id: 4,
+            input: "a ab",
+            expectedOutput: "Not Anagram",
+            isHidden: true,
+            explanation: "Different lengths"
+          }
+        ]
+      },
+      {
+        id: 112,
+        paperId: "paper-2",
+        number: "Q12",
+        title: "Q12 — ATM Withdrawal (Custom Exceptions)",
+        category: "Exceptions",
+        difficulty: "Hard",
+        marks: 10,
+        tagline: "Tera kaam: Sirf withdraw(double balance, double amount) ke andar code likhna.",
+        concept: "Custom Exceptions + Sequential Validation Rules",
+        statement: `Simulate an ATM withdrawal method with custom exception handling rules:
+
+**Validation Order**:
+1. \`amount <= 0\` → throw \`InvalidAmountException("Invalid Amount")\`
+2. \`amount > balance\` → throw \`InsufficientBalanceException("Insufficient Balance")\`
+3. \`amount % 100 != 0\` → throw \`InvalidDenominationException("Invalid Denomination")\`
+
+If all validations pass:
+\`\`\`
+Withdrawal Successful
+Remaining Balance: <bal_with_2_decimals>
+\`\`\`
+
+If any exception is thrown, catch it and print \`e.getMessage()\`.
+
+Output format for success:
+\`\`\`
+Withdrawal Successful
+Remaining Balance: 3800.00
+\`\`\``,
+        sampleInput: `5000
+1200`,
+        sampleOutput: `Withdrawal Successful
+Remaining Balance: 3800.00`,
+        constraints: `0 <= balance, amount <= 10^7`,
+        methodSignature: "static void withdraw(double balance, double amount)",
+        prefixCode: `import java.util.*;
+
+class InvalidAmountException extends Exception {
+    public InvalidAmountException(String message) { super(message); }
+}
+class InsufficientBalanceException extends Exception {
+    public InsufficientBalanceException(String message) { super(message); }
+}
+class InvalidDenominationException extends Exception {
+    public InvalidDenominationException(String message) { super(message); }
+}
+
+public class Main {
+
+    static void withdraw(double balance, double amount) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        double balance = sc.nextDouble();
+        double amount = sc.nextDouble();
+
+        withdraw(balance, amount);
+    }
+}`,
+        referenceSolution: `        try {
+            if (amount <= 0) throw new InvalidAmountException("Invalid Amount");
+            if (amount > balance) throw new InsufficientBalanceException("Insufficient Balance");
+            if (amount % 100 != 0) throw new InvalidDenominationException("Invalid Denomination");
+            double rem = balance - amount;
+            System.out.println("Withdrawal Successful");
+            System.out.printf(Locale.US, "Remaining Balance: %.2f\\n", rem);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }`,
+        testcases: [
+          {
+            id: 1,
+            input: "5000 1200",
+            expectedOutput: "Withdrawal Successful\nRemaining Balance: 3800.00",
+            isHidden: false,
+            explanation: "Valid withdrawal of 1200 from 5000"
+          },
+          {
+            id: 2,
+            input: "5000 1250",
+            expectedOutput: "Invalid Denomination",
+            isHidden: false,
+            explanation: "1250 is not a multiple of 100"
+          },
+          {
+            id: 3,
+            input: "2000 3000",
+            expectedOutput: "Insufficient Balance",
+            isHidden: true,
+            explanation: "Amount exceeds balance"
+          },
+          {
+            id: 4,
+            input: "1000 -500",
+            expectedOutput: "Invalid Amount",
+            isHidden: true,
+            explanation: "Amount <= 0"
+          }
+        ]
+      },
+      {
+        id: 113,
+        paperId: "paper-2",
+        number: "Q13",
+        title: "Q13 — Abstract Vehicle System",
+        category: "OOP",
+        difficulty: "Hard",
+        marks: 10,
+        tagline: "Tera kaam: Sirf process(String[] types, String[] brands, double[] distances) ke andar code likhna.",
+        concept: "Abstract classes, inheritance, method overriding, object array scanning",
+        statement: `Given vehicle arrays of types (\`Car\` / \`Bike\`), brands, and distances:
+
+1. \`Car\`: travel cost = \`distance * 12\`
+2. \`Bike\`: travel cost = \`distance * 5\`
+
+Instantiate the appropriate subclass objects and print the vehicle with the **maximum travel cost**.
+
+⚠️ **Tie-breaker**: Choose the **first** vehicle if maximum cost occurs multiple times.
+
+Output format:
+\`\`\`
+Maximum Cost Vehicle: <brand>
+Cost: <cost_with_2_decimals>
+Index: <0_based_index>
+\`\`\``,
+        sampleInput: `4
+Car Toyota 100
+Bike Honda 200
+Car BMW 80
+Bike Yamaha 150`,
+        sampleOutput: `Maximum Cost Vehicle: Toyota
+Cost: 1200.00
+Index: 0`,
+        constraints: `1 <= n <= 10^4`,
+        methodSignature: "static void process(String[] types, String[] brands, double[] distances)",
+        prefixCode: `import java.util.*;
+
+abstract class Vehicle {
+    private String brand;
+    public Vehicle(String brand) { this.brand = brand; }
+    public String getBrand() { return brand; }
+    public abstract double calculateCost();
+}
+
+class Car extends Vehicle {
+    private double distance;
+    public Car(String brand, double distance) { super(brand); this.distance = distance; }
+    public double calculateCost() { return distance * 12; }
+}
+
+class Bike extends Vehicle {
+    private double distance;
+    public Bike(String brand, double distance) { super(brand); this.distance = distance; }
+    public double calculateCost() { return distance * 5; }
+}
+
+public class Main {
+
+    static void process(String[] types, String[] brands, double[] distances) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        String[] types = new String[n];
+        String[] brands = new String[n];
+        double[] distances = new double[n];
+        for (int i = 0; i < n; i++) {
+            types[i] = sc.next();
+            brands[i] = sc.next();
+            distances[i] = sc.nextDouble();
+        }
+
+        process(types, brands, distances);
+    }
+}`,
+        referenceSolution: `        int n = types.length;
+        Vehicle[] vehicles = new Vehicle[n];
+        for (int i = 0; i < n; i++) {
+            if (types[i].equalsIgnoreCase("Car")) {
+                vehicles[i] = new Car(brands[i], distances[i]);
+            } else {
+                vehicles[i] = new Bike(brands[i], distances[i]);
+            }
+        }
+        int maxIdx = 0;
+        double maxCost = vehicles[0].calculateCost();
+        for (int i = 1; i < n; i++) {
+            double cost = vehicles[i].calculateCost();
+            if (cost > maxCost) {
+                maxCost = cost;
+                maxIdx = i;
+            }
+        }
+        System.out.println("Maximum Cost Vehicle: " + vehicles[maxIdx].getBrand());
+        System.out.printf(Locale.US, "Cost: %.2f\\n", maxCost);
+        System.out.println("Index: " + maxIdx);`,
+        testcases: [
+          {
+            id: 1,
+            input: "4\nCar Toyota 100\nBike Honda 200\nCar BMW 80\nBike Yamaha 150",
+            expectedOutput: "Maximum Cost Vehicle: Toyota\nCost: 1200.00\nIndex: 0",
+            isHidden: false,
+            explanation: "Car Toyota cost = 100*12 = 1200"
+          },
+          {
+            id: 2,
+            input: "2\nBike Suzuki 500\nCar Ford 100",
+            expectedOutput: "Maximum Cost Vehicle: Suzuki\nCost: 2500.00\nIndex: 0",
+            isHidden: false,
+            explanation: "Bike Suzuki cost = 500*5 = 2500"
+          },
+          {
+            id: 3,
+            input: "3\nCar Nissan 50\nCar Honda 50\nBike TVS 100",
+            expectedOutput: "Maximum Cost Vehicle: Nissan\nCost: 600.00\nIndex: 0",
+            isHidden: true,
+            explanation: "Tie breaker selects first vehicle Nissan"
+          }
+        ]
+      },
+      {
+        id: 114,
+        paperId: "paper-2",
+        number: "Q14",
+        title: "Q14 — Employee Email Generator",
+        category: "OOP",
+        difficulty: "Hard",
+        marks: 10,
+        tagline: "Tera kaam: Sirf process(String[] names, int[] ids) ke andar code likhna.",
+        concept: "Encapsulation, private fields, getters, String manipulation",
+        statement: `Given employee names and IDs, construct \`Employee\` objects.
+
+For each employee, generate an email address formatted as:
+\`\`\`
+<first_letter_lowercase><id>@company.com
+\`\`\`
+
+Print each email on a separate line.
+
+Finally, print the employee name having the **longest original name**:
+\`\`\`
+Longest Name: <original_name>
+\`\`\``,
+        sampleInput: `3
+aMan 101
+RIYA 202
+KaRaN 303`,
+        sampleOutput: `a101@company.com
+r202@company.com
+k303@company.com
+Longest Name: KaRaN`,
+        constraints: `1 <= n <= 10^4`,
+        methodSignature: "static void process(String[] names, int[] ids)",
+        prefixCode: `import java.util.*;
+
+class Employee {
+    private String name;
+    private int id;
+    public Employee(String name, int id) { this.name = name; this.id = id; }
+    public String getName() { return name; }
+    public int getId() { return id; }
+}
+
+public class Main {
+
+    static void process(String[] names, int[] ids) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        String[] names = new String[n];
+        int[] ids = new int[n];
+        for (int i = 0; i < n; i++) {
+            names[i] = sc.next();
+            ids[i] = sc.nextInt();
+        }
+
+        process(names, ids);
+    }
+}`,
+        referenceSolution: `        int n = names.length;
+        Employee[] emps = new Employee[n];
+        for (int i = 0; i < n; i++) {
+            emps[i] = new Employee(names[i], ids[i]);
+        }
+        String longestName = emps[0].getName();
+        for (int i = 0; i < n; i++) {
+            String name = emps[i].getName();
+            char firstChar = Character.toLowerCase(name.charAt(0));
+            System.out.println(firstChar + "" + emps[i].getId() + "@company.com");
+            if (name.length() > longestName.length()) {
+                longestName = name;
+            }
+        }
+        System.out.println("Longest Name: " + longestName);`,
+        testcases: [
+          {
+            id: 1,
+            input: "3\naMan 101\nRIYA 202\nKaRaN 303",
+            expectedOutput: "a101@company.com\nr202@company.com\nk303@company.com\nLongest Name: KaRaN",
+            isHidden: false,
+            explanation: "Emails generated and longest name KaRaN"
+          },
+          {
+            id: 2,
+            input: "2\nBob 50\nAlice 99",
+            expectedOutput: "b50@company.com\na99@company.com\nLongest Name: Alice",
+            isHidden: false,
+            explanation: "Alice is longer than Bob"
+          },
+          {
+            id: 3,
+            input: "1\nZ 7",
+            expectedOutput: "z7@company.com\nLongest Name: Z",
+            isHidden: true,
+            explanation: "Single character name"
+          }
+        ]
+      },
+      {
+        id: 115,
+        paperId: "paper-2",
+        number: "Q15",
+        title: "Q15 — Student Code Validator",
+        category: "Mixed Hard",
+        difficulty: "Hard",
+        marks: 10,
+        tagline: "Tera kaam: Sirf process(String[] data) ke andar code likhna.",
+        concept: "Full Mixed Hard: String parsing, Exception handling, Integer.parseInt(), HashSet, TreeSet, Average filter",
+        statement: `Given an array of \`name:marks\` formatted strings:
+
+1. Split string by \`:\`.
+2. Convert marks using \`Integer.parseInt()\`.
+3. If marks cannot be parsed, or if marks < 0 or > 100, print:
+   \`\`\`
+   Invalid Marks: <raw_marks>
+   \`\`\`
+   and skip the record.
+4. Store valid student names and marks.
+5. Find top student (highest marks, first tie).
+6. Calculate average of valid marks (formatted to 2 decimal places e.g. \`78.00\`).
+7. Store unique valid marks in a \`HashSet<Integer>\` (insertion order / unique).
+8. Store unique valid marks in a \`TreeSet<Integer>\` (ascending sorted).
+9. Print all students scoring strictly above average.
+
+Output format:
+\`\`\`
+Invalid Marks: <invalid_val1>
+...
+Top Student: <name>
+Top Marks: <marks>
+Average: <avg_2_decimals>
+Above Average: <name1> <name2> ...
+Unique Marks: <mark1> <mark2> ...
+Sorted Marks: <mark1> <mark2> ...
+\`\`\``,
+        sampleInput: `7
+Aman:80
+Riya:95
+Karan:abc
+Simran:70
+Raj:95
+Neha:50
+Arjun:110`,
+        sampleOutput: `Invalid Marks: abc
+Invalid Marks: 110
+Top Student: Riya
+Top Marks: 95
+Average: 78.00
+Above Average: Aman Riya Raj
+Unique Marks: 80 95 70 50
+Sorted Marks: 50 70 80 95`,
+        constraints: `1 <= n <= 10^5`,
+        methodSignature: "static void process(String[] data)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+
+    static void process(String[] data) {
+
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        `,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        String[] data = new String[n];
+        for (int i = 0; i < n; i++) {
+            data[i] = sc.next();
+        }
+
+        process(data);
+    }
+}`,
+        referenceSolution: `        List<String> validNames = new ArrayList<>();
+        List<Integer> validMarks = new ArrayList<>();
+        Set<Integer> uniqueSet = new LinkedHashSet<>();
+        TreeSet<Integer> sortedSet = new TreeSet<>();
+
+        for (String entry : data) {
+            String[] parts = entry.split(":");
+            String name = parts[0];
+            String rawMark = parts.length > 1 ? parts[1] : "";
+            try {
+                int mark = Integer.parseInt(rawMark);
+                if (mark < 0 || mark > 100) {
+                    System.out.println("Invalid Marks: " + rawMark);
+                } else {
+                    validNames.add(name);
+                    validMarks.add(mark);
+                    uniqueSet.add(mark);
+                    sortedSet.add(mark);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid Marks: " + rawMark);
+            }
+        }
+
+        if (validMarks.isEmpty()) return;
+
+        int topIdx = 0;
+        double sum = 0;
+        for (int i = 0; i < validMarks.size(); i++) {
+            int m = validMarks.get(i);
+            sum += m;
+            if (m > validMarks.get(topIdx)) {
+                topIdx = i;
+            }
+        }
+        double avg = sum / validMarks.size();
+
+        System.out.println("Top Student: " + validNames.get(topIdx));
+        System.out.println("Top Marks: " + validMarks.get(topIdx));
+        System.out.printf(Locale.US, "Average: %.2f\\n", avg);
+
+        System.out.print("Above Average:");
+        for (int i = 0; i < validMarks.size(); i++) {
+            if (validMarks.get(i) > avg) {
+                System.out.print(" " + validNames.get(i));
+            }
+        }
+        System.out.println();
+
+        System.out.print("Unique Marks:");
+        for (int mark : uniqueSet) {
+            System.out.print(" " + mark);
+        }
+        System.out.println();
+
+        System.out.print("Sorted Marks:");
+        for (int mark : sortedSet) {
+            System.out.print(" " + mark);
+        }
+        System.out.println();`,
+        testcases: [
+          {
+            id: 1,
+            input: "7\nAman:80\nRiya:95\nKaran:abc\nSimran:70\nRaj:95\nNeha:50\nArjun:110",
+            expectedOutput: `Invalid Marks: abc
+Invalid Marks: 110
+Top Student: Riya
+Top Marks: 95
+Average: 78.00
+Above Average: Aman Riya Raj
+Unique Marks: 80 95 70 50
+Sorted Marks: 50 70 80 95`,
+            isHidden: false,
+            explanation: "Invalid abc and 110 filtered out, top student Riya"
+          },
+          {
+            id: 2,
+            input: "3\nAlice:90\nBob:90\nCharlie:50",
+            expectedOutput: `Top Student: Alice
+Top Marks: 90
+Average: 76.67
+Above Average: Alice Bob
+Unique Marks: 90 50
+Sorted Marks: 50 90`,
+            isHidden: false,
+            explanation: "All valid marks, tie for top student chooses first Alice"
+          },
+          {
+            id: 3,
+            input: "2\nJohn:-5\nJane:xyz",
+            expectedOutput: `Invalid Marks: -5
+Invalid Marks: xyz`,
+            isHidden: true,
+            explanation: "All inputs invalid"
+          }
+        ]
+      }
+    ]
   }
 ];
 
-// LocalStorage helpers
+// Active Paper Helper
+export const getActivePaperId = () => {
+  return localStorage.getItem('active_paper_id') || 'paper-1';
+};
+
+export const setActivePaperId = (paperId) => {
+  localStorage.setItem('active_paper_id', paperId);
+};
+
+// Practice Papers helpers
 export const getPracticePapers = () => {
   const saved = localStorage.getItem('practice_papers_data');
   if (saved) {
@@ -1586,6 +3147,10 @@ export const getPracticePapers = () => {
 export const savePracticePapers = (papers) => {
   localStorage.setItem('practice_papers_data', JSON.stringify(papers));
 };
+
+// Backward compatibility helper
+export const getQuestionsData = () => getPracticePapers();
+export const saveQuestionsData = (data) => savePracticePapers(data);
 
 // User test progress helpers: tracks score, code, pass status per question
 export const getUserProgress = () => {
