@@ -33,15 +33,22 @@ export default function Problem() {
   const [activeTab, setActiveTab] = useState(0);
   const [results, setResults] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [runningSingleIndex, setRunningSingleIndex] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isTextareaMode, setIsTextareaMode] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showMainModal, setShowMainModal] = useState(false);
 
+  // Custom Input State
+  const [customInput, setCustomInput] = useState('');
+  const [customResult, setCustomResult] = useState(null);
+  const [isCustomRunning, setIsCustomRunning] = useState(false);
+
   // Submit Modal States
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitResults, setSubmitResults] = useState(null);
+  const [modalActiveTab, setModalActiveTab] = useState(0);
 
   // Initial code getter
   const getInitialCode = () => {
@@ -61,15 +68,17 @@ export default function Problem() {
       }
       setResults(null);
       setActiveTab(0);
+      setCustomResult(null);
+      // Pre-fill sample input into custom input
+      if (question.sampleInput) {
+        setCustomInput(question.sampleInput);
+      }
     }
   }, [questionId]);
 
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
-    // Command to prevent browser default Ctrl+S / Cmd+S saving dialog
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-      // Intentionally prevent browser save dialog
-    });
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {});
   };
 
   if (!question) {
@@ -83,9 +92,8 @@ export default function Problem() {
     );
   }
 
-  const sampleCases = question.testcases.filter(tc => !tc.isHidden);
-  const totalHiddenCount = question.testcases.filter(tc => tc.isHidden).length;
-
+  // All testcases are 100% visible and verifiable
+  const allCases = question.testcases;
   const currentQuestions = currentPaper.questions;
   const currentIndex = currentQuestions.findIndex(q => q.id === question.id);
   const prevQuestion = currentIndex > 0 ? currentQuestions[currentIndex - 1] : null;
@@ -105,14 +113,11 @@ export default function Problem() {
       .map(l => l.trimRight())
       .filter(l => l.length > 0);
 
-    // Special graceful handling for Q15 Reverse Names line
     if (qId === 15) {
       return cleanLines.map(line => {
         if (line.startsWith('Reverse Names:')) {
-          // Accept reversed letters or reversed word order
           const content = line.substring('Reverse Names:'.length).trim();
           const words = content.split(/\s+/);
-          // If words are reversed characters, normalize to standard for test comparison
           const normalizedWords = words.map(w => {
             if (w === 'namA' || w === 'ayRi' || w === 'ayiR' || w === 'naraK' || w === 'narmiS' || w === 'namiS' || w === 'jaR' || w === 'naKaraN') {
               if (w === 'namA') return 'Aman';
@@ -139,10 +144,17 @@ export default function Problem() {
     return codeRef.current || getInitialCode();
   };
 
+  // Ultra-Fast Parallel Execution Runner
   const executeTestCases = async (testcasesToRun) => {
     const currentCode = getCurrentUserCode();
     codeRef.current = currentCode;
     const fullCode = getFullCode(currentCode);
+
+    // Run all test cases in PARALLEL via Promise.all!
+    const responses = await Promise.all(
+      testcasesToRun.map(tc => executeCode('java', fullCode, tc.input))
+    );
+
     const testResults = [];
     let passedAll = true;
     let passCount = 0;
@@ -150,7 +162,7 @@ export default function Problem() {
 
     for (let i = 0; i < testcasesToRun.length; i++) {
       const tc = testcasesToRun[i];
-      const response = await executeCode('java', fullCode, tc.input);
+      const response = responses[i];
 
       let actualOutput = '';
       let errorOutput = false;
@@ -194,8 +206,6 @@ export default function Problem() {
         isHidden: tc.isHidden,
         explanation: tc.explanation
       });
-
-      if (globalCompileError) break;
     }
 
     return {
@@ -207,13 +217,136 @@ export default function Problem() {
     };
   };
 
-  const handleRun = async () => {
+  // Run only the currently selected single testcase (Instant ~2s)
+  const handleRunSingleCase = async (index) => {
+    const tc = allCases[index];
+    if (!tc) return;
+
     setIsRunning(true);
-    setResults(null);
-    setActiveTab(0);
+    setRunningSingleIndex(index);
+    const currentCode = getCurrentUserCode();
+    codeRef.current = currentCode;
+    const fullCode = getFullCode(currentCode);
 
     try {
-      const res = await executeTestCases(sampleCases);
+      const response = await executeCode('java', fullCode, tc.input);
+      let actualOutput = '';
+      let errorOutput = false;
+      let errorMessage = '';
+
+      if (response.message) {
+        errorOutput = true;
+        errorMessage = response.message;
+      } else if (response.compile && response.compile.code !== 0) {
+        errorOutput = true;
+        errorMessage = (response.compile.stderr || response.compile.output || response.compile.stdout || 'Compilation Failed').trim();
+      } else if (response.run && response.run.code !== 0) {
+        errorOutput = true;
+        errorMessage = (response.run.stderr || response.run.output || response.run.stdout || `Runtime Error (Exit Code ${response.run.code})`).trim();
+      } else if (response.run) {
+        actualOutput = response.run.stdout ? response.run.stdout.trim() : '';
+        if (response.run.stderr) {
+          actualOutput = (actualOutput + '\n' + response.run.stderr).trim();
+        }
+      }
+
+      const normalizedActual = normalizeOutput(actualOutput, question.id);
+      const normalizedExpected = normalizeOutput(tc.expectedOutput, question.id);
+      const isPass = !errorOutput && (normalizedActual === normalizedExpected);
+
+      const singleResult = {
+        id: tc.id,
+        input: tc.input,
+        expected: tc.expectedOutput,
+        actual: errorOutput ? errorMessage : actualOutput,
+        pass: isPass,
+        error: errorOutput,
+        isHidden: tc.isHidden,
+        explanation: tc.explanation
+      };
+
+      setResults(prev => {
+        const tests = prev?.tests ? [...prev.tests] : new Array(allCases.length).fill(null);
+        tests[index] = singleResult;
+        const executed = tests.filter(Boolean);
+        const passedCount = executed.filter(t => t.pass).length;
+        return {
+          tests,
+          passedAll: passedCount === allCases.length,
+          passCount: passedCount,
+          totalCount: allCases.length,
+          compileError: errorOutput && response.compile?.code !== 0 ? errorMessage : null
+        };
+      });
+    } catch (err) {
+      setResults({ compileError: err.message || 'Execution failed' });
+    } finally {
+      setIsRunning(false);
+      setRunningSingleIndex(null);
+    }
+  };
+
+  // Run Custom Input
+  const handleRunCustom = async () => {
+    setIsCustomRunning(true);
+    setCustomResult(null);
+    const currentCode = getCurrentUserCode();
+    codeRef.current = currentCode;
+    const fullCode = getFullCode(currentCode);
+
+    try {
+      const startTime = Date.now();
+      const response = await executeCode('java', fullCode, customInput);
+      const duration = Date.now() - startTime;
+
+      let actualOutput = '';
+      let errorOutput = false;
+      let errorMessage = '';
+
+      if (response.message) {
+        errorOutput = true;
+        errorMessage = response.message;
+      } else if (response.compile && response.compile.code !== 0) {
+        errorOutput = true;
+        errorMessage = (response.compile.stderr || response.compile.output || response.compile.stdout || 'Compilation Failed').trim();
+      } else if (response.run && response.run.code !== 0) {
+        errorOutput = true;
+        errorMessage = (response.run.stderr || response.run.output || response.run.stdout || `Runtime Error (Exit Code ${response.run.code})`).trim();
+      } else if (response.run) {
+        actualOutput = response.run.stdout ? response.run.stdout.trim() : '';
+        if (response.run.stderr) {
+          actualOutput = (actualOutput + '\n' + response.run.stderr).trim();
+        }
+      }
+
+      setCustomResult({
+        output: errorOutput ? errorMessage : (actualOutput || '(No Output Produced)'),
+        isError: errorOutput,
+        duration
+      });
+    } catch (err) {
+      setCustomResult({
+        output: err.message || 'Custom execution failed',
+        isError: true,
+        duration: 0
+      });
+    } finally {
+      setIsCustomRunning(false);
+    }
+  };
+
+  // Run Code (Runs all test cases in parallel, or custom if active)
+  const handleRun = async () => {
+    if (activeTab === 'custom') {
+      await handleRunCustom();
+      return;
+    }
+
+    setIsRunning(true);
+    setResults(null);
+
+    try {
+      const res = await executeTestCases(allCases);
       setResults(res);
     } catch (err) {
       setResults({ compileError: err.message || 'Execution failed' });
@@ -222,10 +355,12 @@ export default function Problem() {
     }
   };
 
+  // Submit Code (Runs all test cases in parallel and grades marks)
   const handleSubmit = async () => {
     setShowSubmitModal(true);
     setIsSubmitting(true);
     setSubmitResults(null);
+    setModalActiveTab(0);
 
     try {
       const res = await executeTestCases(question.testcases);
@@ -274,8 +409,8 @@ export default function Problem() {
     }
   };
 
-  const activeTestCase = sampleCases[activeTab] || sampleCases[0];
-  const activeTestResult = results?.tests ? results.tests[activeTab] : null;
+  const activeTestCase = (typeof activeTab === 'number' && allCases[activeTab]) ? allCases[activeTab] : (allCases[0] || null);
+  const activeTestResult = (results?.tests && typeof activeTab === 'number') ? results.tests[activeTab] : null;
 
   // Calculate lines in prefix to offset Monaco line numbering
   const prefixLineCount = question.prefixCode.split('\n').length;
@@ -670,119 +805,236 @@ export default function Problem() {
           </div>    </div>
 
         {/* Results / Test Runner Console Panel */}
-        <div className="results-container" style={{ height: '40%' }}>
+        <div className="results-container" style={{ height: '42%', display: 'flex', flexDirection: 'column' }}>
           {isRunning && (
-            <div className="status-banner" style={{ backgroundColor: 'rgba(255, 161, 22, 0.1)', color: 'var(--accent-primary)', border: '1px solid var(--accent-primary)' }}>
-              <Loader size={18} className="spinner" /> Running sample test cases...
+            <div className="status-banner" style={{ backgroundColor: 'rgba(255, 161, 22, 0.1)', color: 'var(--accent-primary)', border: '1px solid var(--accent-primary)', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+              <Loader size={16} className="spinner" /> 
+              {runningSingleIndex !== null ? `Running Case ${runningSingleIndex + 1}...` : `⚡ Evaluating all ${allCases.length} test cases in parallel...`}
             </div>
           )}
 
           {!isRunning && results && (
             <>
               {results.compileError ? (
-                <div className="status-banner wrong">
-                  <AlertTriangle size={18} /> Compilation Error
+                <div className="status-banner wrong" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+                  <AlertTriangle size={16} /> Compilation Error
                 </div>
               ) : results.passedAll ? (
-                <div className="status-banner accepted">
-                  <CheckCircle size={18} /> All Sample Test Cases Passed ({results.passCount}/{results.totalCount})
+                <div className="status-banner accepted" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+                  <CheckCircle size={16} /> Accepted: All {results.totalCount} Test Cases Passed!
                 </div>
               ) : (
-                <div className="status-banner wrong">
-                  <XCircle size={18} /> Wrong Answer ({results.passCount}/{results.totalCount} Sample Cases Passed)
+                <div className="status-banner wrong" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+                  <XCircle size={16} /> Wrong Answer ({results.passCount}/{results.totalCount} Passed)
                 </div>
               )}
             </>
           )}
 
-          {/* Test Case Selection Tabs */}
-          <div className="tabs-header">
-            {sampleCases.map((tc, idx) => {
-              const res = results?.tests ? results.tests[idx] : null;
-              let tabClass = 'tab-btn';
-              if (activeTab === idx) tabClass += ' active';
-              if (res) {
-                tabClass += res.pass ? ' pass' : ' fail';
-              }
+          {/* Test Case Selection Tabs + Custom Input Tab */}
+          <div className="tabs-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.4rem', flexWrap: 'wrap', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              {allCases.map((tc, idx) => {
+                const res = results?.tests ? results.tests[idx] : null;
+                let tabClass = 'tab-btn';
+                if (activeTab === idx) tabClass += ' active';
+                if (res) {
+                  tabClass += res.pass ? ' pass' : ' fail';
+                }
 
-              return (
-                <button
-                  key={idx}
-                  className={tabClass}
-                  onClick={() => setActiveTab(idx)}
-                >
-                  {res && (res.pass ? <CheckCircle size={13} color="var(--success)" /> : <XCircle size={13} color="var(--fail)" />)}
-                  Case {idx + 1}
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={idx}
+                    className={tabClass}
+                    onClick={() => setActiveTab(idx)}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.25rem 0.55rem', fontSize: '0.8rem' }}
+                  >
+                    {res && (res.pass ? <CheckCircle size={12} color="var(--success)" /> : <XCircle size={12} color="var(--fail)" />)}
+                    Case {idx + 1}
+                    {tc.isHidden && (
+                      <span style={{ fontSize: '0.62rem', opacity: 0.75, background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px' }}>
+                        Hidden
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+
+              {/* Custom Input Tab */}
+              <button
+                className={`tab-btn ${activeTab === 'custom' ? 'active' : ''}`}
+                onClick={() => setActiveTab('custom')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.25rem 0.6rem', fontSize: '0.8rem', borderColor: activeTab === 'custom' ? 'var(--accent-primary)' : undefined }}
+              >
+                <span>⚙️ Custom Input</span>
+              </button>
+            </div>
+
+            {/* Quick Run Action for the active tab */}
+            {typeof activeTab === 'number' && (
+              <button
+                className="btn"
+                onClick={() => handleRunSingleCase(activeTab)}
+                disabled={isRunning || isSubmitting}
+                style={{ padding: '0.2rem 0.55rem', fontSize: '0.75rem', gap: '0.3rem', color: 'var(--accent-primary)' }}
+                title={`Run only Case ${activeTab + 1} instantly`}
+              >
+                {runningSingleIndex === activeTab ? <Loader size={12} className="spinner" /> : <Play size={12} />}
+                Run Case {activeTab + 1}
+              </button>
+            )}
           </div>
 
-          {/* Tab Content */}
-          {results?.compileError ? (
-            <div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--fail)', fontWeight: '600', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <TerminalIcon size={16} /> Compilation Error Output:
-              </div>
-              <div className="terminal-box">
-                {results.compileError}
-              </div>
-            </div>
-          ) : (
-            <div>
-              {activeTestResult?.error ? (
-                <div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--fail)', fontWeight: '600', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <TerminalIcon size={16} /> Runtime Exception Output:
-                  </div>
-                  <div className="terminal-box">
-                    {activeTestResult.actual}
-                  </div>
+          {/* Tab Content Container */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '0.4rem 0' }}>
+            {activeTab === 'custom' ? (
+              /* Custom Input Panel */
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600' }}>
+                    Custom Stdin Input:
+                  </label>
+                  <button 
+                    className="btn btn-primary"
+                    onClick={handleRunCustom}
+                    disabled={isCustomRunning || isRunning}
+                    style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem', gap: '0.3rem' }}
+                  >
+                    {isCustomRunning ? <Loader size={13} className="spinner" /> : <Play size={13} />}
+                    Run Custom Input
+                  </button>
                 </div>
-              ) : (
-                <>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Input:</div>
-                      <div className="pre-formatted" style={{ maxHeight: '90px', overflowY: 'auto' }}>
-                        {activeTestCase?.input}
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Expected Output:</div>
-                      <div className="pre-formatted" style={{ maxHeight: '90px', overflowY: 'auto' }}>
-                        {activeTestCase?.expectedOutput}
-                      </div>
-                    </div>
-                  </div>
 
-                  <div style={{ marginTop: '0.8rem' }}>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Actual Output:</div>
+                <textarea
+                  value={customInput}
+                  onChange={(e) => setCustomInput(e.target.value)}
+                  placeholder="Enter custom input here..."
+                  style={{
+                    width: '100%',
+                    minHeight: '75px',
+                    maxHeight: '110px',
+                    backgroundColor: '#121214',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    fontFamily: "'Fira Code', monospace",
+                    fontSize: '13px',
+                    padding: '8px 10px',
+                    resize: 'vertical',
+                    outline: 'none'
+                  }}
+                />
+
+                {customResult && (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                      <span style={{ fontSize: '0.8rem', color: customResult.isError ? 'var(--fail)' : 'var(--success)', fontWeight: '600' }}>
+                        {customResult.isError ? '❌ Error Output:' : '✅ Your Output:'}
+                      </span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        ⏱️ {customResult.duration}ms
+                      </span>
+                    </div>
                     <div 
                       className="pre-formatted" 
                       style={{ 
-                        color: activeTestResult ? (activeTestResult.pass ? 'var(--success)' : 'var(--fail)') : 'var(--text-muted)',
-                        maxHeight: '100px',
-                        overflowY: 'auto'
+                        color: customResult.isError ? 'var(--fail)' : 'var(--success)',
+                        maxHeight: '110px',
+                        overflowY: 'auto',
+                        background: '#0d0d10'
                       }}
                     >
-                      {activeTestResult ? (activeTestResult.actual || '(No Output)') : 'Click "Run Code" to test against sample cases'}
+                      {customResult.output}
                     </div>
                   </div>
-                </>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            ) : results?.compileError ? (
+              /* Compilation Error */
+              <div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--fail)', fontWeight: '600', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <TerminalIcon size={16} /> Compilation Error Output:
+                </div>
+                <div className="terminal-box" style={{ maxHeight: '140px', overflowY: 'auto' }}>
+                  {results.compileError}
+                </div>
+              </div>
+            ) : (
+              /* Standard Test Case View */
+              <div>
+                {activeTestResult?.error ? (
+                  <div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--fail)', fontWeight: '600', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <TerminalIcon size={16} /> Runtime Exception Output:
+                    </div>
+                    <div className="terminal-box" style={{ maxHeight: '120px', overflowY: 'auto' }}>
+                      {activeTestResult.actual}
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
+                      <div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '0.2rem' }}>
+                          Input:
+                        </div>
+                        <div className="pre-formatted" style={{ maxHeight: '80px', overflowY: 'auto' }}>
+                          {activeTestCase?.input}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '0.2rem' }}>
+                          Expected Output:
+                        </div>
+                        <div className="pre-formatted" style={{ maxHeight: '80px', overflowY: 'auto', color: 'var(--accent-primary)' }}>
+                          {activeTestCase?.expectedOutput}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: '0.6rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600' }}>
+                          Your Output (Actual Output):
+                        </div>
+                        {activeTestResult && (
+                          <span style={{ 
+                            fontSize: '0.75rem', 
+                            fontWeight: '700',
+                            color: activeTestResult.pass ? 'var(--success)' : 'var(--fail)'
+                          }}>
+                            {activeTestResult.pass ? '✅ Matches Expected' : '❌ Output Mismatch'}
+                          </span>
+                        )}
+                      </div>
+                      <div 
+                        className="pre-formatted" 
+                        style={{ 
+                          color: activeTestResult ? (activeTestResult.pass ? 'var(--success)' : 'var(--fail)') : 'var(--text-muted)',
+                          maxHeight: '90px',
+                          overflowY: 'auto',
+                          background: activeTestResult ? (activeTestResult.pass ? 'rgba(0,184,163,0.06)' : 'rgba(239,71,67,0.06)') : '#121214',
+                          border: activeTestResult ? (activeTestResult.pass ? '1px solid rgba(0,184,163,0.3)' : '1px solid rgba(239,71,67,0.3)') : '1px solid rgba(255,255,255,0.08)'
+                        }}
+                      >
+                        {activeTestResult ? (activeTestResult.actual || '(No Output Produced)') : `Click "Run Code" or "Run Case ${(typeof activeTab === 'number' ? activeTab + 1 : 1)}" to test your solution`}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Submission Modal: Tests all test cases including hidden cases and awards marks */}
+      {/* Submission Modal: Tests all test cases and shows transparent results */}
       {showSubmitModal && createPortal(
         <div className="modal-overlay" onClick={() => !isSubmitting && setShowSubmitModal(false)}>
           <div 
             className="modal-card" 
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: '540px' }}
+            style={{ maxWidth: '640px', width: '92%', maxHeight: '90vh', overflowY: 'auto' }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -803,100 +1055,153 @@ export default function Problem() {
             {isSubmitting && (
               <div style={{ padding: '2.5rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
                 <Loader size={46} className="spinner" color="var(--accent-primary)" />
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '600' }}>Judging Submission...</h3>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '600' }}>⚡ Judging All Test Cases in Parallel...</h3>
                 <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
-                  Evaluating all <strong>{question.testcases.length}</strong> test cases (including hidden edge cases).
+                  Evaluating all <strong>{question.testcases.length}</strong> test cases concurrently for instant grading.
                 </p>
               </div>
             )}
 
             {!isSubmitting && submitResults && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                 {submitResults.compileError ? (
-                  <>
-                    <AlertTriangle size={56} color="var(--fail)" />
-                    <h2 style={{ color: 'var(--fail)', fontSize: '1.8rem' }}>Compile Error</h2>
+                  <div style={{ textAlign: 'center' }}>
+                    <AlertTriangle size={56} color="var(--fail)" style={{ margin: '0 auto' }} />
+                    <h2 style={{ color: 'var(--fail)', fontSize: '1.8rem', marginTop: '0.5rem' }}>Compile Error</h2>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
                       Marks Earned: <strong style={{ color: 'var(--fail)' }}>0 / {question.marks}</strong>
                     </p>
-                    <div className="terminal-box" style={{ width: '100%', textAlign: 'left' }}>
+                    <div className="terminal-box" style={{ width: '100%', textAlign: 'left', marginTop: '1rem', maxHeight: '180px', overflowY: 'auto' }}>
                       {submitResults.compileError}
                     </div>
-                  </>
+                  </div>
                 ) : submitResults.passedAll ? (
-                  <>
-                    <CheckCircle size={64} color="var(--success)" />
-                    <h2 style={{ color: 'var(--success)', fontSize: '2.2rem', fontWeight: '800' }}>Accepted!</h2>
+                  <div style={{ textAlign: 'center' }}>
+                    <CheckCircle size={64} color="var(--success)" style={{ margin: '0 auto' }} />
+                    <h2 style={{ color: 'var(--success)', fontSize: '2.2rem', fontWeight: '800', marginTop: '0.5rem' }}>Accepted!</h2>
                     <div style={{ 
                       background: 'rgba(0, 184, 163, 0.1)', 
                       border: '1px solid var(--success)', 
-                      padding: '0.6rem 1.4rem', 
+                      padding: '0.5rem 1.4rem', 
                       borderRadius: '30px',
                       fontSize: '1.2rem',
                       fontWeight: '800',
-                      color: 'var(--success)'
+                      color: 'var(--success)',
+                      display: 'inline-block',
+                      margin: '0.5rem 0'
                     }}>
                       +{question.marks} / {question.marks} Marks Earned!
                     </div>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
-                      Passed all <strong>{submitResults.passCount} / {submitResults.totalCount}</strong> test cases (all sample & hidden cases passed).
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+                      Passed all <strong>{submitResults.passCount} / {submitResults.totalCount}</strong> test cases!
                     </p>
-                  </>
+                  </div>
                 ) : (
-                  <>
-                    <XCircle size={64} color="var(--fail)" />
-                    <h2 style={{ color: 'var(--fail)', fontSize: '2rem', fontWeight: '800' }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <XCircle size={64} color="var(--fail)" style={{ margin: '0 auto' }} />
+                    <h2 style={{ color: 'var(--fail)', fontSize: '1.8rem', fontWeight: '800', marginTop: '0.5rem' }}>
                       {submitResults.passCount > 0 ? 'Partially Accepted' : 'Wrong Answer'}
                     </h2>
                     <div style={{ 
                       background: 'rgba(255, 161, 22, 0.1)', 
                       border: '1px solid var(--accent-primary)', 
-                      padding: '0.5rem 1.2rem', 
+                      padding: '0.4rem 1.2rem', 
                       borderRadius: '30px',
                       fontSize: '1.1rem',
                       fontWeight: '700',
-                      color: 'var(--accent-primary)'
+                      color: 'var(--accent-primary)',
+                      display: 'inline-block',
+                      margin: '0.4rem 0'
                     }}>
                       Score: {Math.max(0, Math.round((submitResults.passCount / submitResults.totalCount) * question.marks))} / {question.marks} Marks
                     </div>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
                       Passed <strong>{submitResults.passCount}</strong> of <strong>{submitResults.totalCount}</strong> test cases.
                     </p>
-                  </>
+                  </div>
                 )}
 
-                {/* Individual Test Case Breakdown */}
-                {!submitResults.compileError && (
-                  <div style={{ width: '100%', marginTop: '0.5rem' }}>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.4rem', textAlign: 'left', fontWeight: '600' }}>
-                      Test Cases Result:
+                {/* Individual Test Case Breakdown with Detailed View */}
+                {!submitResults.compileError && submitResults.tests && (
+                  <div style={{ width: '100%', textAlign: 'left' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: '600' }}>
+                      Click any Test Case to inspect Input, Expected & Your Output:
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.5rem' }}>
+
+                    {/* Test Case Selection Tabs */}
+                    <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.8rem' }}>
                       {submitResults.tests.map((t, idx) => (
-                        <div 
+                        <button
                           key={idx}
-                          style={{ 
-                            padding: '0.5rem', 
-                            borderRadius: '6px', 
-                            background: t.pass ? 'rgba(0, 184, 163, 0.1)' : 'rgba(239, 71, 67, 0.1)',
-                            border: `1px solid ${t.pass ? 'var(--success)' : 'var(--fail)'}`,
-                            fontSize: '0.8rem',
-                            display: 'flex',
+                          onClick={() => setModalActiveTab(idx)}
+                          style={{
+                            padding: '0.4rem 0.8rem',
+                            borderRadius: '6px',
+                            background: modalActiveTab === idx ? (t.pass ? 'rgba(0,184,163,0.25)' : 'rgba(239,71,67,0.25)') : '#18181b',
+                            border: `1px solid ${modalActiveTab === idx ? (t.pass ? 'var(--success)' : 'var(--fail)') : 'rgba(255,255,255,0.1)'}`,
+                            color: '#fff',
+                            fontSize: '0.82rem',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
                             alignItems: 'center',
-                            justifyContent: 'space-between'
+                            gap: '0.35rem',
+                            fontWeight: modalActiveTab === idx ? '700' : '500'
                           }}
                         >
-                          <span style={{ fontWeight: '600' }}>
-                            {t.isHidden ? `Hidden ${idx + 1}` : `Sample ${idx + 1}`}
-                          </span>
-                          {t.pass ? (
-                            <CheckCircle size={14} color="var(--success)" />
-                          ) : (
-                            <XCircle size={14} color="var(--fail)" />
-                          )}
-                        </div>
+                          {t.pass ? <CheckCircle size={13} color="var(--success)" /> : <XCircle size={13} color="var(--fail)" />}
+                          Test {idx + 1}
+                          {t.isHidden && <span style={{ fontSize: '0.6rem', opacity: 0.7 }}>(Hidden)</span>}
+                        </button>
                       ))}
                     </div>
+
+                    {/* Selected Test Case Detailed View */}
+                    {submitResults.tests[modalActiveTab] && (
+                      <div style={{ background: '#121214', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.8rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                          <span style={{ fontWeight: '700', fontSize: '0.9rem', color: submitResults.tests[modalActiveTab].pass ? 'var(--success)' : 'var(--fail)' }}>
+                            Test Case {modalActiveTab + 1}: {submitResults.tests[modalActiveTab].pass ? '✅ Passed' : '❌ Failed'}
+                          </span>
+                          {submitResults.tests[modalActiveTab].explanation && (
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                              {submitResults.tests[modalActiveTab].explanation}
+                            </span>
+                          )}
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', marginBottom: '0.6rem' }}>
+                          <div>
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>Input:</div>
+                            <div className="pre-formatted" style={{ maxHeight: '80px', overflowY: 'auto', fontSize: '0.82rem' }}>
+                              {submitResults.tests[modalActiveTab].input}
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>Expected Output:</div>
+                            <div className="pre-formatted" style={{ maxHeight: '80px', overflowY: 'auto', fontSize: '0.82rem', color: 'var(--accent-primary)' }}>
+                              {submitResults.tests[modalActiveTab].expected}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>Your Output:</div>
+                          <div 
+                            className="pre-formatted" 
+                            style={{ 
+                              maxHeight: '90px', 
+                              overflowY: 'auto', 
+                              fontSize: '0.82rem',
+                              color: submitResults.tests[modalActiveTab].pass ? 'var(--success)' : 'var(--fail)',
+                              background: submitResults.tests[modalActiveTab].pass ? 'rgba(0,184,163,0.06)' : 'rgba(239,71,67,0.06)',
+                              border: `1px solid ${submitResults.tests[modalActiveTab].pass ? 'rgba(0,184,163,0.3)' : 'rgba(239,71,67,0.3)'}`
+                            }}
+                          >
+                            {submitResults.tests[modalActiveTab].actual || '(No Output Produced)'}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 

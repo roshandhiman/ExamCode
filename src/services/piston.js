@@ -1,15 +1,22 @@
+// High-Speed Code Execution Service
+// Supports Local Vite Runner and Wandbox OpenJDK with Parallel Concurrency & Abort Timeout
+
 const WANDBOX_API_URL = 'https://wandbox.org/api/compile.json';
 
 export const executeCode = async (language, code, stdin = "") => {
-    // 1. Try Local Execution Plugin first (Unlimited, Free, Instant — works in dev mode)
+    // 1. Try Local Execution Plugin first (Instant, unlimited in dev mode)
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
         const localResponse = await fetch('/api/execute', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ language, code, stdin })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ language, code, stdin }),
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
+
         if (localResponse.ok) {
             const data = await localResponse.json();
             if (!data.error && !data.message) {
@@ -17,10 +24,10 @@ export const executeCode = async (language, code, stdin = "") => {
             }
         }
     } catch (e) {
-        console.log("Local execution server not available, falling back to Wandbox...");
+        // Fall back to Wandbox
     }
 
-    // 2. Fallback: Wandbox API (free, no API key, supports Java)
+    // 2. High-speed Wandbox execution (free, reliable Java 21/22 runtime)
     if (language === 'java') {
         return await executeViaWandbox(code, stdin);
     }
@@ -28,11 +35,21 @@ export const executeCode = async (language, code, stdin = "") => {
     return { message: `Language "${language}" is not supported for remote execution.` };
 };
 
+// Batch parallel execution for ultra-fast multi-testcase evaluation
+export const executeCodeParallel = async (language, code, stdinList) => {
+    return await Promise.all(
+        stdinList.map(stdin => executeCode(language, code, stdin))
+    );
+};
+
 async function executeViaWandbox(code, stdin) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+
     try {
-        // Wandbox names the file prog.java, so "public class Main" causes an error.
-        // Strip "public" from the main class declaration to make it compile.
-        const fixedCode = code.replace(/public\s+class\s+Main\s*\{/g, 'class Main {');
+        // In Java, any "public class" must match the file name (prog.java).
+        // Strip "public" from all class declarations to guarantee successful compilation.
+        const fixedCode = code.replace(/\bpublic\s+class\b/g, 'class');
 
         const response = await fetch(WANDBOX_API_URL, {
             method: 'POST',
@@ -44,20 +61,23 @@ async function executeViaWandbox(code, stdin) {
                 code: fixedCode,
                 stdin: stdin || '',
                 save: false
-            })
+            }),
+            signal: controller.signal
         });
 
+        clearTimeout(timeout);
+
         if (!response.ok) {
-            return { message: `Wandbox API returned HTTP ${response.status}` };
+            return { message: `Execution server returned HTTP ${response.status}. Please try again.` };
         }
 
         const data = await response.json();
 
-        // Map Wandbox response to our app's expected format
+        // Check compiler output and errors
         const compileError = data.compiler_error || '';
         const compileOutput = data.compiler_output || '';
         const hasCompileError = data.status === '1' || data.status === '2' ||
-            (compileError && compileError.includes('error'));
+            (compileError && compileError.toLowerCase().includes('error'));
 
         if (hasCompileError) {
             return {
@@ -81,7 +101,11 @@ async function executeViaWandbox(code, stdin) {
             }
         };
     } catch (error) {
-        console.error("Wandbox execution failed:", error);
-        return { message: 'Code execution service is temporarily unavailable. Please try again.' };
+        clearTimeout(timeout);
+        if (error.name === 'AbortError') {
+            return { message: 'Execution timed out (12s limit). Please check for infinite loops.' };
+        }
+        console.error("Wandbox execution error:", error);
+        return { message: 'Code execution service is temporarily busy. Please click Run again.' };
     }
 }
