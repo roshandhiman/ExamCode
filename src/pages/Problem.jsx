@@ -600,10 +600,12 @@ export default function Problem() {
             flexDirection: 'column',
             padding: '1rem'
           } : { 
-            flex: 1, 
+            flex: '0 0 58%',
             display: 'flex', 
             flexDirection: 'column', 
-            minWidth: '350px' 
+            minWidth: '350px',
+            minHeight: 0,
+            overflow: 'hidden'
           }}
         >
           {/* Editor Header Bar */}
@@ -805,7 +807,7 @@ export default function Problem() {
           </div>    </div>
 
         {/* Results / Test Runner Console Panel */}
-        <div className="results-container" style={{ height: '42%', display: 'flex', flexDirection: 'column' }}>
+        <div className="results-container" style={{ flex: '1 1 42%', minHeight: '180px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {isRunning && (
             <div className="status-banner" style={{ backgroundColor: 'rgba(255, 161, 22, 0.1)', color: 'var(--accent-primary)', border: '1px solid var(--accent-primary)', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
               <Loader size={16} className="spinner" /> 

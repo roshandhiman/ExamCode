@@ -4,27 +4,31 @@
 const WANDBOX_API_URL = 'https://wandbox.org/api/compile.json';
 
 export const executeCode = async (language, code, stdin = "") => {
-    // 1. Try Local Execution Plugin first (Instant, unlimited in dev mode)
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+    // 1. Try Local Execution Plugin first (only in dev mode - skip in production for speed)
+    const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isDev) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-        const localResponse = await fetch('/api/execute', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ language, code, stdin }),
-            signal: controller.signal
-        });
-        clearTimeout(timeoutId);
+            const localResponse = await fetch('/api/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ language, code, stdin }),
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
 
-        if (localResponse.ok) {
-            const data = await localResponse.json();
-            if (!data.error && !data.message) {
-                return data;
+            if (localResponse.ok) {
+                const data = await localResponse.json();
+                if (!data.error && !data.message) {
+                    return data;
+                }
             }
+        } catch (e) {
+            // Fall back to Wandbox
         }
-    } catch (e) {
-        // Fall back to Wandbox
     }
 
     // 2. High-speed Wandbox execution (free, reliable Java 21/22 runtime)
