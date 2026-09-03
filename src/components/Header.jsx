@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Flame, Award, Settings, CheckCircle2, ChevronDown } from 'lucide-react';
+import { Flame, Award, Settings, CheckCircle2, ChevronDown, Lock } from 'lucide-react';
 import { getPracticePapers, getUserProgress, getActivePaperId, setActivePaperId } from '../data/questions';
 
-export default function Header({ onOpenScorecard }) {
+export default function Header({ onOpenScorecard, onLockSite }) {
   const navigate = useNavigate();
   const location = useLocation();
   const papers = getPracticePapers();
@@ -138,7 +138,19 @@ export default function Header({ onOpenScorecard }) {
         <Link to="/admin" className="btn" title="Assignment / Paper Manager" style={{ padding: '0.45rem' }}>
           <Settings size={17} />
         </Link>
+
+        {onLockSite && (
+          <button 
+            onClick={onLockSite}
+            className="btn"
+            title="Lock Website Access"
+            style={{ padding: '0.45rem', color: 'var(--accent-primary)', borderColor: 'rgba(255,161,22,0.3)' }}
+          >
+            <Lock size={17} />
+          </button>
+        )}
       </div>
     </header>
   );
 }
+
