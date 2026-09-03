@@ -5,7 +5,7 @@ import Editor from '@monaco-editor/react';
 import { 
   Play, Send, CheckCircle, XCircle, Loader, Terminal as TerminalIcon, 
   AlertTriangle, X, ChevronLeft, ChevronRight, Lock, Copy, RotateCcw, 
-  Award, Eye, EyeOff, Sparkles, Check
+  Award, Eye, EyeOff, Sparkles, Check, Maximize2, Minimize2
 } from 'lucide-react';
 import { getPracticePapers, getUserProgress, saveQuestionProgress } from '../data/questions';
 import { executeCode } from '../services/piston';
@@ -35,6 +35,7 @@ export default function Problem() {
   const [isRunning, setIsRunning] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isTextareaMode, setIsTextareaMode] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Submit Modal States
   const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -452,10 +453,25 @@ export default function Problem() {
 
       {/* Right Column: Code Editor & Execution Results */}
       <div className="problem-right">
-        {/* Editor Container with Locked Boilerplate Frame */}
-        <div className="editor-container" style={{ height: '60%' }}>
-          {/* Editor Header Toolbar */}
-          <div className="editor-toolbar">
+        {/* Right Panel: Interactive Code Editor & Test Console */}
+        <div 
+          style={isFullscreen ? {
+            position: 'fixed',
+            inset: 0,
+            zIndex: 99999,
+            background: '#141416',
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '1rem'
+          } : { 
+            flex: 1, 
+            display: 'flex', 
+            flexDirection: 'column', 
+            minWidth: '350px' 
+          }}
+        >
+          {/* Editor Header Bar */}
+          <div className="editor-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 1rem', background: '#1c1c1f', borderBottom: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
               <span style={{ 
                 background: '#2b2b2b', 
@@ -482,6 +498,16 @@ export default function Problem() {
             </div>
 
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <button 
+                className="btn" 
+                onClick={() => setIsFullscreen(!isFullscreen)} 
+                style={{ padding: '0.35rem 0.6rem', fontSize: '0.8rem', borderColor: isFullscreen ? 'var(--accent-primary)' : 'var(--border-color)' }}
+                title="Toggle Fullscreen Editor"
+              >
+                {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+                {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+              </button>
+
               <button 
                 className="btn" 
                 onClick={() => setIsTextareaMode(!isTextareaMode)} 
@@ -562,7 +588,7 @@ export default function Problem() {
             </div>
 
             {/* Middle Editable Code Area */}
-            <div style={{ minHeight: '220px', flex: 1, position: 'relative' }}>
+            <div style={{ minHeight: isFullscreen ? 'calc(100vh - 280px)' : '380px', flex: 1, position: 'relative' }}>
               {isTextareaMode ? (
                 <textarea
                   key={`textarea-${question.id}`}
@@ -572,7 +598,7 @@ export default function Problem() {
                   style={{
                     width: '100%',
                     height: '100%',
-                    minHeight: '220px',
+                    minHeight: isFullscreen ? 'calc(100vh - 280px)' : '380px',
                     background: '#121214',
                     color: '#f8f8f2',
                     border: 'none',
@@ -618,7 +644,7 @@ export default function Problem() {
 
             {/* Bottom Locked Code Block */}
             <div style={{ 
-              padding: '0.3rem 1.2rem 1rem 1.2rem', 
+              padding: '0.6rem 1.2rem 1.2rem 1.2rem', 
               color: '#8b949e', 
               fontSize: '13.5px', 
               lineHeight: 1.5,
@@ -628,8 +654,7 @@ export default function Problem() {
             }}>
               {question.suffixCode}
             </div>
-          </div>
-        </div>
+          </div>    </div>
 
         {/* Results / Test Runner Console Panel */}
         <div className="results-container" style={{ height: '40%' }}>

@@ -2639,16 +2639,10 @@ Remaining Balance: 3800.00`,
         methodSignature: "static void withdraw(double balance, double amount)",
         prefixCode: `import java.util.*;
 
-// 👇 YOUR CODE STARTS HERE (Define Custom Exception classes & logic)`,
-        starterUserCode: `class InvalidAmountException extends Exception {
-    public InvalidAmountException(String message) { super(message); }
-}
-class InsufficientBalanceException extends Exception {
-    public InsufficientBalanceException(String message) { super(message); }
-}
-class InvalidDenominationException extends Exception {
-    public InvalidDenominationException(String message) { super(message); }
-}
+// 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `// 1. Define custom exceptions: InvalidAmountException, InsufficientBalanceException, InvalidDenominationException
+
+// 2. Define ProcessHelper class with withdraw(double balance, double amount) method
 
 class ProcessHelper {
     static void withdraw(double balance, double amount) {
@@ -2757,35 +2751,14 @@ Index: 0`,
         methodSignature: "abstract class Vehicle + Car/Bike subclasses + process()",
         prefixCode: `import java.util.*;
 
-// 👇 YOUR CODE STARTS HERE (Define abstract Vehicle, Car, Bike & ProcessHelper)`,
-        starterUserCode: `abstract class Vehicle {
-    private String brand;
-    public Vehicle(String brand) { this.brand = brand; }
-    public String getBrand() { return brand; }
-    public abstract double calculateCost();
-}
+// 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `// 1. Define abstract class Vehicle (brand, constructor, getBrand, abstract calculateCost)
 
-class Car extends Vehicle {
-    private double distance;
-    public Car(String brand, double distance) {
-        super(brand);
-        this.distance = distance;
-    }
-    public double calculateCost() {
-        return distance * 12;
-    }
-}
+// 2. Define class Car extends Vehicle (distance * 12)
 
-class Bike extends Vehicle {
-    private double distance;
-    public Bike(String brand, double distance) {
-        super(brand);
-        this.distance = distance;
-    }
-    public double calculateCost() {
-        return distance * 5;
-    }
-}
+// 3. Define class Bike extends Vehicle (distance * 5)
+
+// 4. Define ProcessHelper with static void process(String[] types, String[] brands, double[] distances)
 
 class ProcessHelper {
     static void process(String[] types, String[] brands, double[] distances) {
@@ -2913,17 +2886,10 @@ Longest Name: KaRaN`,
         methodSignature: "class Employee + getters + process()",
         prefixCode: `import java.util.*;
 
-// 👇 YOUR CODE STARTS HERE (Define class Employee with private fields/getters & ProcessHelper)`,
-        starterUserCode: `class Employee {
-    private String name;
-    private int id;
-    public Employee(String name, int id) {
-        this.name = name;
-        this.id = id;
-    }
-    public String getName() { return name; }
-    public int getId() { return id; }
-}
+// 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `// 1. Define class Employee with private fields name, id, constructor, getName(), getId()
+
+// 2. Define ProcessHelper class with static void process(String[] names, int[] ids)
 
 class ProcessHelper {
     static void process(String[] names, int[] ids) {
