@@ -582,7 +582,7 @@ export default function Problem() {
             Evaluation Suite:
           </span>
           <span style={{ fontWeight: '600', color: 'var(--text-secondary)' }}>
-            {sampleCases.length} Visible Cases • {totalHiddenCount} Hidden Edge Cases
+            {allCases.length} Test Cases (All Visible)
           </span>
         </div>
       </div>
