@@ -50,6 +50,12 @@ export default function Problem() {
   const [submitResults, setSubmitResults] = useState(null);
   const [modalActiveTab, setModalActiveTab] = useState(0);
 
+  // MCQ Selection State
+  const [selectedMcqOption, setSelectedMcqOption] = useState(() => {
+    const progress = getUserProgress();
+    return (question && question.type === 'mcq') ? (progress[question?.id]?.userCode || null) : null;
+  });
+
   // Initial code getter
   const getInitialCode = () => {
     if (!question) return '        ';
@@ -69,17 +75,22 @@ export default function Problem() {
   // Load question and previous saved code if available
   useEffect(() => {
     if (question) {
-      const initialCode = getInitialCode();
-      codeRef.current = initialCode;
-      if (editorRef.current) {
-        editorRef.current.setValue(initialCode);
-      }
-      setResults(null);
-      setActiveTab(0);
-      setCustomResult(null);
-      // Pre-fill sample input into custom input
-      if (question.sampleInput) {
-        setCustomInput(question.sampleInput);
+      if (question.type === 'mcq') {
+        const progress = getUserProgress();
+        setSelectedMcqOption(progress[question.id]?.userCode || null);
+      } else {
+        const initialCode = getInitialCode();
+        codeRef.current = initialCode;
+        if (editorRef.current) {
+          editorRef.current.setValue(initialCode);
+        }
+        setResults(null);
+        setActiveTab(0);
+        setCustomResult(null);
+        // Pre-fill sample input into custom input
+        if (question.sampleInput) {
+          setCustomInput(question.sampleInput);
+        }
       }
     }
   }, [questionId]);
@@ -468,12 +479,12 @@ export default function Problem() {
 
   // MCQ Question Layout Render
   if (question.type === 'mcq') {
-    const progress = getUserProgress();
-    const currentProgress = progress[question.id] || {};
-    const selectedOption = currentProgress.userCode || null;
-    const isSubmitted = currentProgress.status !== undefined;
+    const selectedOption = selectedMcqOption;
+    const isSubmitted = selectedOption !== null && selectedOption !== undefined;
+    const isCorrectAnswer = selectedOption === question.correctAnswer;
 
     const handleMcqSelect = (option) => {
+      setSelectedMcqOption(option);
       const isCorrect = option === question.correctAnswer;
       const marksEarned = isCorrect ? question.marks : 0;
       const status = isCorrect ? 'passed' : 'failed';
@@ -555,17 +566,17 @@ export default function Problem() {
                 marginTop: '1.5rem',
                 padding: '1rem 1.2rem',
                 borderRadius: '8px',
-                background: currentProgress.status === 'passed' ? 'rgba(46, 204, 113, 0.12)' : 'rgba(231, 76, 60, 0.12)',
-                border: `1px solid ${currentProgress.status === 'passed' ? '#2ecc71' : '#e74c3c'}`,
-                color: currentProgress.status === 'passed' ? '#2ecc71' : '#e74c3c',
+                background: isCorrectAnswer ? 'rgba(46, 204, 113, 0.12)' : 'rgba(231, 76, 60, 0.12)',
+                border: `1px solid ${isCorrectAnswer ? '#2ecc71' : '#e74c3c'}`,
+                color: isCorrectAnswer ? '#2ecc71' : '#e74c3c',
                 fontWeight: '600',
                 fontSize: '0.95rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem'
               }}>
-                {currentProgress.status === 'passed' ? <CheckCircle size={20} /> : <XCircle size={20} />}
-                {currentProgress.status === 'passed' ? '🎉 Correct Answer! (+1 Mark)' : '❌ Incorrect Answer (0 Marks)'}
+                {isCorrectAnswer ? <CheckCircle size={20} /> : <XCircle size={20} />}
+                {isCorrectAnswer ? '🎉 Correct Answer! (+1 Mark)' : '❌ Incorrect Answer (0 Marks)'}
               </div>
             )}
           </div>
@@ -587,10 +598,10 @@ export default function Problem() {
                 if (isSubmitted) {
                   if (isCorrectOpt) {
                     borderColor = '#2ecc71';
-                    bg = 'rgba(46, 204, 113, 0.1)';
+                    bg = 'rgba(46, 204, 113, 0.12)';
                   } else if (isSelected && !isCorrectOpt) {
                     borderColor = '#e74c3c';
-                    bg = 'rgba(231, 76, 60, 0.1)';
+                    bg = 'rgba(231, 76, 60, 0.12)';
                   }
                 } else if (isSelected) {
                   borderColor = 'var(--accent-primary)';
@@ -600,6 +611,8 @@ export default function Problem() {
                 return (
                   <div 
                     key={idx}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => handleMcqSelect(opt)}
                     style={{
                       display: 'flex',
@@ -610,7 +623,8 @@ export default function Problem() {
                       border: `2px solid ${borderColor}`,
                       background: bg,
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      userSelect: 'none',
+                      transition: 'all 0.18s ease'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
@@ -621,7 +635,8 @@ export default function Problem() {
                         border: `2px solid ${isSelected ? (isSubmitted ? (isCorrectOpt ? '#2ecc71' : '#e74c3c') : 'var(--accent-primary)') : 'var(--text-muted)'}`,
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        flexShrink: 0
                       }}>
                         {isSelected && (
                           <div style={{
