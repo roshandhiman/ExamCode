@@ -190,11 +190,7 @@ Assume that there were negative marking in the examination, i.e. for each wrong 
 public class Main {
     static int maxMarks(int[] marks, int N) {
         // 👇 YOUR CODE STARTS HERE`,
-        starterUserCode: `        TreeSet<Integer> a = new TreeSet<>();
-        for (Integer num : marks) {
-            a.add(num);
-        }
-        return a.last();`,
+        starterUserCode: `        `,
         suffixCode: `        // 👆 YOUR CODE ENDS HERE
     }
 
@@ -301,18 +297,7 @@ class MyException extends Exception {
 public class Main {
     static void power(int n, int p) {
         // 👇 YOUR CODE STARTS HERE`,
-        starterUserCode: `        try {
-            if (n < 0 || p < 0) {
-                throw new MyException(-1);
-            }
-            if (n == 0 && p == 0) {
-                throw new MyException(-2);
-            }
-            double res = Math.pow(n, p);
-            System.out.println((int)res);
-        } catch (MyException e) {
-            System.out.println(e.errorCode);
-        }`,
+        starterUserCode: `        `,
         suffixCode: `        // 👆 YOUR CODE ENDS HERE
     }
 
@@ -420,20 +405,7 @@ Rules:
 public class Main {
     public static LinkedList<Integer> findFrequentSites(LinkedList<Integer> history) {
         // 👇 YOUR CODE STARTS HERE`,
-        starterUserCode: `        TreeSet<Integer> a = new TreeSet<>();
-        TreeSet<Integer> b = new TreeSet<>();
-        for (Integer num : history) {
-            if (!a.add(num)) {
-                b.add(num);
-            }
-        }
-        LinkedList<Integer> c = new LinkedList<>();
-        for (Integer val : history) {
-            if (b.contains(val) && !c.contains(val)) {
-                c.add(val);
-            }
-        }
-        return c;`,
+        starterUserCode: `        `,
         suffixCode: `        // 👆 YOUR CODE ENDS HERE
     }
 
