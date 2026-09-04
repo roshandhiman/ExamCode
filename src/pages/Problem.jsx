@@ -424,7 +424,7 @@ export default function Problem() {
   const activeTestResult = (results?.tests && typeof activeTab === 'number') ? results.tests[activeTab] : null;
 
   // Calculate lines in prefix to offset Monaco line numbering
-  const prefixLineCount = question.prefixCode.split('\n').length;
+  const prefixLineCount = question.prefixCode ? question.prefixCode.split('\n').length : 0;
 
   const renderFormattedText = (text) => {
     if (!text) return null;
@@ -982,7 +982,6 @@ export default function Problem() {
                   theme="vs-dark"
                   defaultValue={getInitialCode()}
                   onChange={(val) => handleCodeChange(val || '')}
-                  onMount={handleEditorDidMount}
                   onMount={handleEditorDidMount}
                   options={{
                     minimap: { enabled: false },
