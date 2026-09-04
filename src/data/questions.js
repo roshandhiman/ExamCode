@@ -1,7 +1,7 @@
 export const practiceTestPapers = [
   {
     id: "sample-paper-1",
-    day: "Day 1",
+    day: "Day 3",
     title: "Sample Test Paper 1",
     subtitle: "10 MCQs + 3 Coding Problems (Exam Special Prep)",
     totalMarks: 30,
@@ -521,7 +521,7 @@ public class Main {
   },
   {
     id: "paper-1",
-    day: "Day 2",
+    day: "Day 1",
     title: "Practice Test Paper 1",
     subtitle: "Core Java & Logic Foundations (End Term Prep • Lectures 1–30)",
     totalMarks: 80,
