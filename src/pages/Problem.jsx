@@ -7,7 +7,7 @@ import {
   AlertTriangle, X, ChevronLeft, ChevronRight, Lock, Copy, RotateCcw, 
   Award, Eye, EyeOff, Sparkles, Check, Maximize2, Minimize2
 } from 'lucide-react';
-import { getPracticePapers, getUserProgress, saveQuestionProgress } from '../data/questions';
+import { getPracticePapers, getUserProgress, saveQuestionProgress, saveDraftCode } from '../data/questions';
 import { executeCode } from '../services/piston';
 
 export default function Problem() {
@@ -17,7 +17,7 @@ export default function Problem() {
   const codeRef = useRef('');
 
   const papers = getPracticePapers();
-  const questionId = parseInt(id) || 1;
+  const questionId = parseInt(id) || 501;
 
   let currentPaper = papers[0];
   let question = null;
@@ -58,6 +58,14 @@ export default function Problem() {
     return (saved && saved.userCode !== undefined) ? saved.userCode : (question.starterUserCode || '        ');
   };
 
+  // Instant draft auto-save handler on every character edit
+  const handleCodeChange = (newCode) => {
+    codeRef.current = newCode;
+    if (question && question.type !== 'mcq') {
+      saveDraftCode(question.id, newCode);
+    }
+  };
+
   // Load question and previous saved code if available
   useEffect(() => {
     if (question) {
@@ -93,7 +101,7 @@ export default function Problem() {
   }
 
   // All testcases are 100% visible and verifiable
-  const allCases = question.testcases;
+  const allCases = question.testcases || [];
   const currentQuestions = currentPaper.questions;
   const currentIndex = currentQuestions.findIndex(q => q.id === question.id);
   const prevQuestion = currentIndex > 0 ? currentQuestions[currentIndex - 1] : null;
@@ -406,6 +414,9 @@ export default function Problem() {
       if (editorRef.current) {
         editorRef.current.setValue(blankCode);
       }
+      if (question) {
+        saveDraftCode(question.id, blankCode);
+      }
     }
   };
 
@@ -454,6 +465,198 @@ export default function Problem() {
       );
     });
   };
+
+  // MCQ Question Layout Render
+  if (question.type === 'mcq') {
+    const progress = getUserProgress();
+    const currentProgress = progress[question.id] || {};
+    const selectedOption = currentProgress.userCode || null;
+    const isSubmitted = currentProgress.status !== undefined;
+
+    const handleMcqSelect = (option) => {
+      const isCorrect = option === question.correctAnswer;
+      const marksEarned = isCorrect ? question.marks : 0;
+      const status = isCorrect ? 'passed' : 'failed';
+
+      saveQuestionProgress(question.id, {
+        userCode: option,
+        marksEarned,
+        totalMarks: question.marks,
+        passedCount: isCorrect ? 1 : 0,
+        totalCount: 1,
+        status
+      });
+
+      window.dispatchEvent(new Event('storage'));
+    };
+
+    return (
+      <div className="container" style={{ flex: 1, paddingTop: '1.5rem', paddingBottom: '3rem', maxWidth: '1200px' }}>
+        {/* Navigation & Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <Link to="/" className="btn" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <ChevronLeft size={16} /> All Questions
+          </Link>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button 
+              className="btn" 
+              disabled={!prevQuestion} 
+              onClick={() => prevQuestion && navigate(`/problem/${prevQuestion.id}`)}
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+            >
+              <ChevronLeft size={16} /> Prev
+            </button>
+            <button 
+              className="btn" 
+              disabled={!nextQuestion} 
+              onClick={() => nextQuestion && navigate(`/problem/${nextQuestion.id}`)}
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+            >
+              Next <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.5rem' }}>
+          {/* Left Panel: MCQ Details */}
+          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '1.8rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
+              <span style={{ background: '#ffa116', color: '#000', fontWeight: '800', fontSize: '0.75rem', padding: '0.25rem 0.6rem', borderRadius: '4px', textTransform: 'uppercase' }}>
+                MCQ
+              </span>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
+                {question.title} ({question.marks} Marks)
+              </h2>
+            </div>
+
+            <div style={{ fontSize: '1.05rem', color: 'var(--text-primary)', lineHeight: 1.6, marginBottom: '1.2rem', fontWeight: '500' }}>
+              {question.statement}
+            </div>
+
+            {question.codeSnippet && (
+              <pre style={{ 
+                background: '#161618', 
+                border: '1px solid var(--border-color)', 
+                borderRadius: '8px', 
+                padding: '1.2rem', 
+                color: '#f8f8f2', 
+                fontSize: '0.92rem', 
+                fontFamily: "'Fira Code', monospace",
+                overflowX: 'auto',
+                marginBottom: '1.2rem',
+                lineHeight: 1.5
+              }}>
+                <code>{question.codeSnippet}</code>
+              </pre>
+            )}
+
+            {isSubmitted && (
+              <div style={{
+                marginTop: '1.5rem',
+                padding: '1rem 1.2rem',
+                borderRadius: '8px',
+                background: currentProgress.status === 'passed' ? 'rgba(46, 204, 113, 0.12)' : 'rgba(231, 76, 60, 0.12)',
+                border: `1px solid ${currentProgress.status === 'passed' ? '#2ecc71' : '#e74c3c'}`,
+                color: currentProgress.status === 'passed' ? '#2ecc71' : '#e74c3c',
+                fontWeight: '600',
+                fontSize: '0.95rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                {currentProgress.status === 'passed' ? <CheckCircle size={20} /> : <XCircle size={20} />}
+                {currentProgress.status === 'passed' ? '🎉 Correct Answer! (+1 Mark)' : '❌ Incorrect Answer (0 Marks)'}
+              </div>
+            )}
+          </div>
+
+          {/* Right Panel: Options */}
+          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '1.8rem' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '1.2rem' }}>
+              Choose any one
+            </h3>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {question.options.map((opt, idx) => {
+                const isSelected = selectedOption === opt;
+                const isCorrectOpt = opt === question.correctAnswer;
+                
+                let borderColor = 'var(--border-color)';
+                let bg = 'rgba(255, 255, 255, 0.02)';
+                
+                if (isSubmitted) {
+                  if (isCorrectOpt) {
+                    borderColor = '#2ecc71';
+                    bg = 'rgba(46, 204, 113, 0.1)';
+                  } else if (isSelected && !isCorrectOpt) {
+                    borderColor = '#e74c3c';
+                    bg = 'rgba(231, 76, 60, 0.1)';
+                  }
+                } else if (isSelected) {
+                  borderColor = 'var(--accent-primary)';
+                  bg = 'rgba(255, 161, 22, 0.08)';
+                }
+
+                return (
+                  <div 
+                    key={idx}
+                    onClick={() => handleMcqSelect(opt)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '1.1rem 1.3rem',
+                      borderRadius: '10px',
+                      border: `2px solid ${borderColor}`,
+                      background: bg,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                      <div style={{
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        border: `2px solid ${isSelected ? (isSubmitted ? (isCorrectOpt ? '#2ecc71' : '#e74c3c') : 'var(--accent-primary)') : 'var(--text-muted)'}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        {isSelected && (
+                          <div style={{
+                            width: '10px',
+                            height: '10px',
+                            borderRadius: '50%',
+                            background: isSubmitted ? (isCorrectOpt ? '#2ecc71' : '#e74c3c') : 'var(--accent-primary)'
+                          }} />
+                        )}
+                      </div>
+                      <span style={{ fontSize: '0.98rem', fontWeight: '500', color: 'var(--text-primary)', fontFamily: 'monospace' }}>
+                        {opt}
+                      </span>
+                    </div>
+
+                    {isSubmitted && isCorrectOpt && (
+                      <span style={{ color: '#2ecc71', fontWeight: '700', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <Check size={16} /> Correct
+                      </span>
+                    )}
+
+                    {isSubmitted && isSelected && !isCorrectOpt && (
+                      <span style={{ color: '#e74c3c', fontWeight: '700', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <X size={16} /> Incorrect
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="problem-layout">
@@ -633,6 +836,19 @@ export default function Problem() {
               }}>
                 <Lock size={12} color="var(--accent-primary)" /> Boilerplate Locked
               </span>
+              <span style={{
+                color: '#2ecc71',
+                fontSize: '0.78rem',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                background: 'rgba(46, 204, 113, 0.1)',
+                padding: '0.15rem 0.5rem',
+                borderRadius: '4px'
+              }}>
+                💾 Auto-Saved
+              </span>
             </div>
 
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
@@ -740,7 +956,7 @@ export default function Problem() {
                 <textarea
                   key={`textarea-${question.id}`}
                   defaultValue={getInitialCode()}
-                  onChange={(e) => { codeRef.current = e.target.value; }}
+                  onChange={(e) => handleCodeChange(e.target.value)}
                   placeholder="Type your Java code logic here..."
                   style={{
                     width: '100%',
@@ -765,7 +981,8 @@ export default function Problem() {
                   language="java"
                   theme="vs-dark"
                   defaultValue={getInitialCode()}
-                  onChange={(val) => { codeRef.current = val || ''; }}
+                  onChange={(val) => handleCodeChange(val || '')}
+                  onMount={handleEditorDidMount}
                   onMount={handleEditorDidMount}
                   options={{
                     minimap: { enabled: false },

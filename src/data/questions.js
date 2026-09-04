@@ -1,7 +1,527 @@
 export const practiceTestPapers = [
   {
-    id: "paper-1",
+    id: "sample-paper-1",
     day: "Day 1",
+    title: "Sample Test Paper 1",
+    subtitle: "10 MCQs + 3 Coding Problems (Exam Special Prep)",
+    totalMarks: 30,
+    passingMarks: 12,
+    examDate: "Exam: Special Prep",
+    instructions: [
+      "This test contains 10 Multiple Choice Questions (1 Mark each) and 3 Coding Problems (5, 5, and 10 Marks).",
+      "For MCQs, select your choice to check and save your answer immediately.",
+      "For Coding questions, complete the method body. All test cases are 100% visible and evaluated automatically."
+    ],
+    questions: [
+      {
+        id: 501,
+        paperId: "sample-paper-1",
+        number: "Q1",
+        type: "mcq",
+        title: "MCQ 1 Marks",
+        category: "HashSet",
+        difficulty: "Easy",
+        marks: 1,
+        tagline: "Select the correct option for HashSet case sensitivity.",
+        concept: "HashSet.contains() string case sensitivity",
+        statement: "What is the value of the result variable?",
+        codeSnippet: `Set<String> cities = new HashSet<>();\ncities.add("London");\ncities.add("Paris");\ncities.add("New York");\nboolean result = cities.contains("london");`,
+        options: ["true", "false", "Apple", "none of the above"],
+        correctAnswer: "false"
+      },
+      {
+        id: 502,
+        paperId: "sample-paper-1",
+        number: "Q2",
+        type: "mcq",
+        title: "MCQ 1 Marks",
+        category: "Wrapper Classes",
+        difficulty: "Easy",
+        marks: 1,
+        tagline: "Select the primary purpose of Wrapper classes in Java.",
+        concept: "Primitive encapsulation into objects",
+        statement: "What is the main use of wrapper classes in Java?",
+        options: ["Converting primitives to objects", "Making all methods static", "Defining custom data types", "None of the above"],
+        correctAnswer: "Converting primitives to objects"
+      },
+      {
+        id: 503,
+        paperId: "sample-paper-1",
+        number: "Q3",
+        type: "mcq",
+        title: "MCQ 1 Marks",
+        category: "Exceptions",
+        difficulty: "Easy",
+        marks: 1,
+        tagline: "Select the keyword used to throw an exception explicitly.",
+        concept: "throw vs throws keyword",
+        statement: "Which keyword is used to explicitly throw an exception in Java?",
+        options: ["throw", "exception", "catch", "throws"],
+        correctAnswer: "throw"
+      },
+      {
+        id: 504,
+        paperId: "sample-paper-1",
+        number: "Q4",
+        type: "mcq",
+        title: "MCQ 1 Marks",
+        category: "Operators",
+        difficulty: "Easy",
+        marks: 1,
+        tagline: "Calculate the modulus output.",
+        concept: "Remainder operator %",
+        statement: "What will be the output of System.out.println(10 % 3);",
+        codeSnippet: "System.out.println(10 % 3);",
+        options: ["3", "1", "8", "10"],
+        correctAnswer: "1"
+      },
+      {
+        id: 505,
+        paperId: "sample-paper-1",
+        number: "Q5",
+        type: "mcq",
+        title: "MCQ 1 Marks",
+        category: "Exceptions",
+        difficulty: "Easy",
+        marks: 1,
+        tagline: "Select the keyword used to declare & propagate exceptions.",
+        concept: "Method signature exception declaration",
+        statement: "Which of the following keywords is used by a calling function to declare and propagate an exception thrown by a called function instead of handling it?",
+        options: ["try", "throw", "throws", "catch"],
+        correctAnswer: "throws"
+      },
+      {
+        id: 506,
+        paperId: "sample-paper-1",
+        number: "Q6",
+        type: "mcq",
+        title: "MCQ 1 Marks",
+        category: "ArrayList",
+        difficulty: "Easy",
+        marks: 1,
+        tagline: "ArrayList default initial capacity in Java.",
+        concept: "Default collection sizing",
+        statement: "What is the initial default capacity of an ArrayList in Java?",
+        options: ["10", "16", "0", "12"],
+        correctAnswer: "10"
+      },
+      {
+        id: 507,
+        paperId: "sample-paper-1",
+        number: "Q7",
+        type: "mcq",
+        title: "MCQ 1 Marks",
+        category: "Collections",
+        difficulty: "Easy",
+        marks: 1,
+        tagline: "Interface preventing duplicates.",
+        concept: "Set uniqueness guarantee",
+        statement: "Which interface in Java does not allow duplicate elements?",
+        options: ["Set", "List", "Queue", "Map"],
+        correctAnswer: "Set"
+      },
+      {
+        id: 508,
+        paperId: "sample-paper-1",
+        number: "Q8",
+        type: "mcq",
+        title: "MCQ 1 Marks",
+        category: "Collections",
+        difficulty: "Easy",
+        marks: 1,
+        tagline: "Thread safe dynamic array collection.",
+        concept: "Vector synchronization",
+        statement: "Which class in Java provides thread-safe operations on dynamic arrays?",
+        options: ["Vector", "ArrayList", "LinkedList", "ArrayDeque"],
+        correctAnswer: "Vector"
+      },
+      {
+        id: 509,
+        paperId: "sample-paper-1",
+        number: "Q9",
+        type: "mcq",
+        title: "MCQ 1 Marks",
+        category: "Exceptions",
+        difficulty: "Easy",
+        marks: 1,
+        tagline: "Invalid array index access exception.",
+        concept: "Array bounds check exception",
+        statement: "What exception is thrown when an array is accessed with an invalid index?",
+        options: ["ArrayIndexOutOfBoundsException", "IndexOutOfBoundsException", "NullPointerException", "IllegalArgumentException"],
+        correctAnswer: "ArrayIndexOutOfBoundsException"
+      },
+      {
+        id: 510,
+        paperId: "sample-paper-1",
+        number: "Q10",
+        type: "mcq",
+        title: "MCQ 1 Marks",
+        category: "Java Core",
+        difficulty: "Easy",
+        marks: 1,
+        tagline: "Auto-imported package in Java.",
+        concept: "java.lang automatic package import",
+        statement: "Which package is automatically imported into every Java program?",
+        options: ["java.lang", "java.util", "java.io", "java.net"],
+        correctAnswer: "java.lang"
+      },
+      {
+        id: 511,
+        paperId: "sample-paper-1",
+        number: "Q11",
+        type: "coding",
+        title: "Exam Topper",
+        category: "Arrays & Logic",
+        difficulty: "Easy",
+        marks: 5,
+        tagline: "Tera kaam: Sirf maxMarks(int[] marks, int N) ke andar code likhna.",
+        concept: "Finding maximum element in array with negative numbers",
+        statement: `The education board of India has conducted an all-India talent examination. Finally, the results are out, and the education board needs your help to find the maximum marks that are scored by any student.
+
+Given an array of size N, denoting the marks of those students who appeared for the exam. Your task is to find the maximum marks out of it.
+
+Assume that there were negative marking in the examination, i.e. for each wrong answer the students have got a -1 penalty. That means there is a possibility that some students may have scored negative marks as well.`,
+        sampleInput: `7\n20 30 93 71 18 82 66`,
+        sampleOutput: `93`,
+        constraints: `1 <= N <= 10^5\n-1000 <= marks[i] <= 1000`,
+        methodSignature: "static int maxMarks(int[] marks, int N)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+    static int maxMarks(int[] marks, int N) {
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        TreeSet<Integer> a = new TreeSet<>();
+        for (Integer num : marks) {
+            a.add(num);
+        }
+        return a.last();`,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        if (!sc.hasNextInt()) return;
+        int N = sc.nextInt();
+        int[] marks = new int[N];
+        for (int i = 0; i < N; i++) {
+            marks[i] = sc.nextInt();
+        }
+        System.out.println(maxMarks(marks, N));
+    }
+}`,
+        referenceSolution: `        int max = marks[0];
+        for (int i = 1; i < N; i++) {
+            if (marks[i] > max) max = marks[i];
+        }
+        return max;`,
+        testcases: [
+          {
+            id: 1,
+            input: "7\n20 30 93 71 18 82 66",
+            expectedOutput: "93",
+            isHidden: false,
+            explanation: "Sample input from examination board"
+          },
+          {
+            id: 2,
+            input: "5\n-10 -5 -20 -1 -50",
+            expectedOutput: "-1",
+            isHidden: false,
+            explanation: "All negative marks scenario"
+          },
+          {
+            id: 3,
+            input: "1\n500",
+            expectedOutput: "500",
+            isHidden: false,
+            explanation: "Single student"
+          },
+          {
+            id: 4,
+            input: "6\n0 0 0 0 0 0",
+            expectedOutput: "0",
+            isHidden: false,
+            explanation: "All zero marks"
+          },
+          {
+            id: 5,
+            input: "8\n-100 200 -50 400 150 -300 400 99",
+            expectedOutput: "400",
+            isHidden: false,
+            explanation: "Duplicate max values"
+          },
+          {
+            id: 6,
+            input: "4\n1000 -1000 999 -999",
+            expectedOutput: "1000",
+            isHidden: false,
+            explanation: "Constraint boundary values"
+          }
+        ]
+      },
+      {
+        id: 512,
+        paperId: "sample-paper-1",
+        number: "Q12",
+        type: "coding",
+        title: "MyCalculator Exception",
+        category: "Exception Handling",
+        difficulty: "Medium",
+        marks: 5,
+        tagline: "Tera kaam: Sirf power(int n, int p) ke andar try-catch + MyException handling code likhna.",
+        concept: "Custom Exception throwing and catching with error codes",
+        statement: `A scientific calculator allows users to calculate the value of n^p (n raised to the power p). Before performing the calculation, the calculator validates the input values.
+
+If the inputs violate any of the validation rules, the program should throw a user-defined exception, handle it inside the calculation function, and print the appropriate error code.
+
+The calculator processes multiple power calculations independently. A custom exception class MyException is already provided.
+
+Task:
+Implement the method static void power(int n, int p) inside the Main class. The method must enforce the following validation rules in order:
+
+Rule 1 (Negative Inputs): If either n or p is negative, throw a MyException with the error code -1.
+Rule 2 (Zero Inputs): If both n and p are zero, throw a MyException with the error code -2.
+
+Calculation: If both inputs are valid, calculate the value of n^p (n raised to the power p)
+
+The entire logic (validation, throwing, and catching) must be handled inside the power method using a try-catch block.`,
+        sampleInput: `5\n2 3\n-3 2\n0 0\n5 0\n0 5`,
+        sampleOutput: `8\n-1\n-2\n1\n0`,
+        constraints: `-100 <= n, p <= 100`,
+        methodSignature: "static void power(int n, int p)",
+        prefixCode: `import java.util.*;
+
+class MyException extends Exception {
+    int errorCode;
+    MyException(int errorCode) {
+        this.errorCode = errorCode;
+    }
+}
+
+public class Main {
+    static void power(int n, int p) {
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        try {
+            if (n < 0 || p < 0) {
+                throw new MyException(-1);
+            }
+            if (n == 0 && p == 0) {
+                throw new MyException(-2);
+            }
+            double res = Math.pow(n, p);
+            System.out.println((int)res);
+        } catch (MyException e) {
+            System.out.println(e.errorCode);
+        }`,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        if (!sc.hasNextInt()) return;
+        int t = sc.nextInt();
+        while (t-- > 0) {
+            int n = sc.nextInt();
+            int p = sc.nextInt();
+            power(n, p);
+        }
+    }
+}`,
+        referenceSolution: `        try {
+            if (n < 0 || p < 0) {
+                throw new MyException(-1);
+            }
+            if (n == 0 && p == 0) {
+                throw new MyException(-2);
+            }
+            double res = Math.pow(n, p);
+            System.out.println((int)res);
+        } catch (MyException e) {
+            System.out.println(e.errorCode);
+        }`,
+        testcases: [
+          {
+            id: 1,
+            input: "5\n2 3\n-3 2\n0 0\n5 0\n0 5",
+            expectedOutput: "8\n-1\n-2\n1\n0",
+            isHidden: false,
+            explanation: "Sample input tests negative, zero zero, and normal exponentiation"
+          },
+          {
+            id: 2,
+            input: "3\n3 4\n-1 -1\n2 10",
+            expectedOutput: "81\n-1\n1024",
+            isHidden: false,
+            explanation: "Powers 3^4, negative exponents, 2^10"
+          },
+          {
+            id: 3,
+            input: "2\n0 0\n-5 0",
+            expectedOutput: "-2\n-1",
+            isHidden: false,
+            explanation: "Zero zero rule and negative base rule"
+          },
+          {
+            id: 4,
+            input: "4\n10 2\n2 0\n0 2\n-2 -2",
+            expectedOutput: "100\n1\n0\n-1",
+            isHidden: false,
+            explanation: "Base 10, zero exponent, zero base, both negative"
+          },
+          {
+            id: 5,
+            input: "3\n1 10\n0 0\n-10 5",
+            expectedOutput: "1\n-2\n-1",
+            isHidden: false,
+            explanation: "1 raised to power, 0^0, negative base"
+          },
+          {
+            id: 6,
+            input: "2\n5 3\n3 5",
+            expectedOutput: "125\n243",
+            isHidden: false,
+            explanation: "5^3 and 3^5"
+          }
+        ]
+      },
+      {
+        id: 513,
+        paperId: "sample-paper-1",
+        number: "Q13",
+        type: "coding",
+        title: "Web Browser Tab History Analyzer",
+        category: "LinkedList & Sets",
+        difficulty: "Hard",
+        marks: 10,
+        tagline: "Tera kaam: Sirf findFrequentSites(LinkedList<Integer> history) ke andar code likhna.",
+        concept: "LinkedList frequency filtering & preserving original insertion order",
+        statement: `A modern web browser keeps track of the websites visited by a user during a browsing session. The browser stores the visited website IDs in a LinkedList, where each ID represents a website.
+
+For performance analysis, the browser needs to identify the user's browsing session pattern.
+
+A website is considered frequently visited if its ID appears more than once in the browsing history.
+
+Your task is to analyze the browsing history and create a new LinkedList containing the website IDs that were visited multiple times.
+
+Each website ID should appear only once in the result, and the order should be based on the first occurrence in the browsing history.
+
+Rules:
+1. A website is considered frequent if it appears more than once.
+2. Add each frequent website ID to the result only once.
+3. Preserve the order of its first appearance.
+4. Do not modify the original history list.
+5. If no website was visited more than once, return an empty LinkedList.`,
+        sampleInput: `10\n101 205 310 101 450 205 101 520 310 600`,
+        sampleOutput: `101 205 310`,
+        constraints: `1 <= history.size() <= 10^5\n1 <= website ID <= 10^9`,
+        methodSignature: "public static LinkedList<Integer> findFrequentSites(LinkedList<Integer> history)",
+        prefixCode: `import java.util.*;
+
+public class Main {
+    public static LinkedList<Integer> findFrequentSites(LinkedList<Integer> history) {
+        // 👇 YOUR CODE STARTS HERE`,
+        starterUserCode: `        TreeSet<Integer> a = new TreeSet<>();
+        TreeSet<Integer> b = new TreeSet<>();
+        for (Integer num : history) {
+            if (!a.add(num)) {
+                b.add(num);
+            }
+        }
+        LinkedList<Integer> c = new LinkedList<>();
+        for (Integer val : history) {
+            if (b.contains(val) && !c.contains(val)) {
+                c.add(val);
+            }
+        }
+        return c;`,
+        suffixCode: `        // 👆 YOUR CODE ENDS HERE
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        if (!sc.hasNextInt()) return;
+        int N = sc.nextInt();
+        LinkedList<Integer> history = new LinkedList<>();
+        for (int i = 0; i < N; i++) {
+            history.add(sc.nextInt());
+        }
+        LinkedList<Integer> result = findFrequentSites(history);
+        if (result.isEmpty()) {
+            System.out.println("EMPTY");
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < result.size(); i++) {
+                sb.append(result.get(i));
+                if (i < result.size() - 1) sb.append(" ");
+            }
+            System.out.println(sb.toString());
+        }
+    }
+}`,
+        referenceSolution: `        Set<Integer> seen = new HashSet<>();
+        Set<Integer> duplicates = new HashSet<>();
+        for (Integer num : history) {
+            if (!seen.add(num)) {
+                duplicates.add(num);
+            }
+        }
+        LinkedList<Integer> result = new LinkedList<>();
+        for (Integer val : history) {
+            if (duplicates.contains(val) && !result.contains(val)) {
+                result.add(val);
+            }
+        }
+        return result;`,
+        testcases: [
+          {
+            id: 1,
+            input: "10\n101 205 310 101 450 205 101 520 310 600",
+            expectedOutput: "101 205 310",
+            isHidden: false,
+            explanation: "Sample input with frequent sites 101, 205, 310"
+          },
+          {
+            id: 2,
+            input: "5\n1 2 3 4 5",
+            expectedOutput: "EMPTY",
+            isHidden: false,
+            explanation: "No duplicates found"
+          },
+          {
+            id: 3,
+            input: "6\n50 50 50 50 50 50",
+            expectedOutput: "50",
+            isHidden: false,
+            explanation: "Single site repeated multiple times"
+          },
+          {
+            id: 4,
+            input: "8\n10 20 30 20 10 40 50 30",
+            expectedOutput: "10 20 30",
+            isHidden: false,
+            explanation: "Multiple duplicates out of order"
+          },
+          {
+            id: 5,
+            input: "4\n99 99 88 88",
+            expectedOutput: "99 88",
+            isHidden: false,
+            explanation: "Adjacent duplicate pairs"
+          },
+          {
+            id: 6,
+            input: "7\n5 1 2 3 1 4 5",
+            expectedOutput: "5 1",
+            isHidden: false,
+            explanation: "Duplicates preserve first appearance order"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "paper-1",
+    day: "Day 2",
     title: "Practice Test Paper 1",
     subtitle: "Core Java & Logic Foundations (End Term Prep • Lectures 1–30)",
     totalMarks: 80,
@@ -3144,7 +3664,7 @@ Invalid Marks: xyz`,
 
 // Active Paper Helper
 export const getActivePaperId = () => {
-  return localStorage.getItem('active_paper_id') || 'paper-1';
+  return localStorage.getItem('active_paper_id') || 'sample-paper-1';
 };
 
 export const setActivePaperId = (paperId) => {
@@ -3156,7 +3676,10 @@ export const getPracticePapers = () => {
   const saved = localStorage.getItem('practice_papers_data');
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.some(p => p.id === 'sample-paper-1')) {
+        return parsed;
+      }
     } catch (e) {
       console.error("Failed to parse stored practice papers", e);
     }
@@ -3185,9 +3708,21 @@ export const getUserProgress = () => {
   return {};
 };
 
+export const saveDraftCode = (questionId, userCode) => {
+  const progress = getUserProgress();
+  const existing = progress[questionId] || {};
+  progress[questionId] = {
+    ...existing,
+    userCode,
+    updatedAt: Date.now()
+  };
+  localStorage.setItem('user_exam_progress', JSON.stringify(progress));
+};
+
 export const saveQuestionProgress = (questionId, { userCode, marksEarned, totalMarks, passedCount, totalCount, status }) => {
   const progress = getUserProgress();
   progress[questionId] = {
+    ...progress[questionId],
     userCode,
     marksEarned,
     totalMarks,
