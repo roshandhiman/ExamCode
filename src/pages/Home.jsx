@@ -356,7 +356,10 @@ export default function Home({ onOpenScorecard }) {
                   </div>
                 )}
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                  {q.testcases.length} Total Tests ({q.testcases.filter(t => t.isHidden).length} Hidden)
+                  {q.type === 'mcq' 
+                    ? '1 Mark MCQ (Single Choice)' 
+                    : `${q.testcases?.length || 0} Total Tests (${q.testcases?.filter(t => t.isHidden)?.length || 0} Hidden)`
+                  }
                 </div>
               </div>
 

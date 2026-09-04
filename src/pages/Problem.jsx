@@ -1275,7 +1275,7 @@ export default function Problem() {
                 <Loader size={46} className="spinner" color="var(--accent-primary)" />
                 <h3 style={{ fontSize: '1.2rem', fontWeight: '600' }}>⚡ Judging All Test Cases in Parallel...</h3>
                 <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
-                  Evaluating all <strong>{question.testcases.length}</strong> test cases concurrently for instant grading.
+                  Evaluating all <strong>{question.testcases?.length || 0}</strong> test cases concurrently for instant grading.
                 </p>
               </div>
             )}

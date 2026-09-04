@@ -185,7 +185,7 @@ export default function ScorecardModal({ onClose }) {
                 const marksEarned = p ? p.marksEarned : 0;
                 const status = p ? p.status : 'unattempted';
                 const passedCount = p ? p.passedCount : 0;
-                const totalCount = q.testcases.length;
+                const totalCount = q.testcases ? q.testcases.length : 1;
 
                 return (
                   <tr 
