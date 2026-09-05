@@ -187,17 +187,16 @@ export default function Problem() {
       let errorOutput = false;
       let errorMessage = '';
 
-      if (response.message) {
-        errorOutput = true;
-        errorMessage = response.message;
-        globalCompileError = errorMessage;
-      } else if (response.compile && response.compile.code !== 0) {
+      if (response.compile && response.compile.code !== 0) {
         errorOutput = true;
         errorMessage = (response.compile.stderr || response.compile.output || response.compile.stdout || 'Compilation Failed').trim();
         globalCompileError = errorMessage;
       } else if (response.run && response.run.code !== 0) {
         errorOutput = true;
         errorMessage = (response.run.stderr || response.run.output || response.run.stdout || `Runtime Error (Exit Code ${response.run.code})`).trim();
+      } else if (response.message) {
+        errorOutput = true;
+        errorMessage = response.message;
       } else if (response.run) {
         actualOutput = response.run.stdout ? response.run.stdout.trim() : '';
         if (response.run.stderr) {
@@ -253,15 +252,15 @@ export default function Problem() {
       let errorOutput = false;
       let errorMessage = '';
 
-      if (response.message) {
-        errorOutput = true;
-        errorMessage = response.message;
-      } else if (response.compile && response.compile.code !== 0) {
+      if (response.compile && response.compile.code !== 0) {
         errorOutput = true;
         errorMessage = (response.compile.stderr || response.compile.output || response.compile.stdout || 'Compilation Failed').trim();
       } else if (response.run && response.run.code !== 0) {
         errorOutput = true;
         errorMessage = (response.run.stderr || response.run.output || response.run.stdout || `Runtime Error (Exit Code ${response.run.code})`).trim();
+      } else if (response.message) {
+        errorOutput = true;
+        errorMessage = response.message;
       } else if (response.run) {
         actualOutput = response.run.stdout ? response.run.stdout.trim() : '';
         if (response.run.stderr) {

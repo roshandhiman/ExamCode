@@ -1,58 +1,138 @@
-// High-Speed Code Execution Service
-// Supports Local Vite Runner and Wandbox OpenJDK with Parallel Concurrency & Abort Timeout
+// High-Speed Multi-Tier Code Execution Engine
+// Primary: Judge0 CE (Ultra-fast parallel execution ~0.05-0.1s per testcase)
+// Fallback: Wandbox OpenJDK 22 (Reliable, high-compatibility backup)
 
+const JUDGE0_API_URL = 'https://ce.judge0.com/submissions?wait=true';
 const WANDBOX_API_URL = 'https://wandbox.org/api/compile.json';
 
 export const executeCode = async (language, code, stdin = "") => {
-    // 1. Try Local Execution Plugin first (only in dev mode - skip in production for speed)
-    const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    
-    if (isDev) {
+    if (language === 'java') {
+        // 1. Try Judge0 CE first (Fastest: ~0.05-0.1s execution)
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-            const localResponse = await fetch('/api/execute', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ language, code, stdin }),
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-
-            if (localResponse.ok) {
-                const data = await localResponse.json();
-                if (!data.error && !data.message) {
-                    return data;
-                }
+            const judge0Result = await executeViaJudge0(code, stdin);
+            if (judge0Result && !judge0Result.shouldFallback) {
+                return judge0Result;
             }
         } catch (e) {
-            // Fall back to Wandbox
+            console.warn("Judge0 execution error, falling back to Wandbox:", e);
         }
-    }
 
-    // 2. High-speed Wandbox execution (free, reliable Java 21/22 runtime)
-    if (language === 'java') {
+        // 2. Fallback to Wandbox OpenJDK 22
         return await executeViaWandbox(code, stdin);
     }
 
     return { message: `Language "${language}" is not supported for remote execution.` };
 };
 
-// Batch parallel execution for ultra-fast multi-testcase evaluation
+// Batch parallel execution helper
 export const executeCodeParallel = async (language, code, stdinList) => {
     return await Promise.all(
         stdinList.map(stdin => executeCode(language, code, stdin))
     );
 };
 
-async function executeViaWandbox(code, stdin) {
+// Judge0 CE Java Execution (Java 17 / OpenJDK 17)
+async function executeViaJudge0(code, stdin) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
 
     try {
-        // In Java, any "public class" must match the file name (prog.java).
-        // Strip "public" from all class declarations to guarantee successful compilation.
+        const response = await fetch(JUDGE0_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                language_id: 91, // Java (JDK 17.0.6)
+                source_code: code,
+                stdin: stdin || ''
+            }),
+            signal: controller.signal
+        });
+
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+            return { shouldFallback: true };
+        }
+
+        const data = await response.json();
+        const statusId = data.status ? data.status.id : 0;
+
+        // Status 6 = Compilation Error
+        if (statusId === 6 || data.compile_output) {
+            return {
+                compile: {
+                    code: 1,
+                    stderr: data.compile_output || 'Compilation Error'
+                }
+            };
+        }
+
+        // Status 5 = Time Limit Exceeded
+        if (statusId === 5) {
+            return {
+                run: {
+                    code: 1,
+                    stdout: '',
+                    stderr: 'Time Limit Exceeded. Please check for infinite loops.'
+                }
+            };
+        }
+
+        // Status 3 = Accepted (Success)
+        if (statusId === 3) {
+            return {
+                compile: { code: 0 },
+                run: {
+                    code: 0,
+                    stdout: data.stdout || '',
+                    stderr: data.stderr || ''
+                }
+            };
+        }
+
+        // Runtime errors (Status 7-12)
+        if (statusId >= 7 && statusId <= 12) {
+            return {
+                compile: { code: 0 },
+                run: {
+                    code: 1,
+                    stdout: data.stdout || '',
+                    stderr: (data.stderr || data.message || data.status?.description || 'Runtime Error').trim()
+                }
+            };
+        }
+
+        // Default valid output
+        if (data.stdout !== null || data.stderr !== null) {
+            return {
+                compile: { code: 0 },
+                run: {
+                    code: statusId === 3 ? 0 : 1,
+                    stdout: data.stdout || '',
+                    stderr: data.stderr || ''
+                }
+            };
+        }
+
+        return { shouldFallback: true };
+    } catch (err) {
+        clearTimeout(timeout);
+        if (err.name === 'AbortError') {
+            return { shouldFallback: true };
+        }
+        return { shouldFallback: true };
+    }
+}
+
+// Fallback: Wandbox OpenJDK 22
+async function executeViaWandbox(code, stdin) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+
+    try {
+        // Strip public from class declarations to prevent file name mismatch
         const fixedCode = code.replace(/\bpublic\s+class\b/g, 'class');
 
         const response = await fetch(WANDBOX_API_URL, {
@@ -77,7 +157,6 @@ async function executeViaWandbox(code, stdin) {
 
         const data = await response.json();
 
-        // Check compiler output and errors
         const compileError = data.compiler_error || '';
         const compileOutput = data.compiler_output || '';
         const hasCompileError = data.status === '1' || data.status === '2' ||
@@ -107,9 +186,9 @@ async function executeViaWandbox(code, stdin) {
     } catch (error) {
         clearTimeout(timeout);
         if (error.name === 'AbortError') {
-            return { message: 'Execution timed out (12s limit). Please check for infinite loops.' };
+            return { message: 'Execution timed out (20s limit). Please check for infinite loops.' };
         }
-        console.error("Wandbox execution error:", error);
+        console.error("Execution error:", error);
         return { message: 'Code execution service is temporarily busy. Please click Run again.' };
     }
 }
