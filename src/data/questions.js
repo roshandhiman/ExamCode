@@ -1,4 +1,1288 @@
 export const practiceTestPapers = [
+{
+  "id": "sample-paper-3",
+  "day": "Day 4",
+  "title": "Sample Practice Test Paper 3",
+  "subtitle": "30 MCQs + 15 Coding Questions (OOP & Collections Master)",
+  "totalMarks": 155,
+  "passingMarks": 60,
+  "examDate": "Exam: Today's Special Prep",
+  "instructions": [
+    "This practice test contains 30 Multiple Choice Questions (1 Mark each) and 15 Coding Problems (5 & 10 Marks).",
+    "For MCQs, select your choice to test your knowledge with immediate validation.",
+    "For Coding questions, class Main and Scanner input are locked. Write clean logic in the designated areas.",
+    "All test cases are simple, standard, and 100% visible."
+  ],
+  "questions": [
+    {
+      "id": 601,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 1",
+      "type": "mcq",
+      "title": "String Substring",
+      "category": "String",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Predict output of substring(1, 3)",
+      "concept": "substring(beginIndex, endIndex) excludes endIndex",
+      "statement": "What is the output of the following code snippet?",
+      "codeSnippet": "String s = \"Java\";\nSystem.out.println(s.substring(1, 3));",
+      "options": [
+        "Jav",
+        "av",
+        "ava",
+        "ja"
+      ],
+      "correctAnswer": "av"
+    },
+    {
+      "id": 602,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 2",
+      "type": "mcq",
+      "title": "String Comparison",
+      "category": "String",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Compare two Strings based on content",
+      "concept": "equals() checks value equality vs == reference equality",
+      "statement": "Which method compares two Strings based on their content?",
+      "options": [
+        "==",
+        "compare()",
+        "equals()",
+        "match()"
+      ],
+      "correctAnswer": "equals()"
+    },
+    {
+      "id": 603,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 3",
+      "type": "mcq",
+      "title": "StringBuilder Append",
+      "category": "StringBuilder",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Predict output of append()",
+      "concept": "StringBuilder mutates original object by appending string",
+      "statement": "What is the output of the following code snippet?",
+      "codeSnippet": "StringBuilder sb = new StringBuilder(\"Java\");\nsb.append(\"Code\");\nSystem.out.println(sb);",
+      "options": [
+        "Java",
+        "Code",
+        "JavaCode",
+        "Java Code"
+      ],
+      "correctAnswer": "JavaCode"
+    },
+    {
+      "id": 604,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 4",
+      "type": "mcq",
+      "title": "StringBuilder Reverse",
+      "category": "StringBuilder",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Purpose of reverse() method",
+      "concept": "reverse() reverses sequence of characters in-place",
+      "statement": "What does reverse() do in StringBuilder?",
+      "codeSnippet": "StringBuilder sb = new StringBuilder(\"hello\");\nsb.reverse();",
+      "options": [
+        "Deletes the String",
+        "Sorts the String",
+        "Reverses the characters",
+        "Converts to uppercase"
+      ],
+      "correctAnswer": "Reverses the characters"
+    },
+    {
+      "id": 605,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 5",
+      "type": "mcq",
+      "title": "String charAt Indexing",
+      "category": "String",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Find character at 0-based index 3",
+      "concept": "charAt(3) returns 4th character ('g' in Programming)",
+      "statement": "What is the output of the following code snippet?",
+      "codeSnippet": "String s = \"Programming\";\nSystem.out.println(s.charAt(3));",
+      "options": [
+        "g",
+        "r",
+        "o",
+        "a"
+      ],
+      "correctAnswer": "g"
+    },
+    {
+      "id": 606,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 6",
+      "type": "mcq",
+      "title": "ArrayList Insert at Index",
+      "category": "ArrayList",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Method to add element at specific index",
+      "concept": "add(index, value) inserts element at index, shifting subsequent elements",
+      "statement": "Which method is used to add an element at a specific index in ArrayList?",
+      "options": [
+        "insert()",
+        "add(index, value)",
+        "set(index, value)",
+        "put(index, value)"
+      ],
+      "correctAnswer": "add(index, value)"
+    },
+    {
+      "id": 607,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 7",
+      "type": "mcq",
+      "title": "ArrayList set() Replacement",
+      "category": "ArrayList",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Predict list after set(1, 50)",
+      "concept": "set(index, element) replaces element at specified position",
+      "statement": "What is the output of the following code?",
+      "codeSnippet": "ArrayList<Integer> a = new ArrayList<>();\na.add(10);\na.add(20);\na.add(30);\na.set(1, 50);\nSystem.out.println(a);",
+      "options": [
+        "[10, 20, 30]",
+        "[10, 50, 30]",
+        "[50, 20, 30]",
+        "[10, 20, 50]"
+      ],
+      "correctAnswer": "[10, 50, 30]"
+    },
+    {
+      "id": 608,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 8",
+      "type": "mcq",
+      "title": "ArrayList remove by Object",
+      "category": "ArrayList",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Differentiate remove(int index) vs remove(Object o)",
+      "concept": "Integer.valueOf(10) creates an Object, triggering remove(Object)",
+      "statement": "What does this code do?",
+      "codeSnippet": "a.remove(Integer.valueOf(10));",
+      "options": [
+        "Removes index 10",
+        "Removes the value 10",
+        "Removes the first element",
+        "Clears the list"
+      ],
+      "correctAnswer": "Removes the value 10"
+    },
+    {
+      "id": 609,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 9",
+      "type": "mcq",
+      "title": "LinkedList addFirst",
+      "category": "LinkedList",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Add element at beginning of LinkedList",
+      "concept": "addFirst() inserts element at head of LinkedList",
+      "statement": "Which method adds an element at the beginning of a LinkedList?",
+      "options": [
+        "addStart()",
+        "insertFirst()",
+        "addFirst()",
+        "firstAdd()"
+      ],
+      "correctAnswer": "addFirst()"
+    },
+    {
+      "id": 610,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 10",
+      "type": "mcq",
+      "title": "LinkedList getLast",
+      "category": "LinkedList",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Fetch last element of LinkedList",
+      "concept": "getLast() retrieves tail element without removing it",
+      "statement": "What is the output of the following code?",
+      "codeSnippet": "LinkedList<Integer> list = new LinkedList<>();\nlist.add(10);\nlist.add(20);\nlist.add(30);\nSystem.out.println(list.getLast());",
+      "options": [
+        "10",
+        "20",
+        "30",
+        "Error"
+      ],
+      "correctAnswer": "30"
+    },
+    {
+      "id": 611,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 11",
+      "type": "mcq",
+      "title": "HashSet Properties",
+      "category": "HashSet",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Duplicates in HashSet",
+      "concept": "HashSet rejects duplicate elements based on hashCode and equals",
+      "statement": "Which statement is correct regarding HashSet?",
+      "options": [
+        "HashSet allows duplicate elements",
+        "HashSet stores elements using indexes",
+        "HashSet does not allow duplicate elements",
+        "HashSet automatically sorts elements"
+      ],
+      "correctAnswer": "HashSet does not allow duplicate elements"
+    },
+    {
+      "id": 612,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 12",
+      "type": "mcq",
+      "title": "HashSet add() Return Value",
+      "category": "HashSet",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Return values on adding duplicate",
+      "concept": "add() returns true if added, false if already present",
+      "statement": "What happens here?",
+      "codeSnippet": "HashSet<Integer> set = new HashSet<>();\nSystem.out.println(set.add(10));\nSystem.out.println(set.add(10));",
+      "options": [
+        "true\ntrue",
+        "false\nfalse",
+        "true\nfalse",
+        "false\ntrue"
+      ],
+      "correctAnswer": "true\nfalse"
+    },
+    {
+      "id": 613,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 13",
+      "type": "mcq",
+      "title": "TreeSet Characteristics",
+      "category": "TreeSet",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Special feature of TreeSet",
+      "concept": "TreeSet maintains natural sorting order of elements",
+      "statement": "What is special about TreeSet?",
+      "options": [
+        "Allows duplicates",
+        "Maintains insertion order only",
+        "Automatically maintains sorted order",
+        "Supports index-based access"
+      ],
+      "correctAnswer": "Automatically maintains sorted order"
+    },
+    {
+      "id": 614,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 14",
+      "type": "mcq",
+      "title": "TreeSet higher() Method",
+      "category": "TreeSet",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Find least element strictly greater than given key",
+      "concept": "higher(20) returns strictly greater element (30)",
+      "statement": "What does this return?",
+      "codeSnippet": "TreeSet<Integer> set = new TreeSet<>();\nset.add(10);\nset.add(20);\nset.add(30);\nSystem.out.println(set.higher(20));",
+      "options": [
+        "10",
+        "20",
+        "30",
+        "-1"
+      ],
+      "correctAnswer": "30"
+    },
+    {
+      "id": 615,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 15",
+      "type": "mcq",
+      "title": "TreeSet lower() Method",
+      "category": "TreeSet",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Find greatest element strictly less than given key",
+      "concept": "lower(20) returns strictly less element (10)",
+      "statement": "What does lower(20) return for [10, 20, 30]?",
+      "options": [
+        "10",
+        "20",
+        "30",
+        "Nothing"
+      ],
+      "correctAnswer": "10"
+    },
+    {
+      "id": 616,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 16",
+      "type": "mcq",
+      "title": "TreeSet floor() Method",
+      "category": "TreeSet",
+      "difficulty": "Medium",
+      "marks": 1,
+      "tagline": "Definition of floor() in NavigableSet",
+      "concept": "floor(x) returns greatest element <= x",
+      "statement": "What does floor(20) return?",
+      "options": [
+        "Greatest element strictly less than 20",
+        "Smallest element greater than 20",
+        "Greatest element less than or equal to 20",
+        "Smallest element less than 20"
+      ],
+      "correctAnswer": "Greatest element less than or equal to 20"
+    },
+    {
+      "id": 617,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 17",
+      "type": "mcq",
+      "title": "Abstract Class Declaration",
+      "category": "OOP",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Keyword for abstract class",
+      "concept": "abstract keyword is used to declare abstract classes",
+      "statement": "Which keyword is used to declare an abstract class?",
+      "options": [
+        "interface",
+        "abstract",
+        "extends",
+        "implements"
+      ],
+      "correctAnswer": "abstract"
+    },
+    {
+      "id": 618,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 18",
+      "type": "mcq",
+      "title": "Abstract Method Definition",
+      "category": "OOP",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Characteristics of abstract methods",
+      "concept": "Abstract methods have declaration only, without body",
+      "statement": "Which statement is correct about an abstract method?",
+      "options": [
+        "Abstract method must always have a body",
+        "Abstract method cannot be overridden",
+        "Abstract method normally has no body",
+        "Abstract method must be private"
+      ],
+      "correctAnswer": "Abstract method normally has no body"
+    },
+    {
+      "id": 619,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 19",
+      "type": "mcq",
+      "title": "Class Inheritance Keyword",
+      "category": "OOP",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Inheriting another class",
+      "concept": "extends keyword establishes inheritance between classes",
+      "statement": "Which keyword is used when a class inherits another class?",
+      "options": [
+        "implements",
+        "inherits",
+        "extends",
+        "super"
+      ],
+      "correctAnswer": "extends"
+    },
+    {
+      "id": 620,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 20",
+      "type": "mcq",
+      "title": "Interface Implementation Keyword",
+      "category": "OOP",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Implementing an interface",
+      "concept": "implements keyword binds class to interface contract",
+      "statement": "Which keyword is used when a class implements an interface?",
+      "options": [
+        "extends",
+        "implements",
+        "interface",
+        "inherit"
+      ],
+      "correctAnswer": "implements"
+    },
+    {
+      "id": 621,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 21",
+      "type": "mcq",
+      "title": "Interface Polymorphism",
+      "category": "OOP",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Method dispatch via interface reference",
+      "concept": "Dynamic method dispatch executes overridden method in Demo",
+      "statement": "What is the output of the following code?",
+      "codeSnippet": "interface Test {\n    void show();\n}\nclass Demo implements Test {\n    public void show() {\n        System.out.println(\"Hello\");\n    }\n}\nTest t = new Demo();\nt.show();",
+      "options": [
+        "Error",
+        "Demo",
+        "Hello",
+        "Test"
+      ],
+      "correctAnswer": "Hello"
+    },
+    {
+      "id": 622,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 22",
+      "type": "mcq",
+      "title": "Method Overriding Output",
+      "category": "OOP",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Runtime polymorphism with subclasses",
+      "concept": "Runtime object is of class B, so B's show() is invoked",
+      "statement": "What is the output?",
+      "codeSnippet": "class A {\n    void show() {\n        System.out.println(\"A\");\n    }\n}\nclass B extends A {\n    void show() {\n        System.out.println(\"B\");\n    }\n}\nA obj = new B();\nobj.show();",
+      "options": [
+        "A",
+        "B",
+        "AB",
+        "Compilation error"
+      ],
+      "correctAnswer": "B"
+    },
+    {
+      "id": 623,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 23",
+      "type": "mcq",
+      "title": "super Keyword Purpose",
+      "category": "OOP",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Main usage of super",
+      "concept": "super references immediate parent class constructors/methods/fields",
+      "statement": "What is super mainly used for?",
+      "options": [
+        "Creating a new object",
+        "Accessing parent class members",
+        "Creating an interface",
+        "Handling exceptions"
+      ],
+      "correctAnswer": "Accessing parent class members"
+    },
+    {
+      "id": 624,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 24",
+      "type": "mcq",
+      "title": "Division by Zero Exception",
+      "category": "Exceptions",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Identify exception in integer division by zero",
+      "concept": "Integer division by zero throws ArithmeticException",
+      "statement": "What exception occurs here?",
+      "codeSnippet": "int x = 10 / 0;",
+      "options": [
+        "NullPointerException",
+        "ArithmeticException",
+        "InputMismatchException",
+        "NumberFormatException"
+      ],
+      "correctAnswer": "ArithmeticException"
+    },
+    {
+      "id": 625,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 25",
+      "type": "mcq",
+      "title": "Integer.parseInt Invalid Input",
+      "category": "Exceptions",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Parsing non-numeric string",
+      "concept": "Non-numeric string parsing throws NumberFormatException",
+      "statement": "What exception can occur here?",
+      "codeSnippet": "int x = Integer.parseInt(\"abc\");",
+      "options": [
+        "ArithmeticException",
+        "ArrayIndexOutOfBoundsException",
+        "NumberFormatException",
+        "IOException"
+      ],
+      "correctAnswer": "NumberFormatException"
+    },
+    {
+      "id": 626,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 26",
+      "type": "mcq",
+      "title": "Throwing Exceptions Explicitly",
+      "category": "Exceptions",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Keyword to throw an exception object",
+      "concept": "throw keyword throws an exception instance explicitly",
+      "statement": "Which keyword is used to explicitly generate an exception?",
+      "options": [
+        "throws",
+        "throw",
+        "exception",
+        "catch"
+      ],
+      "correctAnswer": "throw"
+    },
+    {
+      "id": 627,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 27",
+      "type": "mcq",
+      "title": "Exception Handling Block Order",
+      "category": "Exceptions",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Correct block sequencing",
+      "concept": "A try block must precede its corresponding catch block",
+      "statement": "What is the correct order of blocks?",
+      "options": [
+        "try → catch",
+        "catch → try",
+        "throw → try → catch",
+        "catch → throw → try"
+      ],
+      "correctAnswer": "try → catch"
+    },
+    {
+      "id": 628,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 28",
+      "type": "mcq",
+      "title": "Custom Exception Syntax",
+      "category": "Exceptions",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Valid custom exception declaration",
+      "concept": "User-defined exceptions extend Exception or RuntimeException",
+      "statement": "Which is a valid custom exception declaration?",
+      "options": [
+        "class MyException extends Exception",
+        "exception MyException",
+        "class MyException implements Exception",
+        "custom MyException extends Error"
+      ],
+      "correctAnswer": "class MyException extends Exception"
+    },
+    {
+      "id": 629,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 29",
+      "type": "mcq",
+      "title": "Iterator hasNext() Method",
+      "category": "Collections",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Purpose of hasNext()",
+      "concept": "hasNext() checks if there are remaining elements in iteration",
+      "statement": "What does hasNext() check?",
+      "options": [
+        "Whether the current element is valid",
+        "Whether another element exists",
+        "Whether the collection is empty only",
+        "Whether the iterator should be deleted"
+      ],
+      "correctAnswer": "Whether another element exists"
+    },
+    {
+      "id": 630,
+      "paperId": "sample-paper-3",
+      "number": "MCQ 30",
+      "type": "mcq",
+      "title": "HashMap Structure",
+      "category": "Collections",
+      "difficulty": "Easy",
+      "marks": 1,
+      "tagline": "Key-value pair mapping",
+      "concept": "HashMap stores mappings of keys to values",
+      "statement": "What is true about a HashMap?",
+      "options": [
+        "It stores only values",
+        "It stores key-value pairs",
+        "It automatically sorts keys",
+        "It does not allow keys"
+      ],
+      "correctAnswer": "It stores key-value pairs"
+    },
+    {
+      "id": 631,
+      "paperId": "sample-paper-3",
+      "number": "Q1",
+      "type": "coding",
+      "title": "Reverse Each Word, Keep Word Order",
+      "category": "String",
+      "difficulty": "Easy",
+      "marks": 5,
+      "tagline": "Tera kaam: Sirf process(String s) ke andar code likhna.",
+      "concept": "String splitting and word-by-word reversing",
+      "statement": "Given a sentence, reverse every individual word but keep the order of words same.",
+      "sampleInput": "java is easy",
+      "sampleOutput": "avaj si ysae",
+      "constraints": "1 <= s.length() <= 10^5",
+      "methodSignature": "static void process(String s)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    static void process(String s) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextLine()) return;\n        String s = sc.nextLine();\n        process(s);\n    }\n}",
+      "referenceSolution": "        String[] words = s.split(\" \");\n        StringBuilder result = new StringBuilder();\n        for (int i = 0; i < words.length; i++) {\n            StringBuilder sb = new StringBuilder(words[i]);\n            result.append(sb.reverse().toString());\n            if (i < words.length - 1) result.append(\" \");\n        }\n        System.out.println(result.toString());",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "java is easy",
+          "expectedOutput": "avaj si ysae",
+          "isHidden": false,
+          "explanation": "Sample input sentence"
+        },
+        {
+          "id": 2,
+          "input": "hello world",
+          "expectedOutput": "olleh dlrow",
+          "isHidden": false,
+          "explanation": "Two simple words"
+        },
+        {
+          "id": 3,
+          "input": "code",
+          "expectedOutput": "edoc",
+          "isHidden": false,
+          "explanation": "Single word"
+        }
+      ]
+    },
+    {
+      "id": 632,
+      "paperId": "sample-paper-3",
+      "number": "Q2",
+      "type": "coding",
+      "title": "Remove Elements Having Even Index",
+      "category": "ArrayList",
+      "difficulty": "Easy",
+      "marks": 5,
+      "tagline": "Tera kaam: Sirf process(ArrayList<Integer> list) ke andar code likhna.",
+      "concept": "Filtering elements originally present at even indexes",
+      "statement": "Given an ArrayList<Integer>, remove all elements that were originally present at even indexes.\n\nExample:\n10 20 30 40 50 60\nIndexes: 0 1 2 3 4 5\nRemove 10, 30, 50.\nOutput: [20, 40, 60]",
+      "sampleInput": "6\n10 20 30 40 50 60",
+      "sampleOutput": "[20, 40, 60]",
+      "constraints": "1 <= list.size() <= 10^5",
+      "methodSignature": "static void process(ArrayList<Integer> list)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    static void process(ArrayList<Integer> list) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        ArrayList<Integer> list = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            list.add(sc.nextInt());\n        }\n        process(list);\n    }\n}",
+      "referenceSolution": "        ArrayList<Integer> res = new ArrayList<>();\n        for (int i = 1; i < list.size(); i += 2) {\n            res.add(list.get(i));\n        }\n        System.out.println(res);",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "6\n10 20 30 40 50 60",
+          "expectedOutput": "[20, 40, 60]",
+          "isHidden": false,
+          "explanation": "Elements at odd indexes are retained"
+        },
+        {
+          "id": 2,
+          "input": "4\n1 2 3 4",
+          "expectedOutput": "[2, 4]",
+          "isHidden": false,
+          "explanation": "Simple 4 element list"
+        },
+        {
+          "id": 3,
+          "input": "5\n5 10 15 20 25",
+          "expectedOutput": "[10, 20]",
+          "isHidden": false,
+          "explanation": "Odd size list"
+        }
+      ]
+    },
+    {
+      "id": 633,
+      "paperId": "sample-paper-3",
+      "number": "Q3",
+      "type": "coding",
+      "title": "Count Duplicate Values",
+      "category": "HashSet",
+      "difficulty": "Easy",
+      "marks": 5,
+      "tagline": "Tera kaam: Sirf process(int[] a) ke andar code likhna.",
+      "concept": "Counting distinct values that occur more than once",
+      "statement": "Given numbers, print how many different values occur more than once.",
+      "sampleInput": "8\n2 5 2 7 5 5 9 2",
+      "sampleOutput": "2",
+      "constraints": "1 <= n <= 10^5",
+      "methodSignature": "static void process(int[] a)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    static void process(int[] a) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int[] a = new int[n];\n        for (int i = 0; i < n; i++) {\n            a[i] = sc.nextInt();\n        }\n        process(a);\n    }\n}",
+      "referenceSolution": "        HashSet<Integer> seen = new HashSet<>();\n        HashSet<Integer> dupes = new HashSet<>();\n        for (int num : a) {\n            if (!seen.add(num)) {\n                dupes.add(num);\n            }\n        }\n        System.out.println(dupes.size());",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "8\n2 5 2 7 5 5 9 2",
+          "expectedOutput": "2",
+          "isHidden": false,
+          "explanation": "Only 2 and 5 occur more than once"
+        },
+        {
+          "id": 2,
+          "input": "5\n1 2 3 4 5",
+          "expectedOutput": "0",
+          "isHidden": false,
+          "explanation": "All unique elements"
+        },
+        {
+          "id": 3,
+          "input": "6\n10 10 20 20 30 30",
+          "expectedOutput": "3",
+          "isHidden": false,
+          "explanation": "All 3 values are duplicated"
+        }
+      ]
+    },
+    {
+      "id": 634,
+      "paperId": "sample-paper-3",
+      "number": "Q4",
+      "type": "coding",
+      "title": "Remove All Vowels",
+      "category": "StringBuilder",
+      "difficulty": "Easy",
+      "marks": 5,
+      "tagline": "Tera kaam: Sirf process(String s) ke andar code likhna.",
+      "concept": "Filtering vowels from string using StringBuilder",
+      "statement": "Remove all vowels (a, e, i, o, u, A, E, I, O, U) from a string using StringBuilder.",
+      "sampleInput": "Programming",
+      "sampleOutput": "Prgrmmng",
+      "constraints": "1 <= s.length() <= 10^5",
+      "methodSignature": "static void process(String s)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    static void process(String s) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextLine()) return;\n        String s = sc.nextLine();\n        process(s);\n    }\n}",
+      "referenceSolution": "        StringBuilder sb = new StringBuilder();\n        String vowels = \"aeiouAEIOU\";\n        for (int i = 0; i < s.length(); i++) {\n            char ch = s.charAt(i);\n            if (vowels.indexOf(ch) == -1) {\n                sb.append(ch);\n            }\n        }\n        System.out.println(sb.toString());",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "Programming",
+          "expectedOutput": "Prgrmmng",
+          "isHidden": false,
+          "explanation": "o, a, i removed"
+        },
+        {
+          "id": 2,
+          "input": "hello world",
+          "expectedOutput": "hll wrld",
+          "isHidden": false,
+          "explanation": "e, o removed"
+        },
+        {
+          "id": 3,
+          "input": "Java",
+          "expectedOutput": "Jv",
+          "isHidden": false,
+          "explanation": "both a removed"
+        }
+      ]
+    },
+    {
+      "id": 635,
+      "paperId": "sample-paper-3",
+      "number": "Q5",
+      "type": "coding",
+      "title": "Print Second Smallest Distinct Number",
+      "category": "TreeSet",
+      "difficulty": "Easy",
+      "marks": 5,
+      "tagline": "Tera kaam: Sirf process(int[] a) ke andar code likhna.",
+      "concept": "Sorted unique set traversal with TreeSet",
+      "statement": "Given an array of numbers (which can contain duplicates), print the second smallest distinct number.",
+      "sampleInput": "7\n8 3 5 3 9 8 2",
+      "sampleOutput": "3",
+      "constraints": "2 <= n <= 10^5",
+      "methodSignature": "static void process(int[] a)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    static void process(int[] a) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int[] a = new int[n];\n        for (int i = 0; i < n; i++) {\n            a[i] = sc.nextInt();\n        }\n        process(a);\n    }\n}",
+      "referenceSolution": "        TreeSet<Integer> set = new TreeSet<>();\n        for (int num : a) {\n            set.add(num);\n        }\n        if (set.size() < 2) {\n            System.out.println(\"None\");\n            return;\n        }\n        Iterator<Integer> it = set.iterator();\n        it.next();\n        System.out.println(it.next());",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "7\n8 3 5 3 9 8 2",
+          "expectedOutput": "3",
+          "isHidden": false,
+          "explanation": "Distinct sorted: 2, 3, 5, 8, 9 -> second smallest is 3"
+        },
+        {
+          "id": 2,
+          "input": "5\n10 20 30 40 50",
+          "expectedOutput": "20",
+          "isHidden": false,
+          "explanation": "Second smallest is 20"
+        },
+        {
+          "id": 3,
+          "input": "4\n5 5 2 2",
+          "expectedOutput": "5",
+          "isHidden": false,
+          "explanation": "Duplicates ignored: 2, 5 -> second smallest is 5"
+        }
+      ]
+    },
+    {
+      "id": 636,
+      "paperId": "sample-paper-3",
+      "number": "Q6",
+      "type": "coding",
+      "title": "Payment System Interface",
+      "category": "Interface",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: UPIPayment, CardPayment classes aur process method implement karna.",
+      "concept": "Interface implementation and dynamic method invocation",
+      "statement": "Create an interface Payment:\ninterface Payment {\n    void pay(double amount);\n}\n\nCreate two classes:\n- UPIPayment implementing Payment -> prints \"UPI Payment: amount\"\n- CardPayment implementing Payment -> prints \"Card Payment: amount\"\n\nInput format:\n<type> <amount> (e.g. UPI 500)",
+      "sampleInput": "UPI 500",
+      "sampleOutput": "UPI Payment: 500.0",
+      "constraints": "amount >= 0",
+      "methodSignature": "class UPIPayment & class CardPayment & static void process(String type, double amount)",
+      "prefixCode": "import java.util.*;\n\ninterface Payment {\n    void pay(double amount);\n}",
+      "starterUserCode": "class UPIPayment implements Payment {\n    // YOUR CODE\n}\n\nclass CardPayment implements Payment {\n    // YOUR CODE\n}\n\npublic class Main {\n    static void process(String type, double amount) {\n        // YOUR CODE\n    }",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String type = sc.next();\n        double amount = sc.nextDouble();\n        process(type, amount);\n    }\n}",
+      "referenceSolution": "class UPIPayment implements Payment {\n    public void pay(double amount) {\n        System.out.println(\"UPI Payment: \" + amount);\n    }\n}\n\nclass CardPayment implements Payment {\n    public void pay(double amount) {\n        System.out.println(\"Card Payment: \" + amount);\n    }\n}\n\npublic class Main {\n    static void process(String type, double amount) {\n        Payment p;\n        if (type.equalsIgnoreCase(\"UPI\")) {\n            p = new UPIPayment();\n        } else {\n            p = new CardPayment();\n        }\n        p.pay(amount);\n    }",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "UPI 500",
+          "expectedOutput": "UPI Payment: 500.0",
+          "isHidden": false,
+          "explanation": "UPI payment format"
+        },
+        {
+          "id": 2,
+          "input": "Card 1500",
+          "expectedOutput": "Card Payment: 1500.0",
+          "isHidden": false,
+          "explanation": "Card payment format"
+        },
+        {
+          "id": 3,
+          "input": "UPI 250.5",
+          "expectedOutput": "UPI Payment: 250.5",
+          "isHidden": false,
+          "explanation": "Floating amount payment"
+        }
+      ]
+    },
+    {
+      "id": 637,
+      "paperId": "sample-paper-3",
+      "number": "Q7",
+      "type": "coding",
+      "title": "Employee Salary Calculation",
+      "category": "Abstract Class & Inheritance",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Manager, Developer subclasses aur process method implement karna.",
+      "concept": "Abstract classes, constructor chaining via super, and method overriding",
+      "statement": "Create abstract class Employee:\nabstract class Employee {\n    String name;\n    double salary;\n    Employee(String name, double salary) {\n        this.name = name;\n        this.salary = salary;\n    }\n    abstract double calculateSalary();\n}\n\nCreate subclasses:\n- Manager: salary + 5000 bonus\n- Developer: salary + 3000 bonus\n\nOutput format:\n<name> <totalSalary>",
+      "sampleInput": "Manager Raj 40000",
+      "sampleOutput": "Raj 45000.0",
+      "constraints": "salary >= 0",
+      "methodSignature": "class Manager & class Developer & static void process(String type, String name, double salary)",
+      "prefixCode": "import java.util.*;\n\nabstract class Employee {\n    String name;\n    double salary;\n    Employee(String name, double salary) {\n        this.name = name;\n        this.salary = salary;\n    }\n    abstract double calculateSalary();\n}",
+      "starterUserCode": "class Manager extends Employee {\n    // YOUR CODE\n}\n\nclass Developer extends Employee {\n    // YOUR CODE\n}\n\npublic class Main {\n    static void process(String type, String name, double salary) {\n        // YOUR CODE\n    }",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String type = sc.next();\n        String name = sc.next();\n        double salary = sc.nextDouble();\n        process(type, name, salary);\n    }\n}",
+      "referenceSolution": "class Manager extends Employee {\n    Manager(String name, double salary) {\n        super(name, salary);\n    }\n    double calculateSalary() {\n        return salary + 5000;\n    }\n}\n\nclass Developer extends Employee {\n    Developer(String name, double salary) {\n        super(name, salary);\n    }\n    double calculateSalary() {\n        return salary + 3000;\n    }\n}\n\npublic class Main {\n    static void process(String type, String name, double salary) {\n        Employee emp;\n        if (type.equalsIgnoreCase(\"Manager\")) {\n            emp = new Manager(name, salary);\n        } else {\n            emp = new Developer(name, salary);\n        }\n        System.out.println(emp.name + \" \" + emp.calculateSalary());\n    }",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "Manager Raj 40000",
+          "expectedOutput": "Raj 45000.0",
+          "isHidden": false,
+          "explanation": "Manager gets 5000 bonus"
+        },
+        {
+          "id": 2,
+          "input": "Developer Amit 50000",
+          "expectedOutput": "Amit 53000.0",
+          "isHidden": false,
+          "explanation": "Developer gets 3000 bonus"
+        },
+        {
+          "id": 3,
+          "input": "Manager Priya 60000",
+          "expectedOutput": "Priya 65000.0",
+          "isHidden": false,
+          "explanation": "Manager salary calculation"
+        }
+      ]
+    },
+    {
+      "id": 638,
+      "paperId": "sample-paper-3",
+      "number": "Q8",
+      "type": "coding",
+      "title": "Remove Names Starting With Vowel",
+      "category": "LinkedList & String",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Sirf process(LinkedList<String> list) ke andar code likhna.",
+      "concept": "Iterator-based safe element removal in LinkedList",
+      "statement": "Given a list of names, remove every name whose first character is a vowel (A, E, I, O, U, a, e, i, o, u).",
+      "sampleInput": "6\nAman Raj Simran Isha Karan Om",
+      "sampleOutput": "[Raj, Simran, Karan]",
+      "constraints": "1 <= list.size() <= 10^5",
+      "methodSignature": "static void process(LinkedList<String> list)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    static void process(LinkedList<String> list) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        LinkedList<String> list = new LinkedList<>();\n        for (int i = 0; i < n; i++) {\n            list.add(sc.next());\n        }\n        process(list);\n    }\n}",
+      "referenceSolution": "        Iterator<String> it = list.iterator();\n        String vowels = \"AEIOUaeiou\";\n        while (it.hasNext()) {\n            String name = it.next();\n            if (name.length() > 0 && vowels.indexOf(name.charAt(0)) != -1) {\n                it.remove();\n            }\n        }\n        System.out.println(list);",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "6\nAman Raj Simran Isha Karan Om",
+          "expectedOutput": "[Raj, Simran, Karan]",
+          "isHidden": false,
+          "explanation": "Aman, Isha, Om start with vowels"
+        },
+        {
+          "id": 2,
+          "input": "4\nApple Orange Banana Grapes",
+          "expectedOutput": "[Banana, Grapes]",
+          "isHidden": false,
+          "explanation": "Apple and Orange removed"
+        },
+        {
+          "id": 3,
+          "input": "3\nAnil Amit Ajay",
+          "expectedOutput": "[]",
+          "isHidden": false,
+          "explanation": "All names start with vowel"
+        }
+      ]
+    },
+    {
+      "id": 639,
+      "paperId": "sample-paper-3",
+      "number": "Q9",
+      "type": "coding",
+      "title": "Shape Area Hierarchy",
+      "category": "Interface & Polymorphism",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Circle, Rectangle classes aur process method implement karna.",
+      "concept": "Interface implementation for geometric calculations",
+      "statement": "Create interface Shape:\ninterface Shape {\n    double area();\n}\n\nCreate classes:\n- Circle: π * r * r (Use 3.14 for π)\n- Rectangle: length * breadth\n\nInput:\nCircle 5 -> 78.5\nRectangle 4 6 -> 24.0",
+      "sampleInput": "Circle 5",
+      "sampleOutput": "78.5",
+      "constraints": "dimensions > 0",
+      "methodSignature": "class Circle & class Rectangle & static void process(String type, double x, double y)",
+      "prefixCode": "import java.util.*;\n\ninterface Shape {\n    double area();\n}",
+      "starterUserCode": "class Circle implements Shape {\n    // YOUR CODE\n}\n\nclass Rectangle implements Shape {\n    // YOUR CODE\n}\n\npublic class Main {\n    static void process(String type, double x, double y) {\n        // YOUR CODE\n    }",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String type = sc.next();\n        double x = sc.nextDouble();\n        double y = 0;\n        if (type.equalsIgnoreCase(\"Rectangle\")) {\n            y = sc.nextDouble();\n        }\n        process(type, x, y);\n    }\n}",
+      "referenceSolution": "class Circle implements Shape {\n    double r;\n    Circle(double r) {\n        this.r = r;\n    }\n    public double area() {\n        return 3.14 * r * r;\n    }\n}\n\nclass Rectangle implements Shape {\n    double l, b;\n    Rectangle(double l, double b) {\n        this.l = l;\n        this.b = b;\n    }\n    public double area() {\n        return l * b;\n    }\n}\n\npublic class Main {\n    static void process(String type, double x, double y) {\n        Shape s;\n        if (type.equalsIgnoreCase(\"Circle\")) {\n            s = new Circle(x);\n        } else {\n            s = new Rectangle(x, y);\n        }\n        System.out.println(s.area());\n    }",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "Circle 5",
+          "expectedOutput": "78.5",
+          "isHidden": false,
+          "explanation": "3.14 * 5 * 5 = 78.5"
+        },
+        {
+          "id": 2,
+          "input": "Rectangle 4 6",
+          "expectedOutput": "24.0",
+          "isHidden": false,
+          "explanation": "4 * 6 = 24.0"
+        },
+        {
+          "id": 3,
+          "input": "Circle 10",
+          "expectedOutput": "314.0",
+          "isHidden": false,
+          "explanation": "3.14 * 10 * 10 = 314.0"
+        }
+      ]
+    },
+    {
+      "id": 640,
+      "paperId": "sample-paper-3",
+      "number": "Q10",
+      "type": "coding",
+      "title": "Common Unique Elements",
+      "category": "HashSet & ArrayList",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Sirf process(ArrayList<Integer> a, ArrayList<Integer> b) ke andar code likhna.",
+      "concept": "Intersection of two lists preserving uniqueness",
+      "statement": "Given two lists, print elements that occur in both, but print each only once in the order they appear in the second list.",
+      "sampleInput": "5\n1 2 3 4 5\n6\n3 3 5 7 5 8",
+      "sampleOutput": "[3, 5]",
+      "constraints": "1 <= a.size(), b.size() <= 10^5",
+      "methodSignature": "static void process(ArrayList<Integer> a, ArrayList<Integer> b)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    static void process(ArrayList<Integer> a, ArrayList<Integer> b) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        ArrayList<Integer> a = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            a.add(sc.nextInt());\n        }\n        int m = sc.nextInt();\n        ArrayList<Integer> b = new ArrayList<>();\n        for (int i = 0; i < m; i++) {\n            b.add(sc.nextInt());\n        }\n        process(a, b);\n    }\n}",
+      "referenceSolution": "        HashSet<Integer> setA = new HashSet<>(a);\n        ArrayList<Integer> common = new ArrayList<>();\n        HashSet<Integer> added = new HashSet<>();\n        for (int num : b) {\n            if (setA.contains(num) && added.add(num)) {\n                common.add(num);\n            }\n        }\n        System.out.println(common);",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "5\n1 2 3 4 5\n6\n3 3 5 7 5 8",
+          "expectedOutput": "[3, 5]",
+          "isHidden": false,
+          "explanation": "3 and 5 are common to both lists"
+        },
+        {
+          "id": 2,
+          "input": "3\n10 20 30\n3\n40 50 60",
+          "expectedOutput": "[]",
+          "isHidden": false,
+          "explanation": "No common elements"
+        },
+        {
+          "id": 3,
+          "input": "4\n7 8 9 10\n4\n10 9 8 7",
+          "expectedOutput": "[10, 9, 8, 7]",
+          "isHidden": false,
+          "explanation": "All elements common"
+        }
+      ]
+    },
+    {
+      "id": 641,
+      "paperId": "sample-paper-3",
+      "number": "Q11",
+      "type": "coding",
+      "title": "Bank Withdrawal Exception",
+      "category": "Custom Exception & Class",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: BankAccount method aur process method implement karna.",
+      "concept": "Custom checked exception definition, throwing, and handling",
+      "statement": "Create a BankAccount class having accountNumber and balance.\n\nWithdrawal rules:\n- amount <= 0: print \"Invalid Amount\"\n- amount > balance: throw custom InsufficientBalanceException(\"Insufficient Balance\") and catch it to print the message\n- otherwise: withdraw and print \"Remaining Balance: balance\"",
+      "sampleInput": "101 5000 2000",
+      "sampleOutput": "Remaining Balance: 3000.0",
+      "constraints": "accountNumber > 0, balance >= 0",
+      "methodSignature": "class BankAccount & static void process(int acc, double balance, double amount)",
+      "prefixCode": "import java.util.*;\n\nclass InsufficientBalanceException extends Exception {\n    InsufficientBalanceException(String msg) {\n        super(msg);\n    }\n}",
+      "starterUserCode": "class BankAccount {\n    int accountNumber;\n    double balance;\n    BankAccount(int accountNumber, double balance) {\n        this.accountNumber = accountNumber;\n        this.balance = balance;\n    }\n    // YOUR CODE\n}\n\npublic class Main {\n    static void process(int acc, double balance, double amount) {\n        // YOUR CODE\n    }",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int acc = sc.nextInt();\n        double balance = sc.nextDouble();\n        double amount = sc.nextDouble();\n        process(acc, balance, amount);\n    }\n}",
+      "referenceSolution": "class BankAccount {\n    int accountNumber;\n    double balance;\n    BankAccount(int accountNumber, double balance) {\n        this.accountNumber = accountNumber;\n        this.balance = balance;\n    }\n}\n\npublic class Main {\n    static void process(int acc, double balance, double amount) {\n        if (amount <= 0) {\n            System.out.println(\"Invalid Amount\");\n            return;\n        }\n        try {\n            if (amount > balance) {\n                throw new InsufficientBalanceException(\"Insufficient Balance\");\n            }\n            balance -= amount;\n            System.out.println(\"Remaining Balance: \" + balance);\n        } catch (InsufficientBalanceException e) {\n            System.out.println(e.getMessage());\n        }\n    }",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "101 5000 2000",
+          "expectedOutput": "Remaining Balance: 3000.0",
+          "isHidden": false,
+          "explanation": "Successful withdrawal"
+        },
+        {
+          "id": 2,
+          "input": "102 1000 2000",
+          "expectedOutput": "Insufficient Balance",
+          "isHidden": false,
+          "explanation": "Amount exceeds balance"
+        },
+        {
+          "id": 3,
+          "input": "103 500 -100",
+          "expectedOutput": "Invalid Amount",
+          "isHidden": false,
+          "explanation": "Negative withdrawal amount"
+        }
+      ]
+    },
+    {
+      "id": 642,
+      "paperId": "sample-paper-3",
+      "number": "Q12",
+      "type": "coding",
+      "title": "Smart Device Interface & Abstract Class",
+      "category": "Abstract Class & Interface",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Phone, Laptop classes aur process method implement karna.",
+      "concept": "Simultaneous class extension and interface implementation",
+      "statement": "Create interface Chargeable:\ninterface Chargeable {\n    void charge();\n}\n\nCreate abstract class Device:\nabstract class Device {\n    String name;\n    Device(String name) { this.name = name; }\n    abstract void show();\n}\n\nCreate classes Phone and Laptop:\nBoth extend Device and implement Chargeable.\nWhen charged/shown:\nPhone -> print \"Phone: Charging\"\nLaptop -> print \"Laptop: Charging\"",
+      "sampleInput": "Phone",
+      "sampleOutput": "Phone: Charging",
+      "constraints": "type in [Phone, Laptop]",
+      "methodSignature": "class Phone & class Laptop & static void process(String type)",
+      "prefixCode": "import java.util.*;\n\ninterface Chargeable {\n    void charge();\n}\n\nabstract class Device {\n    String name;\n    Device(String name) {\n        this.name = name;\n    }\n    abstract void show();\n}",
+      "starterUserCode": "class Phone extends Device implements Chargeable {\n    // YOUR CODE\n}\n\nclass Laptop extends Device implements Chargeable {\n    // YOUR CODE\n}\n\npublic class Main {\n    static void process(String type) {\n        // YOUR CODE\n    }",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String type = sc.next();\n        process(type);\n    }\n}",
+      "referenceSolution": "class Phone extends Device implements Chargeable {\n    Phone() {\n        super(\"Phone\");\n    }\n    void show() {\n        System.out.println(name + \": Charging\");\n    }\n    public void charge() {\n        show();\n    }\n}\n\nclass Laptop extends Device implements Chargeable {\n    Laptop() {\n        super(\"Laptop\");\n    }\n    void show() {\n        System.out.println(name + \": Charging\");\n    }\n    public void charge() {\n        show();\n    }\n}\n\npublic class Main {\n    static void process(String type) {\n        if (type.equalsIgnoreCase(\"Phone\")) {\n            new Phone().charge();\n        } else {\n            new Laptop().charge();\n        }\n    }",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "Phone",
+          "expectedOutput": "Phone: Charging",
+          "isHidden": false,
+          "explanation": "Phone charge action"
+        },
+        {
+          "id": 2,
+          "input": "Laptop",
+          "expectedOutput": "Laptop: Charging",
+          "isHidden": false,
+          "explanation": "Laptop charge action"
+        }
+      ]
+    },
+    {
+      "id": 643,
+      "paperId": "sample-paper-3",
+      "number": "Q13",
+      "type": "coding",
+      "title": "Nearest Greater Number",
+      "category": "TreeSet",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Sirf process(int[] a, int x) ke andar code likhna.",
+      "concept": "Using TreeSet.higher() to find least element strictly greater than x",
+      "statement": "Given an array of numbers and a target value x, print the smallest number in the array that is strictly greater than x. If none exists, print None.",
+      "sampleInput": "7\n10 4 7 15 20 7 12\n11",
+      "sampleOutput": "12",
+      "constraints": "1 <= a.length <= 10^5",
+      "methodSignature": "static void process(int[] a, int x)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    static void process(int[] a, int x) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        int[] a = new int[n];\n        for (int i = 0; i < n; i++) {\n            a[i] = sc.nextInt();\n        }\n        int x = sc.nextInt();\n        process(a, x);\n    }\n}",
+      "referenceSolution": "        TreeSet<Integer> set = new TreeSet<>();\n        for (int num : a) set.add(num);\n        Integer res = set.higher(x);\n        System.out.println(res != null ? res : \"None\");",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "7\n10 4 7 15 20 7 12\n11",
+          "expectedOutput": "12",
+          "isHidden": false,
+          "explanation": "Smallest number strictly greater than 11 is 12"
+        },
+        {
+          "id": 2,
+          "input": "5\n1 3 5 7 9\n4",
+          "expectedOutput": "5",
+          "isHidden": false,
+          "explanation": "Smallest number strictly greater than 4 is 5"
+        },
+        {
+          "id": 3,
+          "input": "4\n10 20 30 40\n50",
+          "expectedOutput": "None",
+          "isHidden": false,
+          "explanation": "No element greater than 50"
+        }
+      ]
+    },
+    {
+      "id": 644,
+      "paperId": "sample-paper-3",
+      "number": "Q14",
+      "type": "coding",
+      "title": "Student Name Processor",
+      "category": "ArrayList & Class",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Sirf process(ArrayList<Student> students) ke andar code likhna.",
+      "concept": "Object array iteration and string length comparison",
+      "statement": "Given a list of Student objects, print the name of the student having the longest name. If two names have the same length, print the one appearing first.",
+      "sampleInput": "4\nRaj 80\nAman 75\nSimran 90\nKaran 88",
+      "sampleOutput": "Simran",
+      "constraints": "1 <= students.size() <= 10^5",
+      "methodSignature": "static void process(ArrayList<Student> students)",
+      "prefixCode": "import java.util.*;\n\nclass Student {\n    String name;\n    int marks;\n    Student(String name, int marks) {\n        this.name = name;\n        this.marks = marks;\n    }\n}\n\npublic class Main {\n    static void process(ArrayList<Student> students) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        ArrayList<Student> students = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            String name = sc.next();\n            int marks = sc.nextInt();\n            students.add(new Student(name, marks));\n        }\n        process(students);\n    }\n}",
+      "referenceSolution": "        if (students.isEmpty()) return;\n        Student longest = students.get(0);\n        for (int i = 1; i < students.size(); i++) {\n            if (students.get(i).name.length() > longest.name.length()) {\n                longest = students.get(i);\n            }\n        }\n        System.out.println(longest.name);",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "4\nRaj 80\nAman 75\nSimran 90\nKaran 88",
+          "expectedOutput": "Simran",
+          "isHidden": false,
+          "explanation": "Simran has length 6, longer than Raj (3), Aman (4), Karan (5)"
+        },
+        {
+          "id": 2,
+          "input": "3\nAbc 10\nDef 20\nGhi 30",
+          "expectedOutput": "Abc",
+          "isHidden": false,
+          "explanation": "Tie breaker: Abc appears first"
+        },
+        {
+          "id": 3,
+          "input": "2\nAlexander 100\nBob 90",
+          "expectedOutput": "Alexander",
+          "isHidden": false,
+          "explanation": "Alexander is the longest name"
+        }
+      ]
+    },
+    {
+      "id": 645,
+      "paperId": "sample-paper-3",
+      "number": "Q15",
+      "type": "coding",
+      "title": "Product Inventory Management",
+      "category": "Mixed OOP & Collections",
+      "difficulty": "Hard",
+      "marks": 10,
+      "tagline": "Tera kaam: Sirf process(ArrayList<Product> products) ke andar code likhna.",
+      "concept": "Comprehensive Mixed: Custom Exception, Calculations, TreeSet sorting, Highest Value search",
+      "statement": "Given a list of products (name, quantity, price):\n1. Calculate total inventory value (sum of quantity * price).\n2. Find the product having the highest total value (quantity * price).\n3. Store product names in a TreeSet and print them sorted.\n4. If any product's quantity is negative, throw and handle InvalidQuantityException to print \"Invalid Quantity\".\n\nOutput format:\nTotal Value: <total>\nHighest Value Product: <name>\nSorted Products: [Name1, Name2, ...]",
+      "sampleInput": "4\nPen 10 20\nBook 5 100\nBag 2 500\nPencil 20 10",
+      "sampleOutput": "Total Value: 1900.0\nHighest Value Product: Bag\nSorted Products: [Bag, Book, Pen, Pencil]",
+      "constraints": "1 <= products.size() <= 10^5",
+      "methodSignature": "static void process(ArrayList<Product> products)",
+      "prefixCode": "import java.util.*;\n\nclass InvalidQuantityException extends Exception {\n    InvalidQuantityException(String msg) {\n        super(msg);\n    }\n}\n\nclass Product {\n    String name;\n    int quantity;\n    double price;\n    Product(String name, int quantity, double price) {\n        this.name = name;\n        this.quantity = quantity;\n        this.price = price;\n    }\n}\n\npublic class Main {\n    static void process(ArrayList<Product> products) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        ArrayList<Product> products = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            String name = sc.next();\n            int quantity = sc.nextInt();\n            double price = sc.nextDouble();\n            products.add(new Product(name, quantity, price));\n        }\n        process(products);\n    }\n}",
+      "referenceSolution": "        try {\n            double total = 0;\n            double maxVal = -1;\n            String bestProduct = \"\";\n            TreeSet<String> sortedNames = new TreeSet<>();\n            for (Product p : products) {\n                if (p.quantity < 0) {\n                    throw new InvalidQuantityException(\"Invalid Quantity\");\n                }\n                double val = p.quantity * p.price;\n                total += val;\n                if (val > maxVal) {\n                    maxVal = val;\n                    bestProduct = p.name;\n                }\n                sortedNames.add(p.name);\n            }\n            System.out.println(\"Total Value: \" + total);\n            System.out.println(\"Highest Value Product: \" + bestProduct);\n            System.out.println(\"Sorted Products: \" + sortedNames);\n        } catch (InvalidQuantityException e) {\n            System.out.println(e.getMessage());\n        }",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "4\nPen 10 20\nBook 5 100\nBag 2 500\nPencil 20 10",
+          "expectedOutput": "Total Value: 1900.0\nHighest Value Product: Bag\nSorted Products: [Bag, Book, Pen, Pencil]",
+          "isHidden": false,
+          "explanation": "10*20 + 5*100 + 2*500 + 20*10 = 1900.0, Bag has max (1000.0)"
+        },
+        {
+          "id": 2,
+          "input": "2\nLaptop 2 50000\nMouse 5 1000",
+          "expectedOutput": "Total Value: 105000.0\nHighest Value Product: Laptop\nSorted Products: [Laptop, Mouse]",
+          "isHidden": false,
+          "explanation": "2*50000 + 5*1000 = 105000.0"
+        },
+        {
+          "id": 3,
+          "input": "2\nItem1 -5 100\nItem2 10 50",
+          "expectedOutput": "Invalid Quantity",
+          "isHidden": false,
+          "explanation": "Negative quantity triggers exception"
+        }
+      ]
+    }
+  ]
+},
+
   {
     id: "sample-paper-1",
     day: "Day 3",
@@ -3574,7 +4858,7 @@ Invalid Marks: xyz`,
 
 // Active Paper Helper
 export const getActivePaperId = () => {
-  return localStorage.getItem('active_paper_id') || 'sample-paper-1';
+  return localStorage.getItem('active_paper_id') || 'sample-paper-3';
 };
 
 export const setActivePaperId = (paperId) => {
@@ -3582,7 +4866,7 @@ export const setActivePaperId = (paperId) => {
 };
 
 // Practice Papers helpers
-const PAPERS_DATA_VERSION = 'v5_simple_fast_tc';
+const PAPERS_DATA_VERSION = 'v6_paper3_added';
 
 export const getPracticePapers = () => {
   const currentVer = localStorage.getItem('practice_papers_version');
