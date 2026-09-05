@@ -220,38 +220,17 @@ public class Main {
           },
           {
             id: 2,
-            input: "5\n-10 -5 -20 -1 -50",
-            expectedOutput: "-1",
+            input: "5\n15 42 88 19 63",
+            expectedOutput: "88",
             isHidden: false,
-            explanation: "All negative marks scenario"
+            explanation: "Normal positive scores array"
           },
           {
             id: 3,
-            input: "1\n500",
-            expectedOutput: "500",
+            input: "4\n10 20 30 40",
+            expectedOutput: "40",
             isHidden: false,
-            explanation: "Single student"
-          },
-          {
-            id: 4,
-            input: "6\n0 0 0 0 0 0",
-            expectedOutput: "0",
-            isHidden: false,
-            explanation: "All zero marks"
-          },
-          {
-            id: 5,
-            input: "8\n-100 200 -50 400 150 -300 400 99",
-            expectedOutput: "400",
-            isHidden: false,
-            explanation: "Duplicate max values"
-          },
-          {
-            id: 6,
-            input: "4\n1000 -1000 999 -999",
-            expectedOutput: "1000",
-            isHidden: false,
-            explanation: "Constraint boundary values"
+            explanation: "Ascending scores array"
           }
         ]
       },
@@ -281,8 +260,8 @@ Rule 2 (Zero Inputs): If both n and p are zero, throw a MyException with the err
 Calculation: If both inputs are valid, calculate the value of n^p (n raised to the power p)
 
 The entire logic (validation, throwing, and catching) must be handled inside the power method using a try-catch block.`,
-        sampleInput: `5\n2 3\n-3 2\n0 0\n5 0\n0 5`,
-        sampleOutput: `8\n-1\n-2\n1\n0`,
+        sampleInput: `3\n2 3\n-3 2\n0 0`,
+        sampleOutput: `8\n-1\n-2`,
         constraints: `-100 <= n, p <= 100`,
         methodSignature: "static void power(int n, int p)",
         prefixCode: `import java.util.*;
@@ -327,45 +306,24 @@ public class Main {
         testcases: [
           {
             id: 1,
-            input: "5\n2 3\n-3 2\n0 0\n5 0\n0 5",
-            expectedOutput: "8\n-1\n-2\n1\n0",
+            input: "3\n2 3\n-3 2\n0 0",
+            expectedOutput: "8\n-1\n-2",
             isHidden: false,
-            explanation: "Sample input tests negative, zero zero, and normal exponentiation"
+            explanation: "Sample input tests normal power, negative base (-1), and 0^0 (-2)"
           },
           {
             id: 2,
-            input: "3\n3 4\n-1 -1\n2 10",
-            expectedOutput: "81\n-1\n1024",
+            input: "2\n5 2\n2 4",
+            expectedOutput: "25\n16",
             isHidden: false,
-            explanation: "Powers 3^4, negative exponents, 2^10"
+            explanation: "Normal power calculations 5^2 and 2^4"
           },
           {
             id: 3,
-            input: "2\n0 0\n-5 0",
-            expectedOutput: "-2\n-1",
+            input: "2\n4 -1\n0 0",
+            expectedOutput: "-1\n-2",
             isHidden: false,
-            explanation: "Zero zero rule and negative base rule"
-          },
-          {
-            id: 4,
-            input: "4\n10 2\n2 0\n0 2\n-2 -2",
-            expectedOutput: "100\n1\n0\n-1",
-            isHidden: false,
-            explanation: "Base 10, zero exponent, zero base, both negative"
-          },
-          {
-            id: 5,
-            input: "3\n1 10\n0 0\n-10 5",
-            expectedOutput: "1\n-2\n-1",
-            isHidden: false,
-            explanation: "1 raised to power, 0^0, negative base"
-          },
-          {
-            id: 6,
-            input: "2\n5 3\n3 5",
-            expectedOutput: "125\n243",
-            isHidden: false,
-            explanation: "5^3 and 3^5"
+            explanation: "Validation error codes for negative exponent and 0^0"
           }
         ]
       },
@@ -430,20 +388,14 @@ public class Main {
         }
     }
 }`,
-        referenceSolution: `        Set<Integer> seen = new HashSet<>();
-        Set<Integer> duplicates = new HashSet<>();
+        referenceSolution: `        LinkedHashSet<Integer> seen = new LinkedHashSet<>();
+        LinkedHashSet<Integer> duplicates = new LinkedHashSet<>();
         for (Integer num : history) {
             if (!seen.add(num)) {
                 duplicates.add(num);
             }
         }
-        LinkedList<Integer> result = new LinkedList<>();
-        for (Integer val : history) {
-            if (duplicates.contains(val) && !result.contains(val)) {
-                result.add(val);
-            }
-        }
-        return result;`,
+        return new LinkedList<>(duplicates);`,
         testcases: [
           {
             id: 1,
@@ -454,38 +406,24 @@ public class Main {
           },
           {
             id: 2,
-            input: "5\n1 2 3 4 5",
-            expectedOutput: "EMPTY",
+            input: "6\n10 20 30 10 20 40",
+            expectedOutput: "10 20",
             isHidden: false,
-            explanation: "No duplicates found"
+            explanation: "Normal list with duplicate sites 10 and 20"
           },
           {
             id: 3,
-            input: "6\n50 50 50 50 50 50",
-            expectedOutput: "50",
+            input: "4\n1 2 3 4",
+            expectedOutput: "EMPTY",
             isHidden: false,
-            explanation: "Single site repeated multiple times"
+            explanation: "All unique sites, no duplicates"
           },
           {
             id: 4,
-            input: "8\n10 20 30 20 10 40 50 30",
-            expectedOutput: "10 20 30",
+            input: "4\n50 50 50 50",
+            expectedOutput: "50",
             isHidden: false,
-            explanation: "Multiple duplicates out of order"
-          },
-          {
-            id: 5,
-            input: "4\n99 99 88 88",
-            expectedOutput: "99 88",
-            isHidden: false,
-            explanation: "Adjacent duplicate pairs"
-          },
-          {
-            id: 6,
-            input: "7\n5 1 2 3 1 4 5",
-            expectedOutput: "5 1",
-            isHidden: false,
-            explanation: "Duplicates preserve first appearance order"
+            explanation: "Single site visited multiple times"
           }
         ]
       }
@@ -3644,7 +3582,15 @@ export const setActivePaperId = (paperId) => {
 };
 
 // Practice Papers helpers
+const PAPERS_DATA_VERSION = 'v5_simple_fast_tc';
+
 export const getPracticePapers = () => {
+  const currentVer = localStorage.getItem('practice_papers_version');
+  if (currentVer !== PAPERS_DATA_VERSION) {
+    localStorage.setItem('practice_papers_version', PAPERS_DATA_VERSION);
+    localStorage.removeItem('practice_papers_data');
+    return practiceTestPapers;
+  }
   const saved = localStorage.getItem('practice_papers_data');
   if (saved) {
     try {
@@ -3660,6 +3606,7 @@ export const getPracticePapers = () => {
 };
 
 export const savePracticePapers = (papers) => {
+  localStorage.setItem('practice_papers_version', PAPERS_DATA_VERSION);
   localStorage.setItem('practice_papers_data', JSON.stringify(papers));
 };
 
