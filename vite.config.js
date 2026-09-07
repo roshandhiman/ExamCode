@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import fs from 'fs'
 import path from 'path'
@@ -120,26 +120,25 @@ function localExecutorPlugin() {
           try {
             const { password } = JSON.parse(body);
             const crypto = await import('crypto');
-            const SALT = 'examCODE_s4lt_x99';
-            const DEFAULT_HASH = 'd520d7b92b0ab61184b8b0ac6ffb0f01591a4a3fb25c93fa4078b7f682c46103';
+            const AUTH_SALT = 'examCODE_s4lt_v4_epoch99';
 
             const serverPass = process.env.APP_PASSWORD || process.env.VITE_APP_PASSWORD;
             let isValid = false;
-            if (serverPass) {
-              isValid = (password === serverPass);
-            } else {
-              const hash = crypto.createHash('sha256').update((password || '') + SALT).digest('hex');
-              isValid = (hash === DEFAULT_HASH);
+            if (serverPass && password) {
+              const passBuf = Buffer.from(String(password).trim());
+              const srvBuf = Buffer.from(String(serverPass).trim());
+              isValid = (passBuf.length === srvBuf.length) && crypto.timingSafeEqual(passBuf, srvBuf);
             }
 
             res.setHeader('Content-Type', 'application/json');
             if (isValid) {
               const timestamp = Date.now();
-              const token = Buffer.from(JSON.stringify({ t: timestamp, s: 'auth_' + timestamp })).toString('base64');
+              const tokenSignature = crypto.createHmac('sha256', AUTH_SALT).update(`auth_${timestamp}_v4`).digest('hex');
+              const token = Buffer.from(JSON.stringify({ t: timestamp, v: 'v4', s: tokenSignature })).toString('base64');
               return res.end(JSON.stringify({ success: true, token }));
             } else {
               res.statusCode = 401;
-              return res.end(JSON.stringify({ success: false, error: 'Invalid password' }));
+              return res.end(JSON.stringify({ success: false, error: 'Invalid password. Access denied.' }));
             }
           } catch (e) {
             res.statusCode = 500;
@@ -152,6 +151,10 @@ function localExecutorPlugin() {
   };
 }
 
-export default defineConfig({
-  plugins: [react(), localExecutorPlugin()],
-})
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  process.env = { ...process.env, ...env };
+  return {
+    plugins: [react(), localExecutorPlugin()],
+  };
+});

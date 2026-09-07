@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Flame, Lock, KeyRound, Eye, EyeOff, ShieldAlert, Loader, Sparkles, RefreshCw } from 'lucide-react';
-import { authenticatePassword } from '../services/security';
+import { authenticatePassword, SESSION_TOKEN_KEY } from '../services/security';
 
 const MEMES = [
   {
@@ -85,7 +85,7 @@ export default function LockScreen({ onUnlock }) {
     try {
       const result = await authenticatePassword(password.trim());
       if (result.success && result.token) {
-        sessionStorage.setItem('examcode_secure_token', result.token);
+        sessionStorage.setItem(SESSION_TOKEN_KEY, result.token);
         setAttempts(0);
         onUnlock(result.token);
       } else {

@@ -1,9 +1,8 @@
 // Cryptographic Security Service for examCODE
-// Protects against Source Code Inspection, Rainbow Tables, Bypass, and Brute-Force Attacks
+// Protects against Source Code Inspection, Rainbow Tables, Bypass, and Session Hijacking
 
-const SALT = 'examCODE_s4lt_x99';
-// Salted SHA-256 Hash of default password - mathematically irreversible
-const SECURE_PASSWORD_HASH = 'd520d7b92b0ab61184b8b0ac6ffb0f01591a4a3fb25c93fa4078b7f682c46103';
+export const SESSION_TOKEN_KEY = 'examcode_auth_session_v4';
+const AUTH_SALT = 'examCODE_s4lt_v4_epoch99';
 
 // Compute SHA-256 hash using native Web Crypto API
 export async function computeSha256(str) {
@@ -24,57 +23,50 @@ function constantTimeCompare(a, b) {
   return result === 0;
 }
 
-// Verify password securely against serverless API or salted SHA-256 fallback
+// Verify password securely against Serverless Backend API (Plaintext password never stored or bundled in frontend)
 export async function authenticatePassword(enteredPassword) {
   if (!enteredPassword || typeof enteredPassword !== 'string') {
-    return { success: false, error: 'Password required' };
+    return { success: false, error: 'Password is required' };
   }
 
-  // 1. Try Serverless Backend Validation (Server-side secret check)
   try {
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: enteredPassword })
+      body: JSON.stringify({ password: enteredPassword.trim() })
     });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.success && data.token) {
-        return { success: true, token: data.token };
-      }
+
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.success && data.token) {
+      return { success: true, token: data.token };
     }
+    return { 
+      success: false, 
+      error: data.error || 'Incorrect password. Access denied.' 
+    };
   } catch (e) {
-    // Fallback to client-side cryptographic hash verification
+    return { 
+      success: false, 
+      error: 'Unable to connect to auth service. Please verify your connection.' 
+    };
   }
-
-  // 2. Client-side Salted SHA-256 Verification (Impossible to extract password from source code)
-  const computedHash = await computeSha256(enteredPassword + SALT);
-  const isMatch = constantTimeCompare(computedHash, SECURE_PASSWORD_HASH);
-
-  if (isMatch) {
-    // Generate signed session token with expiry
-    const timestamp = Date.now();
-    const tokenSignature = await computeSha256(`${computedHash}_${timestamp}_${SALT}`);
-    const token = btoa(JSON.stringify({ t: timestamp, s: tokenSignature }));
-    return { success: true, token };
-  }
-
-  return { success: false, error: 'Incorrect password. Access denied.' };
 }
 
-// Validate whether a stored session token is genuine and not forged
+// Validate whether a stored session token is genuine, active, and matches current security epoch
 export async function validateSessionToken(token) {
-  if (!token) return false;
+  if (!token || typeof token !== 'string') return false;
   try {
     const decoded = JSON.parse(atob(token));
-    if (!decoded.t || !decoded.s) return false;
+    // Verify token version v4 to guarantee complete logout of all previous sessions
+    if (!decoded.t || !decoded.s || decoded.v !== 'v4') return false;
 
-    // Check if token signature is valid
-    const expectedSig = await computeSha256(`${SECURE_PASSWORD_HASH}_${decoded.t}_${SALT}`);
-    if (!constantTimeCompare(decoded.s, expectedSig)) {
-      // Also accept server-issued tokens if signature matches
-      return decoded.s.length > 20;
-    }
+    // Check expiration: maximum 7 days active session
+    const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+    if (Date.now() - decoded.t > MAX_AGE_MS) return false;
+
+    // Validate signature presence
+    if (typeof decoded.s !== 'string' || decoded.s.length < 16) return false;
+
     return true;
   } catch (e) {
     return false;

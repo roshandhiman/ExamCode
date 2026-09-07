@@ -6,7 +6,7 @@ import Problem from './pages/Problem';
 import Admin from './pages/Admin';
 import ScorecardModal from './components/ScorecardModal';
 import LockScreen from './components/LockScreen';
-import { validateSessionToken } from './services/security';
+import { validateSessionToken, SESSION_TOKEN_KEY } from './services/security';
 
 function App() {
   const [showScorecard, setShowScorecard] = useState(false);
@@ -15,12 +15,20 @@ function App() {
 
   useEffect(() => {
     const checkToken = async () => {
-      const token = sessionStorage.getItem('examcode_secure_token');
+      // FORCE GLOBAL LOGOUT: Purge all legacy sessions
+      try {
+        sessionStorage.removeItem('examcode_secure_token');
+        sessionStorage.removeItem('examcode_auth_session_v2');
+        sessionStorage.removeItem('examcode_auth_session_v3');
+        localStorage.removeItem('examcode_secure_token');
+      } catch (e) {}
+
+      const token = sessionStorage.getItem(SESSION_TOKEN_KEY);
       if (token) {
         const isValid = await validateSessionToken(token);
         setIsAuthenticated(isValid);
         if (!isValid) {
-          sessionStorage.removeItem('examcode_secure_token');
+          sessionStorage.removeItem(SESSION_TOKEN_KEY);
         }
       } else {
         setIsAuthenticated(false);
@@ -31,7 +39,7 @@ function App() {
   }, []);
 
   const handleLockSite = () => {
-    sessionStorage.removeItem('examcode_secure_token');
+    sessionStorage.removeItem(SESSION_TOKEN_KEY);
     setIsAuthenticated(false);
   };
 
