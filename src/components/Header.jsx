@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Flame, Award, Settings, CheckCircle2, ChevronDown, Lock } from 'lucide-react';
+import { Flame, Award, Settings, CheckCircle2, ChevronDown, Lock, BookOpen } from 'lucide-react';
 import { getPracticePapers, getUserProgress, getActivePaperId, setActivePaperId } from '../data/questions';
 
 export default function Header({ onOpenScorecard, onLockSite }) {
@@ -126,6 +126,25 @@ export default function Header({ onOpenScorecard, onLockSite }) {
             {fullSolvedCount}/15 Solved
           </span>
         </div>
+
+        <Link 
+          to="/oop-notes"
+          className="btn"
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.4rem', 
+            padding: '0.45rem 0.85rem', 
+            fontSize: '0.88rem',
+            background: 'rgba(59, 130, 246, 0.12)',
+            border: '1px solid rgba(59, 130, 246, 0.35)',
+            color: '#60a5fa',
+            fontWeight: '600'
+          }}
+          title="Complete Java OOP Notes & Exam Traps"
+        >
+          <BookOpen size={16} /> OOP Notes
+        </Link>
 
         <button 
           onClick={onOpenScorecard} 

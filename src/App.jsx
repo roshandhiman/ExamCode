@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Home from './pages/Home';
 import Problem from './pages/Problem';
 import Admin from './pages/Admin';
+import OopNotes from './pages/OopNotes';
 import ScorecardModal from './components/ScorecardModal';
 import LockScreen from './components/LockScreen';
 import { validateSessionToken, SESSION_TOKEN_KEY } from './services/security';
@@ -115,6 +116,7 @@ function App() {
             <Route path="/problem/:id" element={<Problem />} />
             <Route path="/paper/:paperId/question/:id" element={<Problem />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/oop-notes" element={<OopNotes />} />
           </Routes>
         </main>
         
