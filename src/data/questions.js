@@ -1,5 +1,449 @@
 export const practiceTestPapers = [
 {
+  "id": "paper-4",
+  "day": "Day 5",
+  "title": "Practice Test Paper 4",
+  "subtitle": "Top 10 OOP Master Problems (100 Marks • Classes, Inheritance, Abstraction & Polymorphism)",
+  "totalMarks": 100,
+  "passingMarks": 40,
+  "examDate": "Exam: OOP Special Prep",
+  "instructions": [
+    "This practice test contains 10 Core OOP Mixed Problems (10 Marks each = 100 Marks).",
+    "Covers Part 1 (Classes & Encapsulation), Part 2 (Inheritance & Polymorphism), and Part 3 (Abstract Classes & Interfaces).",
+    "Class Main and Scanner reading are locked. Complete the designated classes/methods.",
+    "All test cases are 100% visible and evaluated automatically."
+  ],
+  "questions": [
+    {
+      "id": 801,
+      "paperId": "paper-4",
+      "number": "Q1",
+      "type": "coding",
+      "title": "Student Result System",
+      "category": "Classes & Methods",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Student class ka constructor aur getGrade() method implement karna.",
+      "concept": "Class, constructor, this, method return, if-else ladder",
+      "statement": "Create a Student class with:\n- name (String)\n- marks (int)\n- Parameterized constructor Student(String name, int marks)\n- getGrade() method returning String based on rules:\n  * marks >= 90 -> \"A\"\n  * marks >= 75 -> \"B\"\n  * marks >= 60 -> \"C\"\n  * marks >= 40 -> \"D\"\n  * otherwise   -> \"F\"",
+      "sampleInput": "Rahul 82",
+      "sampleOutput": "Rahul\nB",
+      "constraints": "0 <= marks <= 100",
+      "methodSignature": "class Student { Student(String name, int marks); String getGrade(); }",
+      "prefixCode": "import java.util.*;",
+      "starterUserCode": "class Student {\n    String name;\n    int marks;\n\n    Student(String name, int marks) {\n        // YOUR CODE\n    }\n\n    String getGrade() {\n        // YOUR CODE\n        return \"\";\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String name = sc.next();\n        int marks = sc.nextInt();\n        Student s = new Student(name, marks);\n        System.out.println(s.name);\n        System.out.println(s.getGrade());\n    }\n}",
+      "referenceSolution": "class Student {\n    String name;\n    int marks;\n\n    Student(String name, int marks) {\n        this.name = name;\n        this.marks = marks;\n    }\n\n    String getGrade() {\n        if (marks >= 90) return \"A\";\n        if (marks >= 75) return \"B\";\n        if (marks >= 60) return \"C\";\n        if (marks >= 40) return \"D\";\n        return \"F\";\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "Rahul 82",
+          "expectedOutput": "Rahul\nB",
+          "isHidden": false,
+          "explanation": "82 gives Grade B"
+        },
+        {
+          "id": 2,
+          "input": "Priya 95",
+          "expectedOutput": "Priya\nA",
+          "isHidden": false,
+          "explanation": "95 gives Grade A"
+        },
+        {
+          "id": 3,
+          "input": "Amit 35",
+          "expectedOutput": "Amit\nF",
+          "isHidden": false,
+          "explanation": "35 gives Grade F"
+        }
+      ]
+    },
+    {
+      "id": 802,
+      "paperId": "paper-4",
+      "number": "Q2",
+      "type": "coding",
+      "title": "Employee Salary Calculation",
+      "category": "Inheritance & Polymorphism",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Manager child class aur calculateSalary() override karna.",
+      "concept": "Inheritance (extends), constructor chaining (super), method overriding, polymorphism",
+      "statement": "Create a class hierarchy:\nEmployee (Parent):\n- name (String)\n- salary (double)\n- Employee(String name, double salary) constructor\n- calculateSalary() returning salary\n\nManager (Child extends Employee):\n- bonus (double)\n- Manager(String name, double salary, double bonus)\n- Override calculateSalary() to return salary + bonus",
+      "sampleInput": "Aman 40000 8000",
+      "sampleOutput": "48000.0",
+      "constraints": "salary >= 0, bonus >= 0",
+      "methodSignature": "class Manager extends Employee",
+      "prefixCode": "import java.util.*;\n\nclass Employee {\n    String name;\n    double salary;\n    Employee(String name, double salary) {\n        this.name = name;\n        this.salary = salary;\n    }\n    double calculateSalary() {\n        return salary;\n    }\n}",
+      "starterUserCode": "class Manager extends Employee {\n    double bonus;\n\n    Manager(String name, double salary, double bonus) {\n        super(name, salary);\n        // YOUR CODE\n    }\n\n    @Override\n    double calculateSalary() {\n        // YOUR CODE\n        return 0;\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String name = sc.next();\n        double salary = sc.nextDouble();\n        double bonus = sc.nextDouble();\n        Employee e = new Manager(name, salary, bonus);\n        System.out.println(e.calculateSalary());\n    }\n}",
+      "referenceSolution": "class Manager extends Employee {\n    double bonus;\n\n    Manager(String name, double salary, double bonus) {\n        super(name, salary);\n        this.bonus = bonus;\n    }\n\n    @Override\n    double calculateSalary() {\n        return salary + bonus;\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "Aman 40000 8000",
+          "expectedOutput": "48000.0",
+          "isHidden": false,
+          "explanation": "40000 + 8000 = 48000.0"
+        },
+        {
+          "id": 2,
+          "input": "Rohan 50000 5000",
+          "expectedOutput": "55000.0",
+          "isHidden": false,
+          "explanation": "50000 + 5000 = 55000.0"
+        },
+        {
+          "id": 3,
+          "input": "Neha 30000 0",
+          "expectedOutput": "30000.0",
+          "isHidden": false,
+          "explanation": "30000 + 0 = 30000.0"
+        }
+      ]
+    },
+    {
+      "id": 803,
+      "paperId": "paper-4",
+      "number": "Q3",
+      "type": "coding",
+      "title": "Bank Account + Encapsulation",
+      "category": "Encapsulation",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: BankAccount class ke deposit, withdraw, aur getBalance methods implement karna.",
+      "concept": "Private data members, getters, transaction validation",
+      "statement": "Create BankAccount with private balance:\n- private double balance;\n- BankAccount(double balance)\n- deposit(double amount)\n  * if amount <= 0: print \"Invalid Deposit\"\n  * otherwise: add to balance\n- withdraw(double amount)\n  * if amount <= 0: print \"Invalid Withdrawal\"\n  * if amount > balance: print \"Insufficient Balance\"\n  * otherwise: subtract from balance\n- getBalance(): return balance",
+      "sampleInput": "5000 2000 1500",
+      "sampleOutput": "5500.0",
+      "constraints": "balance >= 0",
+      "methodSignature": "class BankAccount { void deposit(double); void withdraw(double); double getBalance(); }",
+      "prefixCode": "import java.util.*;",
+      "starterUserCode": "class BankAccount {\n    private double balance;\n\n    BankAccount(double balance) {\n        // YOUR CODE\n    }\n\n    void deposit(double amount) {\n        // YOUR CODE\n    }\n\n    void withdraw(double amount) {\n        // YOUR CODE\n    }\n\n    double getBalance() {\n        // YOUR CODE\n        return 0;\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextDouble()) return;\n        double initial = sc.nextDouble();\n        double dep = sc.nextDouble();\n        double w = sc.nextDouble();\n        BankAccount b = new BankAccount(initial);\n        b.deposit(dep);\n        b.withdraw(w);\n        System.out.println(b.getBalance());\n    }\n}",
+      "referenceSolution": "class BankAccount {\n    private double balance;\n\n    BankAccount(double balance) {\n        this.balance = balance;\n    }\n\n    void deposit(double amount) {\n        if (amount <= 0) {\n            System.out.println(\"Invalid Deposit\");\n        } else {\n            balance += amount;\n        }\n    }\n\n    void withdraw(double amount) {\n        if (amount <= 0) {\n            System.out.println(\"Invalid Withdrawal\");\n        } else if (amount > balance) {\n            System.out.println(\"Insufficient Balance\");\n        } else {\n            balance -= amount;\n        }\n    }\n\n    double getBalance() {\n        return balance;\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "5000 2000 1500",
+          "expectedOutput": "5500.0",
+          "isHidden": false,
+          "explanation": "5000 + 2000 - 1500 = 5500.0"
+        },
+        {
+          "id": 2,
+          "input": "3000 -500 1000",
+          "expectedOutput": "Invalid Deposit\n2000.0",
+          "isHidden": false,
+          "explanation": "Negative deposit rejected"
+        },
+        {
+          "id": 3,
+          "input": "1000 500 2000",
+          "expectedOutput": "Insufficient Balance\n1500.0",
+          "isHidden": false,
+          "explanation": "Withdrawal exceeds balance"
+        }
+      ]
+    },
+    {
+      "id": 804,
+      "paperId": "paper-4",
+      "number": "Q4",
+      "type": "coding",
+      "title": "Abstract Shape Calculator",
+      "category": "Abstract Class & Polymorphism",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Circle aur Rectangle classes implement karke area() calculate karna.",
+      "concept": "Abstract class, abstract method, inheritance, overriding",
+      "statement": "Create abstract class Shape with abstract double area().\nCreate subclasses:\n- Circle extends Shape:\n  * double r\n  * area = 3.14 * r * r\n- Rectangle extends Shape:\n  * double l, b\n  * area = l * b",
+      "sampleInput": "5 4 6",
+      "sampleOutput": "78.5\n24.0",
+      "constraints": "dimensions > 0",
+      "methodSignature": "class Circle extends Shape & class Rectangle extends Shape",
+      "prefixCode": "import java.util.*;\n\nabstract class Shape {\n    abstract double area();\n}",
+      "starterUserCode": "class Circle extends Shape {\n    double r;\n    Circle(double r) {\n        // YOUR CODE\n    }\n    double area() {\n        // YOUR CODE\n        return 0;\n    }\n}\n\nclass Rectangle extends Shape {\n    double l, b;\n    Rectangle(double l, double b) {\n        // YOUR CODE\n    }\n    double area() {\n        // YOUR CODE\n        return 0;\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextDouble()) return;\n        double r = sc.nextDouble();\n        double l = sc.nextDouble();\n        double b = sc.nextDouble();\n        Shape s1 = new Circle(r);\n        Shape s2 = new Rectangle(l, b);\n        System.out.println(s1.area());\n        System.out.println(s2.area());\n    }\n}",
+      "referenceSolution": "class Circle extends Shape {\n    double r;\n    Circle(double r) {\n        this.r = r;\n    }\n    double area() {\n        return 3.14 * r * r;\n    }\n}\n\nclass Rectangle extends Shape {\n    double l, b;\n    Rectangle(double l, double b) {\n        this.l = l;\n        this.b = b;\n    }\n    double area() {\n        return l * b;\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "5 4 6",
+          "expectedOutput": "78.5\n24.0",
+          "isHidden": false,
+          "explanation": "3.14*5*5 = 78.5, 4*6 = 24.0"
+        },
+        {
+          "id": 2,
+          "input": "10 5 10",
+          "expectedOutput": "314.0\n50.0",
+          "isHidden": false,
+          "explanation": "3.14*10*10 = 314.0, 5*10 = 50.0"
+        },
+        {
+          "id": 3,
+          "input": "2 3 7",
+          "expectedOutput": "12.56\n21.0",
+          "isHidden": false,
+          "explanation": "3.14*2*2 = 12.56, 3*7 = 21.0"
+        }
+      ]
+    },
+    {
+      "id": 805,
+      "paperId": "paper-4",
+      "number": "Q5",
+      "type": "coding",
+      "title": "Multiple Interfaces Implementation",
+      "category": "Interfaces",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Report class implement karke print() aur show() methods likhna.",
+      "concept": "Multiple interfaces, implements keyword, public methods",
+      "statement": "Create two interfaces:\n- interface Printable { void print(); }\n- interface Showable { void show(); }\n\nCreate class Report implementing both interfaces:\n- print() should print: \"Printing Report\"\n- show() should print: \"Showing Report\"",
+      "sampleInput": "run",
+      "sampleOutput": "Printing Report\nShowing Report",
+      "constraints": "No special constraints",
+      "methodSignature": "class Report implements Printable, Showable",
+      "prefixCode": "import java.util.*;\n\ninterface Printable {\n    void print();\n}\n\ninterface Showable {\n    void show();\n}",
+      "starterUserCode": "class Report implements Printable, Showable {\n    // YOUR CODE\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Report r = new Report();\n        r.print();\n        r.show();\n    }\n}",
+      "referenceSolution": "class Report implements Printable, Showable {\n    public void print() {\n        System.out.println(\"Printing Report\");\n    }\n    public void show() {\n        System.out.println(\"Showing Report\");\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "run",
+          "expectedOutput": "Printing Report\nShowing Report",
+          "isHidden": false,
+          "explanation": "Calls both interface methods"
+        }
+      ]
+    },
+    {
+      "id": 806,
+      "paperId": "paper-4",
+      "number": "Q6",
+      "type": "coding",
+      "title": "Highest Price Product",
+      "category": "ArrayList & Objects",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: static Product highestPrice(ArrayList<Product> list) method implement karna.",
+      "concept": "Class, constructor, ArrayList traversal, object comparison, object return",
+      "statement": "Given a class Product with:\n- String name\n- double price\n\nImplement the method:\nstatic Product highestPrice(ArrayList<Product> list)\nwhich returns the Product object having the maximum price.",
+      "sampleInput": "3\nPen 20\nBag 900\nBook 300",
+      "sampleOutput": "Bag\n900.0",
+      "constraints": "1 <= list.size() <= 10^5",
+      "methodSignature": "static Product highestPrice(ArrayList<Product> list)",
+      "prefixCode": "import java.util.*;\n\nclass Product {\n    String name;\n    double price;\n    Product(String name, double price) {\n        this.name = name;\n        this.price = price;\n    }\n}\n\npublic class Main {\n    static Product highestPrice(ArrayList<Product> list) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        ArrayList<Product> list = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            String name = sc.next();\n            double price = sc.nextDouble();\n            list.add(new Product(name, price));\n        }\n        Product ans = highestPrice(list);\n        if (ans != null) {\n            System.out.println(ans.name);\n            System.out.println(ans.price);\n        }\n    }\n}",
+      "referenceSolution": "        if (list == null || list.isEmpty()) return null;\n        Product highest = list.get(0);\n        for (int i = 1; i < list.size(); i++) {\n            if (list.get(i).price > highest.price) {\n                highest = list.get(i);\n            }\n        }\n        return highest;",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "3\nPen 20\nBag 900\nBook 300",
+          "expectedOutput": "Bag\n900.0",
+          "isHidden": false,
+          "explanation": "Bag has highest price 900.0"
+        },
+        {
+          "id": 2,
+          "input": "2\nLaptop 50000\nPhone 30000",
+          "expectedOutput": "Laptop\n50000.0",
+          "isHidden": false,
+          "explanation": "Laptop has highest price 50000.0"
+        },
+        {
+          "id": 3,
+          "input": "3\nItemA 100\nItemB 50\nItemC 250",
+          "expectedOutput": "ItemC\n250.0",
+          "isHidden": false,
+          "explanation": "ItemC has highest price 250.0"
+        }
+      ]
+    },
+    {
+      "id": 807,
+      "paperId": "paper-4",
+      "number": "Q7",
+      "type": "coding",
+      "title": "Age Validation Exception",
+      "category": "Custom Exception",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: checkAge(int age) method mein validation + exception throw karna.",
+      "concept": "Custom Exception, extends Exception, throw, throws",
+      "statement": "Create custom exception class InvalidAgeException extends Exception.\nImplement method:\nstatic void checkAge(int age) throws InvalidAgeException\n\nRules:\n- age < 0  -> throw InvalidAgeException(\"Invalid Age\")\n- age < 18 -> throw InvalidAgeException(\"Not Eligible\")\n- otherwise -> print \"Eligible\"",
+      "sampleInput": "16",
+      "sampleOutput": "Not Eligible",
+      "constraints": "-100 <= age <= 150",
+      "methodSignature": "static void checkAge(int age) throws InvalidAgeException",
+      "prefixCode": "import java.util.*;\n\nclass InvalidAgeException extends Exception {\n    InvalidAgeException(String msg) {\n        super(msg);\n    }\n}\n\npublic class Main {\n    static void checkAge(int age) throws InvalidAgeException {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        ",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int age = sc.nextInt();\n        try {\n            checkAge(age);\n        } catch (InvalidAgeException e) {\n            System.out.println(e.getMessage());\n        }\n    }\n}",
+      "referenceSolution": "        if (age < 0) {\n            throw new InvalidAgeException(\"Invalid Age\");\n        }\n        if (age < 18) {\n            throw new InvalidAgeException(\"Not Eligible\");\n        }\n        System.out.println(\"Eligible\");",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "16",
+          "expectedOutput": "Not Eligible",
+          "isHidden": false,
+          "explanation": "16 is under 18"
+        },
+        {
+          "id": 2,
+          "input": "-5",
+          "expectedOutput": "Invalid Age",
+          "isHidden": false,
+          "explanation": "Negative age is invalid"
+        },
+        {
+          "id": 3,
+          "input": "21",
+          "expectedOutput": "Eligible",
+          "isHidden": false,
+          "explanation": "21 is eligible"
+        }
+      ]
+    },
+    {
+      "id": 808,
+      "paperId": "paper-4",
+      "number": "Q8",
+      "type": "coding",
+      "title": "Developer Salary and Tax",
+      "category": "Abstract + Interface + Inheritance",
+      "difficulty": "Hard",
+      "marks": 10,
+      "tagline": "Tera kaam: Developer class implement karke finalSalary() aur tax() override karna.",
+      "concept": "Abstract class, interface, inheritance, super, polymorphism",
+      "statement": "Given:\ninterface Taxable { double tax(); }\nabstract class Employee {\n    String name; double salary;\n    Employee(String name, double salary) { this.name = name; this.salary = salary; }\n    abstract double finalSalary();\n}\n\nCreate class Developer extends Employee implements Taxable:\n- Developer(String name, double salary) -> calls super(name, salary)\n- finalSalary(): returns salary + 5000 bonus\n- tax(): returns finalSalary() * 0.10",
+      "sampleInput": "Rohan 50000",
+      "sampleOutput": "55000.0\n5500.0",
+      "constraints": "salary >= 0",
+      "methodSignature": "class Developer extends Employee implements Taxable",
+      "prefixCode": "import java.util.*;\n\ninterface Taxable {\n    double tax();\n}\n\nabstract class Employee {\n    String name;\n    double salary;\n    Employee(String name, double salary) {\n        this.name = name;\n        this.salary = salary;\n    }\n    abstract double finalSalary();\n}",
+      "starterUserCode": "class Developer extends Employee implements Taxable {\n    // YOUR CODE\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String name = sc.next();\n        double salary = sc.nextDouble();\n        Employee e = new Developer(name, salary);\n        System.out.println(e.finalSalary());\n        Taxable t = new Developer(name, salary);\n        System.out.println(t.tax());\n    }\n}",
+      "referenceSolution": "class Developer extends Employee implements Taxable {\n    Developer(String name, double salary) {\n        super(name, salary);\n    }\n    double finalSalary() {\n        return salary + 5000;\n    }\n    public double tax() {\n        return finalSalary() * 0.10;\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "Rohan 50000",
+          "expectedOutput": "55000.0\n5500.0",
+          "isHidden": false,
+          "explanation": "50000 + 5000 = 55000.0; 55000 * 0.10 = 5500.0"
+        },
+        {
+          "id": 2,
+          "input": "Aman 40000",
+          "expectedOutput": "45000.0\n4500.0",
+          "isHidden": false,
+          "explanation": "40000 + 5000 = 45000.0; 45000 * 0.10 = 4500.0"
+        },
+        {
+          "id": 3,
+          "input": "Neha 20000",
+          "expectedOutput": "25000.0\n2500.0",
+          "isHidden": false,
+          "explanation": "20000 + 5000 = 25000.0; 25000 * 0.10 = 2500.0"
+        }
+      ]
+    },
+    {
+      "id": 809,
+      "paperId": "paper-4",
+      "number": "Q9",
+      "type": "coding",
+      "title": "Email Generator from Name",
+      "category": "String & Methods",
+      "difficulty": "Easy",
+      "marks": 10,
+      "tagline": "Tera kaam: Person class ka getEmail() method implement karna.",
+      "concept": "Constructor, this, toLowerCase(), replace(), string concatenation",
+      "statement": "Create class Person with:\n- String name\n- Person(String name) constructor\n- String getEmail() method:\n  1. Convert name to lowercase\n  2. Replace spaces with .\n  3. Append \"@college.com\"\nExample: \"Rahul Kumar\" becomes \"rahul.kumar@college.com\"",
+      "sampleInput": "Rahul Kumar",
+      "sampleOutput": "rahul.kumar@college.com",
+      "constraints": "1 <= name.length() <= 100",
+      "methodSignature": "class Person { String getEmail(); }",
+      "prefixCode": "import java.util.*;",
+      "starterUserCode": "class Person {\n    String name;\n\n    Person(String name) {\n        // YOUR CODE\n    }\n\n    String getEmail() {\n        // YOUR CODE\n        return \"\";\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextLine()) return;\n        String name = sc.nextLine();\n        Person p = new Person(name);\n        System.out.println(p.getEmail());\n    }\n}",
+      "referenceSolution": "class Person {\n    String name;\n\n    Person(String name) {\n        this.name = name;\n    }\n\n    String getEmail() {\n        return name.toLowerCase().replace(\" \", \".\") + \"@college.com\";\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "Rahul Kumar",
+          "expectedOutput": "rahul.kumar@college.com",
+          "isHidden": false,
+          "explanation": "Lowercase and spaces replaced with dot"
+        },
+        {
+          "id": 2,
+          "input": "Amit Sharma",
+          "expectedOutput": "amit.sharma@college.com",
+          "isHidden": false,
+          "explanation": "Amit Sharma -> amit.sharma@college.com"
+        },
+        {
+          "id": 3,
+          "input": "John",
+          "expectedOutput": "john@college.com",
+          "isHidden": false,
+          "explanation": "Single word name"
+        }
+      ]
+    },
+    {
+      "id": 810,
+      "paperId": "paper-4",
+      "number": "Q10",
+      "type": "coding",
+      "title": "Product Discount & Final Price (Full OOP Mix)",
+      "category": "Mixed OOP Master",
+      "difficulty": "Hard",
+      "marks": 10,
+      "tagline": "Tera kaam: Electronics class implement karke getDiscount() aur finalPrice() likhna.",
+      "concept": "Full Mix: Abstract class, Interface, extends, implements, super, overriding, polymorphism",
+      "statement": "Create complete hierarchy:\ninterface Discountable {\n    double getDiscount();\n}\n\nabstract class Product {\n    String name;\n    double price;\n    Product(String name, double price) { this.name = name; this.price = price; }\n    abstract double finalPrice();\n}\n\nCreate class Electronics extends Product implements Discountable:\n- Electronics(String name, double price) -> calls super(name, price)\n- getDiscount(): returns 10% of price (0.10 * price)\n- finalPrice(): returns price - getDiscount()",
+      "sampleInput": "Laptop 50000",
+      "sampleOutput": "Laptop\n45000.0\n5000.0",
+      "constraints": "price >= 0",
+      "methodSignature": "class Electronics extends Product implements Discountable",
+      "prefixCode": "import java.util.*;\n\ninterface Discountable {\n    double getDiscount();\n}\n\nabstract class Product {\n    String name;\n    double price;\n    Product(String name, double price) {\n        this.name = name;\n        this.price = price;\n    }\n    abstract double finalPrice();\n}",
+      "starterUserCode": "class Electronics extends Product implements Discountable {\n    // YOUR CODE\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String name = sc.next();\n        double price = sc.nextDouble();\n        Product p = new Electronics(name, price);\n        System.out.println(p.name);\n        System.out.println(p.finalPrice());\n        Discountable d = new Electronics(name, price);\n        System.out.println(d.getDiscount());\n    }\n}",
+      "referenceSolution": "class Electronics extends Product implements Discountable {\n    Electronics(String name, double price) {\n        super(name, price);\n    }\n    double finalPrice() {\n        return price - getDiscount();\n    }\n    public double getDiscount() {\n        return price * 0.10;\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "Laptop 50000",
+          "expectedOutput": "Laptop\n45000.0\n5000.0",
+          "isHidden": false,
+          "explanation": "Discount 5000.0, final price 45000.0"
+        },
+        {
+          "id": 2,
+          "input": "Phone 20000",
+          "expectedOutput": "Phone\n18000.0\n2000.0",
+          "isHidden": false,
+          "explanation": "Discount 2000.0, final price 18000.0"
+        },
+        {
+          "id": 3,
+          "input": "Watch 5000",
+          "expectedOutput": "Watch\n4500.0\n500.0",
+          "isHidden": false,
+          "explanation": "Discount 500.0, final price 4500.0"
+        }
+      ]
+    }
+  ]
+},
+
+{
   "id": "sample-paper-3",
   "day": "Day 4",
   "title": "Sample Practice Test Paper 3",
@@ -4858,7 +5302,7 @@ Invalid Marks: xyz`,
 
 // Active Paper Helper
 export const getActivePaperId = () => {
-  return localStorage.getItem('active_paper_id') || 'sample-paper-3';
+  return localStorage.getItem('active_paper_id') || 'paper-4';
 };
 
 export const setActivePaperId = (paperId) => {
@@ -4866,7 +5310,7 @@ export const setActivePaperId = (paperId) => {
 };
 
 // Practice Papers helpers
-const PAPERS_DATA_VERSION = 'v6_paper3_added';
+const PAPERS_DATA_VERSION = 'v7_paper4_added';
 
 export const getPracticePapers = () => {
   const currentVer = localStorage.getItem('practice_papers_version');
