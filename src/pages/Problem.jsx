@@ -74,6 +74,14 @@ export default function Problem() {
 
   // Load question and previous saved code if available
   useEffect(() => {
+    const token = sessionStorage.getItem('examcode_auth_session_v4');
+    if (!token) {
+      sessionStorage.clear();
+      navigate('/');
+      window.location.reload();
+      return;
+    }
+
     if (question) {
       if (question.type === 'mcq') {
         const progress = getUserProgress();

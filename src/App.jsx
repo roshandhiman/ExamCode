@@ -38,9 +38,42 @@ function App() {
     checkToken();
   }, []);
 
+  // Continuous background session heartbeat: instantly logs out and reloads if session is invalidated
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const enforceActiveSession = async () => {
+      const token = sessionStorage.getItem(SESSION_TOKEN_KEY);
+      if (!token) {
+        setIsAuthenticated(false);
+        window.location.reload();
+        return;
+      }
+      const isValid = await validateSessionToken(token);
+      if (!isValid) {
+        sessionStorage.clear();
+        setIsAuthenticated(false);
+        window.location.reload();
+      }
+    };
+
+    const interval = setInterval(enforceActiveSession, 2000);
+    window.addEventListener('focus', enforceActiveSession);
+    document.addEventListener('visibilitychange', enforceActiveSession);
+    window.addEventListener('storage', enforceActiveSession);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', enforceActiveSession);
+      document.removeEventListener('visibilitychange', enforceActiveSession);
+      window.removeEventListener('storage', enforceActiveSession);
+    };
+  }, [isAuthenticated]);
+
   const handleLockSite = () => {
     sessionStorage.removeItem(SESSION_TOKEN_KEY);
     setIsAuthenticated(false);
+    window.location.reload();
   };
 
   const handleUnlock = () => {

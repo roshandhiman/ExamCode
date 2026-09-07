@@ -6,6 +6,17 @@ const JUDGE0_API_URL = 'https://ce.judge0.com/submissions?wait=true';
 const WANDBOX_API_URL = 'https://wandbox.org/api/compile.json';
 
 export const executeCode = async (language, code, stdin = "") => {
+    // Security check: if session is invalid or missing, immediately terminate execution and force reload
+    if (typeof window !== 'undefined') {
+        const token = sessionStorage.getItem('examcode_auth_session_v4');
+        if (!token) {
+            sessionStorage.clear();
+            window.location.href = '/';
+            window.location.reload();
+            return { message: "Session expired. Reloading..." };
+        }
+    }
+
     if (language === 'java') {
         // 1. Try Judge0 CE first (Fastest: ~0.05-0.1s execution)
         try {

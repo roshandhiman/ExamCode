@@ -4,7 +4,21 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>codepractice</title>
+    <script>
+      // Immediate eviction of all legacy sessions before DOM boots
+      (function() {
+        try {
+          sessionStorage.removeItem('examcode_secure_token');
+          sessionStorage.removeItem('examcode_auth_session_v2');
+          sessionStorage.removeItem('examcode_auth_session_v3');
+          localStorage.removeItem('examcode_secure_token');
+        } catch(e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

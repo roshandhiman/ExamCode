@@ -16,13 +16,21 @@ export default function Home({ onOpenScorecard }) {
   const currentPaper = papers.find(p => p.id === activePaperId) || papers[0];
 
   useEffect(() => {
+    const token = sessionStorage.getItem('examcode_auth_session_v4');
+    if (!token) {
+      sessionStorage.clear();
+      navigate('/');
+      window.location.reload();
+      return;
+    }
+
     const handleStorage = () => {
       setProgress(getUserProgress());
       setActivePaperIdState(getActivePaperId());
     };
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
-  }, []);
+  }, [navigate]);
 
   const handleSwitchPaper = (id) => {
     setActivePaperId(id);
