@@ -131,3 +131,32 @@ export function purgeClientSession() {
   clearStoredToken();
   purgeLegacySessions();
 }
+
+// Active anti-tampering guard: prevents unauthorized DevTools inspection on locked screens
+export function initAntiTamperGuard() {
+  if (typeof window === 'undefined') return;
+
+  const checkDevTools = () => {
+    const threshold = 160;
+    const isDevToolsOpen =
+      (window.outerWidth - window.innerWidth > threshold) ||
+      (window.outerHeight - window.innerHeight > threshold);
+
+    const hasToken = getStoredToken();
+    if (isDevToolsOpen && !hasToken) {
+      if (document.body) {
+        document.body.style.filter = 'blur(16px)';
+        document.body.style.pointerEvents = 'none';
+      }
+    } else {
+      if (document.body && document.body.style.filter === 'blur(16px)') {
+        document.body.style.filter = 'none';
+        document.body.style.pointerEvents = 'auto';
+      }
+    }
+  };
+
+  window.addEventListener('resize', checkDevTools);
+  setInterval(checkDevTools, 1500);
+}
+

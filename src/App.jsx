@@ -7,7 +7,7 @@ import Admin from './pages/Admin';
 import OopNotes from './pages/OopNotes';
 import ScorecardModal from './components/ScorecardModal';
 import LockScreen from './components/LockScreen';
-import { verifySessionWithServer, logoutSession, purgeLegacySessions } from './services/security';
+import { verifySessionWithServer, logoutSession, purgeLegacySessions, initAntiTamperGuard } from './services/security';
 
 function App() {
   const [showScorecard, setShowScorecard] = useState(false);
@@ -15,6 +15,9 @@ function App() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
+    // Initialize anti-tampering inspection guard
+    initAntiTamperGuard();
+
     const checkToken = async () => {
       // Purge only legacy versions, preserve valid active session
       purgeLegacySessions();

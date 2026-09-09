@@ -1,5 +1,607 @@
 export const practiceTestPapers = [
 {
+  "id": "mix-paper",
+  "day": "Day 6",
+  "title": "Mix Paper",
+  "subtitle": "Real TestPad Exam Questions • OOP, Matrix, Strings, HashMap & TreeMap Mix",
+  "totalMarks": 150,
+  "passingMarks": 60,
+  "examDate": "Exam: TestPad Mix Mastery",
+  "instructions": [
+    "Contains 15 Real TestPad Exam Questions (10 Marks each = 150 Marks Total).",
+    "Section A: Matrix & String Logic (Anagrams, Diagonal Sum, Longest Word, Matrix Multiply, Perfect String).",
+    "Section B: OOP Core (Tricycle Speed Manager, Employee Salary 6-Month Tracker, Student Exam Analysis).",
+    "Section C: Advanced Collections Mix (Class + HashMap, TreeMap Leaderboard, Word Frequency, Grouping).",
+    "Method signatures and class stubs are predefined. All test cases are 100% visible."
+  ],
+  "questions": [
+    {
+      "id": 901,
+      "paperId": "mix-paper",
+      "number": "Q1",
+      "type": "coding",
+      "title": "Strings are Anagram or Not",
+      "category": "Strings",
+      "difficulty": "Easy",
+      "marks": 10,
+      "tagline": "Tera kaam: isAnagram(str1, str2) method complete karna jo 1 ya 0 return kare.",
+      "concept": "String manipulation, char array sorting, Arrays.equals, frequency matching",
+      "statement": "A word-puzzle application requires users to unscramble a given string of letters to form a valid target word. To validate submissions and prevent cheating, the backend system must instantly verify that the user's guessed word consists of the exact same characters in identical frequencies as the original scrambled string.\n\nTwo strings A and B are called anagrams if they contain all the same characters (case of character to be same) in the same frequencies. Given two strings, find whether both are anagram of each other or not.\n\nTask:\nComplete the function isAnagram() that will take two strings as parameters and return 1 if they are anagram and return 0 otherwise.",
+      "sampleInput": "silent listen",
+      "sampleOutput": "Yes",
+      "constraints": "1 <= length of strings <= 10^5",
+      "methodSignature": "static int isAnagram(String str1, String str2)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    static int isAnagram(String str1, String str2) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        // Return 1 if anagram, 0 otherwise\n        return 0;",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String s1 = sc.next();\n        String s2 = sc.next();\n        if (isAnagram(s1, s2) == 1) {\n            System.out.println(\"Yes\");\n        } else {\n            System.out.println(\"No\");\n        }\n    }\n}",
+      "referenceSolution": "        char[] c1 = str1.toCharArray();\n        Arrays.sort(c1);\n        char[] c2 = str2.toCharArray();\n        Arrays.sort(c2);\n        if (Arrays.equals(c1, c2)) {\n            return 1;\n        }\n        return 0;",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "silent listen",
+          "expectedOutput": "Yes",
+          "isHidden": false,
+          "explanation": "'silent' and 'listen' contain the exact same letters."
+        },
+        {
+          "id": 2,
+          "input": "hello world",
+          "expectedOutput": "No",
+          "isHidden": false,
+          "explanation": "Characters and frequencies do not match."
+        },
+        {
+          "id": 3,
+          "input": "triangle integral",
+          "expectedOutput": "Yes",
+          "isHidden": false,
+          "explanation": "Both contain same characters."
+        }
+      ]
+    },
+    {
+      "id": 902,
+      "paperId": "mix-paper",
+      "number": "Q2",
+      "type": "coding",
+      "title": "Tricycle Speed Manager",
+      "category": "OOP & Encapsulation",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Tricycle class with private speed, copy constructor, aur member functions implement karna.",
+      "concept": "Class, private data member, default constructor, copy constructor, getters, setters",
+      "statement": "A tricycle can move at different speeds. Every new tricycle starts with a fixed speed. The speed can be increased, decreased, copied to another tricycle, or changed to a new value.\n\nWrite a Java program to perform these operations using a class.\nCreate a class Tricycle with a private data member named speed.\nImplement the following constructors and member functions:\n- Class Name: Tricycle\n- Data Member: private int speed;\n- Constructors:\n  * Tricycle(): Creates a tricycle with an initial speed of 5 mph.\n  * Tricycle(Tricycle t): Creates a new tricycle by copying the speed of another tricycle.\n- Member Functions:\n  * void setSpeed(int speed): Sets the speed of the tricycle to the given value.\n  * int getSpeed(): Returns the current speed of the tricycle.\n  * void incr(): Increases speed by 1.\n  * void brake(): Decreases speed by 1.",
+      "sampleInput": "10",
+      "sampleOutput": "Initial: 5\nCopied: 5\nAfter Set: 10\nAfter Incr: 11\nAfter Brake: 10",
+      "constraints": "speed >= 0",
+      "methodSignature": "class Tricycle { ... }",
+      "prefixCode": "import java.util.*;",
+      "starterUserCode": "class Tricycle {\n    private int speed;\n\n    public Tricycle() {\n        // YOUR CODE\n    }\n\n    public Tricycle(Tricycle t) {\n        // YOUR CODE\n    }\n\n    public void setSpeed(int s) {\n        // YOUR CODE\n    }\n\n    public int getSpeed() {\n        // YOUR CODE\n        return 0;\n    }\n\n    public void incr() {\n        // YOUR CODE\n    }\n\n    public void brake() {\n        // YOUR CODE\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int newSpeed = sc.hasNextInt() ? sc.nextInt() : 10;\n        Tricycle t1 = new Tricycle();\n        System.out.println(\"Initial: \" + t1.getSpeed());\n        Tricycle t2 = new Tricycle(t1);\n        System.out.println(\"Copied: \" + t2.getSpeed());\n        t1.setSpeed(newSpeed);\n        System.out.println(\"After Set: \" + t1.getSpeed());\n        t1.incr();\n        System.out.println(\"After Incr: \" + t1.getSpeed());\n        t1.brake();\n        System.out.println(\"After Brake: \" + t1.getSpeed());\n    }\n}",
+      "referenceSolution": "class Tricycle {\n    private int speed;\n\n    public Tricycle() {\n        speed = 5;\n    }\n\n    public Tricycle(Tricycle t) {\n        speed = t.speed;\n    }\n\n    public void setSpeed(int s) {\n        speed = s;\n    }\n\n    public int getSpeed() {\n        return speed;\n    }\n\n    public void incr() {\n        speed++;\n    }\n\n    public void brake() {\n        speed--;\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "10",
+          "expectedOutput": "Initial: 5\nCopied: 5\nAfter Set: 10\nAfter Incr: 11\nAfter Brake: 10",
+          "isHidden": false,
+          "explanation": "Testing default constructor, copy constructor, setSpeed, incr, and brake."
+        },
+        {
+          "id": 2,
+          "input": "25",
+          "expectedOutput": "Initial: 5\nCopied: 5\nAfter Set: 25\nAfter Incr: 26\nAfter Brake: 25",
+          "isHidden": false,
+          "explanation": "Speed set to 25."
+        }
+      ]
+    },
+    {
+      "id": 903,
+      "paperId": "mix-paper",
+      "number": "Q3",
+      "type": "coding",
+      "title": "Find Sum of Main Diagonal of Matrix",
+      "category": "2D Arrays / Matrix",
+      "difficulty": "Easy",
+      "marks": 10,
+      "tagline": "Tera kaam: mainDiagonalSum(matrix, m) method implement karna.",
+      "concept": "2D Array traversal, matrix diagonal elements (i == j), O(N) optimization",
+      "statement": "A company records the quarterly profit of different departments in a square matrix. The main diagonal contains the profit values of departments that were evaluated against their own yearly targets.\n\nWrite a program to calculate the sum of the values present on the main diagonal of the matrix.\nThe main diagonal of a square matrix consists of all elements whose row and column indices are equal (i == j).\n\nComplete the method:\npublic static int mainDiagonalSum(int[][] matrix, int m)\nThe method should return the sum of all elements present on the main diagonal of the matrix.",
+      "sampleInput": "3\n1 2 3\n4 5 6\n7 8 9",
+      "sampleOutput": "15",
+      "constraints": "1 <= m <= 100\n-1000 <= matrix[i][j] <= 1000",
+      "methodSignature": "public static int mainDiagonalSum(int[][] matrix, int m)",
+      "prefixCode": "import java.util.Scanner;\n\npublic class Main {\n    public static int mainDiagonalSum(int[][] matrix, int m) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        return 0;",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int m = sc.nextInt();\n        int[][] matrix = new int[m][m];\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < m; j++) {\n                matrix[i][j] = sc.nextInt();\n            }\n        }\n        System.out.println(mainDiagonalSum(matrix, m));\n    }\n}",
+      "referenceSolution": "        int sum = 0;\n        for (int i = 0; i < m; i++) {\n            sum += matrix[i][i];\n        }\n        return sum;",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "3\n1 2 3\n4 5 6\n7 8 9",
+          "expectedOutput": "15",
+          "isHidden": false,
+          "explanation": "Main diagonal elements are 1, 5, 9 -> 1 + 5 + 9 = 15."
+        },
+        {
+          "id": 2,
+          "input": "2\n10 20\n30 40",
+          "expectedOutput": "50",
+          "isHidden": false,
+          "explanation": "10 + 40 = 50."
+        },
+        {
+          "id": 3,
+          "input": "4\n1 0 0 0\n0 2 0 0\n0 0 3 0\n0 0 0 4",
+          "expectedOutput": "10",
+          "isHidden": false,
+          "explanation": "1 + 2 + 3 + 4 = 10."
+        }
+      ]
+    },
+    {
+      "id": 904,
+      "paperId": "mix-paper",
+      "number": "Q4",
+      "type": "coding",
+      "title": "Find the Longest Word",
+      "category": "Strings",
+      "difficulty": "Easy",
+      "marks": 10,
+      "tagline": "Tera kaam: findLongestWord(input) method complete karna.",
+      "concept": "String split, array traversal, maximum length comparison, tie-breaking",
+      "statement": "An online text editor is analyzing user input to identify the most significant word in a sentence. One simple way to do this is by finding the longest word entered by the user.\n\nComplete the method that takes a string as an input and returns the longest word present in it.\nIf two or more words have the same maximum length, return the first word that appears in the sentence.",
+      "sampleInput": "I love programming",
+      "sampleOutput": "programming",
+      "constraints": "1 <= length of sentence <= 10^5\nWords separated by spaces.",
+      "methodSignature": "public static String findLongestWord(String input)",
+      "prefixCode": "import java.util.Scanner;\n\npublic class Main {\n    public static String findLongestWord(String input) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        return \"\";",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextLine()) return;\n        String s = sc.nextLine();\n        System.out.println(findLongestWord(s));\n    }\n}",
+      "referenceSolution": "        String l = \"\";\n        String[] a = input.split(\" \");\n        for (String b : a) {\n            if (b.length() > l.length()) {\n                l = b;\n            }\n        }\n        return l;",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "I love programming",
+          "expectedOutput": "programming",
+          "isHidden": false,
+          "explanation": "'programming' has length 11, which is the longest."
+        },
+        {
+          "id": 2,
+          "input": "Java is an amazing language",
+          "expectedOutput": "language",
+          "isHidden": false,
+          "explanation": "'language' has length 8."
+        },
+        {
+          "id": 3,
+          "input": "cat bat rat",
+          "expectedOutput": "cat",
+          "isHidden": false,
+          "explanation": "All words have length 3, return the first word 'cat'."
+        }
+      ]
+    },
+    {
+      "id": 905,
+      "paperId": "mix-paper",
+      "number": "Q5",
+      "type": "coding",
+      "title": "Matrix Multiplication",
+      "category": "2D Arrays / Matrix",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: multiply(A, B, R1, C1, C2) method implement karna.",
+      "concept": "2D Array multiplication, 3 nested loops, row x column dot product",
+      "statement": "A matrix is a rectangular arrangement of numbers in rows and columns. Two matrices can be multiplied only if the number of columns in the first matrix is equal to the number of rows in the second matrix.\n\nGiven two matrices A and B in the form of two dimensional arrays.\nPerform matrix multiplication of two matrices A and B. Complete the given method multiply.\nMethod:\npublic static int[][] multiply(int[][] A, int[][] B, int R1, int C1, int C2)\nReturns resultant matrix of size R1 x C2.",
+      "sampleInput": "2 3\n1 2 3\n4 5 6\n3 2\n1 2\n3 4\n5 6",
+      "sampleOutput": "22 28\n49 64",
+      "constraints": "1 <= R1, C1, C2 <= 50\n-1000 <= Matrix Elements <= 1000",
+      "methodSignature": "public static int[][] multiply(int[][] A, int[][] B, int R1, int C1, int C2)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    public static int[][] multiply(int[][] A, int[][] B, int R1, int C1, int C2) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        int[][] c = new int[R1][C2];\n        return c;",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int R1 = sc.nextInt();\n        int C1 = sc.nextInt();\n        int[][] A = new int[R1][C1];\n        for (int i = 0; i < R1; i++) {\n            for (int j = 0; j < C1; j++) {\n                A[i][j] = sc.nextInt();\n            }\n        }\n        int R2 = sc.nextInt();\n        int C2 = sc.nextInt();\n        int[][] B = new int[R2][C2];\n        for (int i = 0; i < R2; i++) {\n            for (int j = 0; j < C2; j++) {\n                B[i][j] = sc.nextInt();\n            }\n        }\n        int[][] result = multiply(A, B, R1, C1, C2);\n        for (int i = 0; i < R1; i++) {\n            for (int j = 0; j < C2; j++) {\n                System.out.print(result[i][j] + (j == C2 - 1 ? \"\" : \" \"));\n            }\n            System.out.println();\n        }\n    }\n}",
+      "referenceSolution": "        int[][] c = new int[R1][C2];\n        for (int i = 0; i < R1; i++) {\n            for (int j = 0; j < C2; j++) {\n                for (int k = 0; k < C1; k++) {\n                    c[i][j] += A[i][k] * B[k][j];\n                }\n            }\n        }\n        return c;",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "2 3\n1 2 3\n4 5 6\n3 2\n1 2\n3 4\n5 6",
+          "expectedOutput": "22 28\n49 64",
+          "isHidden": false,
+          "explanation": "Standard matrix multiplication result."
+        },
+        {
+          "id": 2,
+          "input": "2 2\n1 2\n3 4\n2 2\n1 0\n0 1",
+          "expectedOutput": "1 2\n3 4",
+          "isHidden": false,
+          "explanation": "Multiplication with 2x2 identity matrix produces identical matrix."
+        }
+      ]
+    },
+    {
+      "id": 906,
+      "paperId": "mix-paper",
+      "number": "Q6",
+      "type": "coding",
+      "title": "Employee Salary Tracker",
+      "category": "OOP & Arrays",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Employee class with getValues, printValues, calTotalSalary, aur maxSalary implement karna.",
+      "concept": "Class encapsulation, private members, array traversal, max finding, index arithmetic",
+      "statement": "The HR department of a company needs a simple system to track and analyze salary records of each employee over their first six months of employment - a standard probation review period at the company.\nThe HR manager wants to store each employee's ID, full name, and their month-wise salary for six months. At the end of the probation period, the system should be able to:\n1. Display all stored details of the employee.\n2. Calculate the total salary earned by the employee over the six months.\n3. Identify the month number (from 1 to 6) in which the employee received the highest salary.\n\nClass Description:\nDesign the class Employee according to:\n- private int e_id\n- private String name\n- private int[] salary (size 6)\n- public void getValues(int id, String name, int[] salary)\n- public void printValues(): Prints e_id, name, and 6 salaries\n- public int calTotalSalary(): Returns total sum over 6 months\n- public int maxSalary(): Returns 1-based month number of highest salary",
+      "sampleInput": "3234\nNitin Kumar\n12313 12001 10333 14923 15783 10010",
+      "sampleOutput": "3234\nNitin Kumar\n12313 12001 10333 14923 15783 10010\nTotal Salary: 75363\nReceived Maximum Salary in Month: 5",
+      "constraints": "salary[i] >= 0",
+      "methodSignature": "class Employee { void getValues(...); void printValues(); int calTotalSalary(); int maxSalary(); }",
+      "prefixCode": "import java.util.*;",
+      "starterUserCode": "class Employee {\n    private int e_id;\n    private String name;\n    private int[] salary;\n\n    public void getValues(int id, String name, int[] salary) {\n        // YOUR CODE\n    }\n\n    public void printValues() {\n        // YOUR CODE\n    }\n\n    public int calTotalSalary() {\n        // YOUR CODE\n        return 0;\n    }\n\n    public int maxSalary() {\n        // YOUR CODE\n        return 0;\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int id = sc.nextInt();\n        sc.nextLine();\n        String name = sc.nextLine();\n        int[] sal = new int[6];\n        for (int i = 0; i < 6; i++) {\n            sal[i] = sc.nextInt();\n        }\n        Employee emp = new Employee();\n        emp.getValues(id, name, sal);\n        emp.printValues();\n        System.out.println(\"Total Salary: \" + emp.calTotalSalary());\n        System.out.println(\"Received Maximum Salary in Month: \" + emp.maxSalary());\n    }\n}",
+      "referenceSolution": "class Employee {\n    private int e_id;\n    private String name;\n    private int[] salary;\n\n    public void getValues(int id, String name, int[] salary) {\n        this.e_id = id;\n        this.name = name;\n        this.salary = salary;\n    }\n\n    public void printValues() {\n        System.out.println(e_id);\n        System.out.println(name);\n        for (int i = 0; i < salary.length; i++) {\n            System.out.print(salary[i] + (i == salary.length - 1 ? \"\" : \" \"));\n        }\n        System.out.println();\n    }\n\n    public int calTotalSalary() {\n        int sum = 0;\n        for (int val : salary) {\n            sum += val;\n        }\n        return sum;\n    }\n\n    public int maxSalary() {\n        int max = salary[0];\n        int indexx = 0;\n        for (int i = 0; i < salary.length; i++) {\n            if (salary[i] > max) {\n                max = salary[i];\n                indexx = i;\n            }\n        }\n        return indexx + 1;\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "3234\nNitin Kumar\n12313 12001 10333 14923 15783 10010",
+          "expectedOutput": "3234\nNitin Kumar\n12313 12001 10333 14923 15783 10010\nTotal Salary: 75363\nReceived Maximum Salary in Month: 5",
+          "isHidden": false,
+          "explanation": "Month 5 had the maximum salary (15783) and total salary is 75363."
+        },
+        {
+          "id": 2,
+          "input": "101\nRohit Sharma\n20000 25000 22000 28000 24000 21000",
+          "expectedOutput": "101\nRohit Sharma\n20000 25000 22000 28000 24000 21000\nTotal Salary: 140000\nReceived Maximum Salary in Month: 4",
+          "isHidden": false,
+          "explanation": "Month 4 had the maximum salary (28000)."
+        }
+      ]
+    },
+    {
+      "id": 907,
+      "paperId": "mix-paper",
+      "number": "Q7",
+      "type": "coding",
+      "title": "Sum of Elements in the Kth Row of a Matrix",
+      "category": "2D Arrays / Matrix",
+      "difficulty": "Easy",
+      "marks": 10,
+      "tagline": "Tera kaam: calculateKthRowSum method implement karna.",
+      "concept": "2D Matrix row access, single-row sum, 0-based indexing",
+      "statement": "A data analysis application stores information in a two-dimensional matrix, where each row represents a separate record.\nWrite a Java program to calculate the sum of all elements present in the Kth row of the given matrix.\nGiven a matrix of size R x C and a valid 0-based row index K, find and print the sum of all elements in the Kth row.",
+      "sampleInput": "3 5\n1 3 5 7 9\n2 4 6 8 10\n2 6 9 3 4\n2",
+      "sampleOutput": "24",
+      "constraints": "1 <= R, C <= 100\n0 <= K < R\n-1000 <= matrix[i][j] <= 1000",
+      "methodSignature": "public static int calculateKthRowSum(int[][] matrix, int r, int c, int k)",
+      "prefixCode": "import java.util.Scanner;\n\npublic class Main {\n    public static int calculateKthRowSum(int[][] matrix, int r, int c, int k) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        return 0;",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int r = sc.nextInt();\n        int c = sc.nextInt();\n        int[][] arr = new int[r][c];\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) {\n                arr[i][j] = sc.nextInt();\n            }\n        }\n        int k = sc.nextInt();\n        System.out.println(calculateKthRowSum(arr, r, c, k));\n    }\n}",
+      "referenceSolution": "        int sum = 0;\n        for (int i = 0; i < c; i++) {\n            sum += matrix[k][i];\n        }\n        return sum;",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "3 5\n1 3 5 7 9\n2 4 6 8 10\n2 6 9 3 4\n2",
+          "expectedOutput": "24",
+          "isHidden": false,
+          "explanation": "Row 2: 2 + 6 + 9 + 3 + 4 = 24."
+        },
+        {
+          "id": 2,
+          "input": "2 3\n10 20 30\n5 15 25\n0",
+          "expectedOutput": "60",
+          "isHidden": false,
+          "explanation": "Row 0: 10 + 20 + 30 = 60."
+        }
+      ]
+    },
+    {
+      "id": 908,
+      "paperId": "mix-paper",
+      "number": "Q8",
+      "type": "coding",
+      "title": "Perfect String Checker",
+      "category": "Strings",
+      "difficulty": "Easy",
+      "marks": 10,
+      "tagline": "Tera kaam: isPerfect(String str) method implement karna.",
+      "concept": "Character counting, parity checks (odd/even), boolean logic",
+      "statement": "Riya is working on a special string checker for her programming assignment.\nShe is given a string containing only four lowercase characters: a, b, x, and y.\nA string is considered perfect if it satisfies both of the following conditions:\n- The total count of a and b is odd\n- The total count of x and y is even\n\nSome characters may not appear in the string, and their count should be considered as zero.\nYour task is to complete the function isPerfect(string) that checks whether the given string is perfect or not.\nIt Returns: true if the string is perfect, false otherwise.",
+      "sampleInput": "xaxbyyb",
+      "sampleOutput": "YES",
+      "constraints": "1 <= length of each string <= 10^5\nContains only 'a', 'b', 'x', 'y'.",
+      "methodSignature": "public static boolean isPerfect(String str)",
+      "prefixCode": "import java.util.Scanner;\n\npublic class Main {\n    public static boolean isPerfect(String str) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        return false;",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNext()) return;\n        String s = sc.next();\n        if (isPerfect(s)) {\n            System.out.println(\"YES\");\n        } else {\n            System.out.println(\"NO\");\n        }\n    }\n}",
+      "referenceSolution": "        int ac = 0, bc = 0, xc = 0, yc = 0;\n        for (int i = 0; i < str.length(); i++) {\n            char ch = str.charAt(i);\n            if (ch == 'a') ac++;\n            else if (ch == 'b') bc++;\n            else if (ch == 'x') xc++;\n            else if (ch == 'y') yc++;\n        }\n        return ((ac + bc) % 2 != 0) && ((xc + yc) % 2 == 0);",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "xaxbyyb",
+          "expectedOutput": "YES",
+          "isHidden": false,
+          "explanation": "a+b count = 3 (odd), x+y count = 4 (even) -> YES."
+        },
+        {
+          "id": 2,
+          "input": "aabbxxyy",
+          "expectedOutput": "NO",
+          "isHidden": false,
+          "explanation": "a+b count = 4 (even, expected odd) -> NO."
+        },
+        {
+          "id": 3,
+          "input": "abaax",
+          "expectedOutput": "NO",
+          "isHidden": false,
+          "explanation": "x+y count = 1 (odd, expected even) -> NO."
+        }
+      ]
+    },
+    {
+      "id": 909,
+      "paperId": "mix-paper",
+      "number": "Q9",
+      "type": "coding",
+      "title": "Class Student - Exam Analysis",
+      "category": "OOP & Sorting",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: Student class implement karna with secondMaxMarks() aur calTotalMarks().",
+      "concept": "Class, parameterized constructor, printValues, array sorting, second maximum",
+      "statement": "Create class Student with:\n- private int studentId;\n- private String name;\n- private int[] marks; (size 5)\n\nImplement:\n1. Student(int studentId, String name, int[] marks)\n2. void printValues(): prints studentId, name, and 5 marks space separated\n3. int calTotalMarks(): returns the sum of 5 subject marks\n4. int secondMaxMarks(): returns the second highest marks scored",
+      "sampleInput": "14\nDeepak Singh\n57 85 45 86 95",
+      "sampleOutput": "14\nDeepak Singh\n57 85 45 86 95\n368\n86",
+      "constraints": "1 <= studentId <= 10^9\n1 <= marks <= 100",
+      "methodSignature": "class Student { Student(int, String, int[]); void printValues(); int calTotalMarks(); int secondMaxMarks(); }",
+      "prefixCode": "import java.util.*;",
+      "starterUserCode": "class Student {\n    private int studentId;\n    private String name;\n    private int[] marks;\n\n    public Student(int studentId, String name, int[] marks) {\n        // YOUR CODE\n    }\n\n    public void printValues() {\n        // YOUR CODE\n    }\n\n    public int calTotalMarks() {\n        // YOUR CODE\n        return 0;\n    }\n\n    public int secondMaxMarks() {\n        // YOUR CODE\n        return 0;\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int id = sc.nextInt();\n        sc.nextLine();\n        String name = sc.nextLine();\n        int[] marks = new int[5];\n        for (int i = 0; i < 5; i++) {\n            marks[i] = sc.nextInt();\n        }\n        Student s = new Student(id, name, marks);\n        s.printValues();\n        System.out.println(s.calTotalMarks());\n        System.out.println(s.secondMaxMarks());\n    }\n}",
+      "referenceSolution": "class Student {\n    private int studentId;\n    private String name;\n    private int[] marks;\n\n    public Student(int studentId, String name, int[] marks) {\n        this.studentId = studentId;\n        this.name = name;\n        this.marks = marks;\n    }\n\n    public void printValues() {\n        System.out.println(studentId);\n        System.out.println(name);\n        for (int i = 0; i < marks.length; i++) {\n            System.out.print(marks[i] + (i == marks.length - 1 ? \"\" : \" \"));\n        }\n        System.out.println();\n    }\n\n    public int calTotalMarks() {\n        int sum = 0;\n        for (int val : marks) {\n            sum += val;\n        }\n        return sum;\n    }\n\n    public int secondMaxMarks() {\n        int[] copy = marks.clone();\n        Arrays.sort(copy);\n        return copy[copy.length - 2];\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "14\nDeepak Singh\n57 85 45 86 95",
+          "expectedOutput": "14\nDeepak Singh\n57 85 45 86 95\n368\n86",
+          "isHidden": false,
+          "explanation": "Total = 368, Second Highest = 86."
+        },
+        {
+          "id": 2,
+          "input": "25\nAman Verma\n90 70 80 60 100",
+          "expectedOutput": "25\nAman Verma\n90 70 80 60 100\n400\n90",
+          "isHidden": false,
+          "explanation": "Total = 400, Second Highest = 90."
+        }
+      ]
+    },
+    {
+      "id": 910,
+      "paperId": "mix-paper",
+      "number": "Q10",
+      "type": "coding",
+      "title": "Class + HashMap Mix: Student Registry",
+      "category": "HashMap & OOP",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: StudentRegistry class mein addStudent, getMarks, aur getTopStudent implement karna.",
+      "concept": "HashMap<Integer, Student>, class interaction, map lookup, max finding over values",
+      "statement": "Create a class StudentRecord with:\n- int id\n- String name\n- int marks\n\nCreate a class StudentRegistry that uses a HashMap<Integer, StudentRecord> to manage records:\n- void addStudent(int id, String name, int marks)\n- int getMarks(int id): Returns the marks of the student with given id, or -1 if not found.\n- String getTopStudent(): Returns the name of the student who scored the highest marks.",
+      "sampleInput": "3\n101 Rahul 85\n102 Priya 95\n103 Amit 78\n102",
+      "sampleOutput": "Marks: 95\nTop Student: Priya",
+      "constraints": "1 <= marks <= 100",
+      "methodSignature": "class StudentRegistry { void addStudent(...); int getMarks(int); String getTopStudent(); }",
+      "prefixCode": "import java.util.*;\n\nclass StudentRecord {\n    int id;\n    String name;\n    int marks;\n    StudentRecord(int id, String name, int marks) {\n        this.id = id;\n        this.name = name;\n        this.marks = marks;\n    }\n}",
+      "starterUserCode": "class StudentRegistry {\n    private HashMap<Integer, StudentRecord> map = new HashMap<>();\n\n    public void addStudent(int id, String name, int marks) {\n        // YOUR CODE\n    }\n\n    public int getMarks(int id) {\n        // YOUR CODE\n        return -1;\n    }\n\n    public String getTopStudent() {\n        // YOUR CODE\n        return \"\";\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        StudentRegistry reg = new StudentRegistry();\n        for (int i = 0; i < n; i++) {\n            int id = sc.nextInt();\n            String name = sc.next();\n            int marks = sc.nextInt();\n            reg.addStudent(id, name, marks);\n        }\n        int queryId = sc.nextInt();\n        System.out.println(\"Marks: \" + reg.getMarks(queryId));\n        System.out.println(\"Top Student: \" + reg.getTopStudent());\n    }\n}",
+      "referenceSolution": "class StudentRegistry {\n    private HashMap<Integer, StudentRecord> map = new HashMap<>();\n\n    public void addStudent(int id, String name, int marks) {\n        map.put(id, new StudentRecord(id, name, marks));\n    }\n\n    public int getMarks(int id) {\n        StudentRecord rec = map.get(id);\n        return rec != null ? rec.marks : -1;\n    }\n\n    public String getTopStudent() {\n        if (map.isEmpty()) return \"\";\n        String topName = \"\";\n        int maxMarks = -1;\n        for (StudentRecord rec : map.values()) {\n            if (rec.marks > maxMarks) {\n                maxMarks = rec.marks;\n                topName = rec.name;\n            }\n        }\n        return topName;\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "3\n101 Rahul 85\n102 Priya 95\n103 Amit 78\n102",
+          "expectedOutput": "Marks: 95\nTop Student: Priya",
+          "isHidden": false,
+          "explanation": "Query 102 gives Priya with 95, who also has highest marks."
+        },
+        {
+          "id": 2,
+          "input": "2\n1 John 60\n2 Smith 90\n5",
+          "expectedOutput": "Marks: -1\nTop Student: Smith",
+          "isHidden": false,
+          "explanation": "ID 5 not present returns -1. Smith has top marks."
+        }
+      ]
+    },
+    {
+      "id": 911,
+      "paperId": "mix-paper",
+      "number": "Q11",
+      "type": "coding",
+      "title": "String + HashMap: Most Frequent Word",
+      "category": "HashMap & Strings",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: mostFrequentWord(String sentence) method implement karna.",
+      "concept": "String split, HashMap<String, Integer> frequency counter, max frequency lookup",
+      "statement": "Given a sentence consisting of space-separated words, count the frequency of each word using a HashMap.\nReturn the word that appears the most number of times in the sentence along with its frequency.\nIf multiple words have the same maximum frequency, return the one that appeared first in the sentence.\nOutput Format: \"<word> -> <count>\"",
+      "sampleInput": "apple banana apple cherry apple banana",
+      "sampleOutput": "apple -> 3",
+      "constraints": "1 <= sentence length <= 10^5",
+      "methodSignature": "public static String mostFrequentWord(String sentence)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    public static String mostFrequentWord(String sentence) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        return \"\";",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextLine()) return;\n        String line = sc.nextLine();\n        System.out.println(mostFrequentWord(line));\n    }\n}",
+      "referenceSolution": "        String[] words = sentence.split(\" \");\n        LinkedHashMap<String, Integer> map = new LinkedHashMap<>();\n        for (String w : words) {\n            map.put(w, map.getOrDefault(w, 0) + 1);\n        }\n        String topWord = \"\";\n        int maxCount = 0;\n        for (Map.Entry<String, Integer> entry : map.entrySet()) {\n            if (entry.getValue() > maxCount) {\n                maxCount = entry.getValue();\n                topWord = entry.getKey();\n            }\n        }\n        return topWord + \" -> \" + maxCount;",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "apple banana apple cherry apple banana",
+          "expectedOutput": "apple -> 3",
+          "isHidden": false,
+          "explanation": "apple appears 3 times."
+        },
+        {
+          "id": 2,
+          "input": "testpad exam testpad oop testpad exam",
+          "expectedOutput": "testpad -> 3",
+          "isHidden": false,
+          "explanation": "testpad appears 3 times."
+        }
+      ]
+    },
+    {
+      "id": 912,
+      "paperId": "mix-paper",
+      "number": "Q12",
+      "type": "coding",
+      "title": "Class + TreeMap: Sorted Price Catalog",
+      "category": "TreeMap & OOP",
+      "difficulty": "Medium",
+      "marks": 10,
+      "tagline": "Tera kaam: PriceCatalog class mein TreeMap ka use karke min aur max price product nikalna.",
+      "concept": "TreeMap<Double, String> natural sorting, firstEntry(), lastEntry()",
+      "statement": "Create a class PriceCatalog that maintains a sorted catalog of products using a TreeMap<Double, String> where the key is the price and value is the product name:\n- void addProduct(String name, double price)\n- String getCheapest(): Returns \"<name> ($<price>)\" of the lowest priced product.\n- String getMostExpensive(): Returns \"<name> ($<price>)\" of the highest priced product.",
+      "sampleInput": "3\nPen 20.0\nLaptop 55000.0\nHeadphones 2500.0",
+      "sampleOutput": "Cheapest: Pen ($20.0)\nMost Expensive: Laptop ($55000.0)",
+      "constraints": "price > 0",
+      "methodSignature": "class PriceCatalog { void addProduct(String, double); String getCheapest(); String getMostExpensive(); }",
+      "prefixCode": "import java.util.*;",
+      "starterUserCode": "class PriceCatalog {\n    private TreeMap<Double, String> treeMap = new TreeMap<>();\n\n    public void addProduct(String name, double price) {\n        // YOUR CODE\n    }\n\n    public String getCheapest() {\n        // YOUR CODE\n        return \"\";\n    }\n\n    public String getMostExpensive() {\n        // YOUR CODE\n        return \"\";\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        PriceCatalog pc = new PriceCatalog();\n        for (int i = 0; i < n; i++) {\n            String name = sc.next();\n            double price = sc.nextDouble();\n            pc.addProduct(name, price);\n        }\n        System.out.println(\"Cheapest: \" + pc.getCheapest());\n        System.out.println(\"Most Expensive: \" + pc.getMostExpensive());\n    }\n}",
+      "referenceSolution": "class PriceCatalog {\n    private TreeMap<Double, String> treeMap = new TreeMap<>();\n\n    public void addProduct(String name, double price) {\n        treeMap.put(price, name);\n    }\n\n    public String getCheapest() {\n        if (treeMap.isEmpty()) return \"None\";\n        Map.Entry<Double, String> first = treeMap.firstEntry();\n        return first.getValue() + \" ($\" + first.getKey() + \")\";\n    }\n\n    public String getMostExpensive() {\n        if (treeMap.isEmpty()) return \"None\";\n        Map.Entry<Double, String> last = treeMap.lastEntry();\n        return last.getValue() + \" ($\" + last.getKey() + \")\";\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "3\nPen 20.0\nLaptop 55000.0\nHeadphones 2500.0",
+          "expectedOutput": "Cheapest: Pen ($20.0)\nMost Expensive: Laptop ($55000.0)",
+          "isHidden": false,
+          "explanation": "Pen is lowest (20.0) and Laptop is highest (55000.0)."
+        },
+        {
+          "id": 2,
+          "input": "2\nCar 1200000.0\nBike 85000.0",
+          "expectedOutput": "Cheapest: Bike ($85000.0)\nMost Expensive: Car ($1200000.0)",
+          "isHidden": false,
+          "explanation": "Bike is cheapest, Car is most expensive."
+        }
+      ]
+    },
+    {
+      "id": 913,
+      "paperId": "mix-paper",
+      "number": "Q13",
+      "type": "coding",
+      "title": "TreeMap: Alphabetical Character Frequency",
+      "category": "TreeMap & Strings",
+      "difficulty": "Easy",
+      "marks": 10,
+      "tagline": "Tera kaam: printCharFrequency(String s) method implement karna.",
+      "concept": "TreeMap<Character, Integer> auto-sorting, iterating key-value pairs",
+      "statement": "Given a string, count the frequency of each lowercase alphabet and print them in alphabetical sorted order using a TreeMap<Character, Integer>.\nIgnore spaces and punctuation.\nOutput Format: For each character, print \"<char>:<count>\" space separated.",
+      "sampleInput": "programming",
+      "sampleOutput": "a:1 g:2 i:1 m:2 n:1 o:1 p:1 r:2",
+      "constraints": "1 <= string length <= 10^5",
+      "methodSignature": "public static void printCharFrequency(String s)",
+      "prefixCode": "import java.util.*;\n\npublic class Main {\n    public static void printCharFrequency(String s) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        // YOUR CODE",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextLine()) return;\n        String line = sc.nextLine();\n        printCharFrequency(line);\n    }\n}",
+      "referenceSolution": "        TreeMap<Character, Integer> map = new TreeMap<>();\n        for (int i = 0; i < s.length(); i++) {\n            char ch = s.charAt(i);\n            if (Character.isLetter(ch)) {\n                ch = Character.toLowerCase(ch);\n                map.put(ch, map.getOrDefault(ch, 0) + 1);\n            }\n        }\n        StringBuilder sb = new StringBuilder();\n        for (Map.Entry<Character, Integer> entry : map.entrySet()) {\n            if (sb.length() > 0) sb.append(\" \");\n            sb.append(entry.getKey()).append(\":\").append(entry.getValue());\n        }\n        System.out.println(sb.toString());",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "programming",
+          "expectedOutput": "a:1 g:2 i:1 m:2 n:1 o:1 p:1 r:2",
+          "isHidden": false,
+          "explanation": "Characters counted and printed alphabetically."
+        },
+        {
+          "id": 2,
+          "input": "java",
+          "expectedOutput": "a:2 j:1 v:1",
+          "isHidden": false,
+          "explanation": "a:2, j:1, v:1."
+        }
+      ]
+    },
+    {
+      "id": 914,
+      "paperId": "mix-paper",
+      "number": "Q14",
+      "type": "coding",
+      "title": "Matrix Secondary Diagonal Sum",
+      "category": "2D Arrays / Matrix",
+      "difficulty": "Easy",
+      "marks": 10,
+      "tagline": "Tera kaam: secondaryDiagonalSum(int[][] matrix, int m) method implement karna.",
+      "concept": "2D Array index math, anti-diagonal (i + j == m - 1)",
+      "statement": "Given an m x m square matrix, write a method to calculate the sum of elements on its secondary diagonal (anti-diagonal).\nThe secondary diagonal runs from the top-right corner to the bottom-left corner of the matrix, satisfying i + j = m - 1.",
+      "sampleInput": "3\n1 2 3\n4 5 6\n7 8 9",
+      "sampleOutput": "15",
+      "constraints": "1 <= m <= 100",
+      "methodSignature": "public static int secondaryDiagonalSum(int[][] matrix, int m)",
+      "prefixCode": "import java.util.Scanner;\n\npublic class Main {\n    public static int secondaryDiagonalSum(int[][] matrix, int m) {\n        // 👇 YOUR CODE STARTS HERE",
+      "starterUserCode": "        return 0;",
+      "suffixCode": "        // 👆 YOUR CODE ENDS HERE\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int m = sc.nextInt();\n        int[][] arr = new int[m][m];\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < m; j++) {\n                arr[i][j] = sc.nextInt();\n            }\n        }\n        System.out.println(secondaryDiagonalSum(arr, m));\n    }\n}",
+      "referenceSolution": "        int sum = 0;\n        for (int i = 0; i < m; i++) {\n            sum += matrix[i][m - 1 - i];\n        }\n        return sum;",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "3\n1 2 3\n4 5 6\n7 8 9",
+          "expectedOutput": "15",
+          "isHidden": false,
+          "explanation": "Elements are 3, 5, 7 -> 3 + 5 + 7 = 15."
+        },
+        {
+          "id": 2,
+          "input": "2\n1 9\n8 2",
+          "expectedOutput": "17",
+          "isHidden": false,
+          "explanation": "9 + 8 = 17."
+        }
+      ]
+    },
+    {
+      "id": 915,
+      "paperId": "mix-paper",
+      "number": "Q15",
+      "type": "coding",
+      "title": "Class + HashMap: Department Employee Grouping",
+      "category": "HashMap & Collections",
+      "difficulty": "Hard",
+      "marks": 10,
+      "tagline": "Tera kaam: DepartmentDirectory class implement karna using HashMap<String, ArrayList<String>>.",
+      "concept": "HashMap<String, ArrayList<String>>, grouping by key, collections in classes",
+      "statement": "Create a class DepartmentDirectory that groups employees by their department:\n- void addEmployee(String dept, String empName): Adds the employee name under the given department.\n- void printDepartment(String dept): Prints the department name followed by comma-separated employee names in the order they were added. If the department has no employees, print \"<dept>: No Employees\".\nFormat: \"<dept>: <name1>, <name2>\"",
+      "sampleInput": "4\nIT Rahul\nHR Priya\nIT Amit\nFinance Sneha\nIT\nMarketing",
+      "sampleOutput": "IT: Rahul, Amit\nMarketing: No Employees",
+      "constraints": "1 <= employees <= 1000",
+      "methodSignature": "class DepartmentDirectory { void addEmployee(String, String); void printDepartment(String); }",
+      "prefixCode": "import java.util.*;",
+      "starterUserCode": "class DepartmentDirectory {\n    private HashMap<String, ArrayList<String>> map = new HashMap<>();\n\n    public void addEmployee(String dept, String empName) {\n        // YOUR CODE\n    }\n\n    public void printDepartment(String dept) {\n        // YOUR CODE\n    }\n}\n\npublic class Main {",
+      "suffixCode": "    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (!sc.hasNextInt()) return;\n        int n = sc.nextInt();\n        DepartmentDirectory dir = new DepartmentDirectory();\n        for (int i = 0; i < n; i++) {\n            String dept = sc.next();\n            String name = sc.next();\n            dir.addEmployee(dept, name);\n        }\n        String q1 = sc.next();\n        String q2 = sc.next();\n        dir.printDepartment(q1);\n        dir.printDepartment(q2);\n    }\n}",
+      "referenceSolution": "class DepartmentDirectory {\n    private HashMap<String, ArrayList<String>> map = new HashMap<>();\n\n    public void addEmployee(String dept, String empName) {\n        map.putIfAbsent(dept, new ArrayList<>());\n        map.get(dept).add(empName);\n    }\n\n    public void printDepartment(String dept) {\n        ArrayList<String> list = map.get(dept);\n        if (list == null || list.isEmpty()) {\n            System.out.println(dept + \": No Employees\");\n        } else {\n            System.out.println(dept + \": \" + String.join(\", \", list));\n        }\n    }\n}\n\npublic class Main {",
+      "testcases": [
+        {
+          "id": 1,
+          "input": "4\nIT Rahul\nHR Priya\nIT Amit\nFinance Sneha\nIT\nMarketing",
+          "expectedOutput": "IT: Rahul, Amit\nMarketing: No Employees",
+          "isHidden": false,
+          "explanation": "IT has Rahul and Amit. Marketing has no employees."
+        },
+        {
+          "id": 2,
+          "input": "2\nSales John\nSales Alice\nSales\nHR",
+          "expectedOutput": "Sales: John, Alice\nHR: No Employees",
+          "isHidden": false,
+          "explanation": "Sales has John and Alice."
+        }
+      ]
+    }
+  ]
+},
+
+{
   "id": "paper-4",
   "day": "Day 5",
   "title": "Practice Test Paper 4",
@@ -5302,7 +5904,7 @@ Invalid Marks: xyz`,
 
 // Active Paper Helper
 export const getActivePaperId = () => {
-  return localStorage.getItem('active_paper_id') || 'paper-4';
+  return localStorage.getItem('active_paper_id') || 'mix-paper';
 };
 
 export const setActivePaperId = (paperId) => {
@@ -5310,7 +5912,7 @@ export const setActivePaperId = (paperId) => {
 };
 
 // Practice Papers helpers
-const PAPERS_DATA_VERSION = 'v7_paper4_added';
+const PAPERS_DATA_VERSION = 'v8_mix_paper_added';
 
 export const getPracticePapers = () => {
   const currentVer = localStorage.getItem('practice_papers_version');

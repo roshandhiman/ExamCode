@@ -20,6 +20,27 @@
           localStorage.removeItem('examcode_auth_session_v4');
           localStorage.removeItem('examcode_secure_token');
         } catch(e) {}
+
+        // Global Anti-Inspect: Disable Context Menu (Right Click)
+        document.addEventListener('contextmenu', function(e) {
+          e.preventDefault();
+          return false;
+        }, { capture: true });
+
+        // Global Anti-Inspect: Block DevTools and View-Source Shortcuts
+        document.addEventListener('keydown', function(e) {
+          if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+            (e.metaKey && e.altKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+            (e.ctrlKey && (e.key === 'U' || e.key === 'u')) ||
+            (e.metaKey && (e.key === 'U' || e.key === 'u'))
+          ) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }, { capture: true });
       })();
     </script>
   </head>
