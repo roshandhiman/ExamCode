@@ -7,7 +7,7 @@ import Admin from './pages/Admin';
 import OopNotes from './pages/OopNotes';
 import ScorecardModal from './components/ScorecardModal';
 import LockScreen from './components/LockScreen';
-import { verifySessionWithServer, logoutSession, purgeClientSession } from './services/security';
+import { verifySessionWithServer, logoutSession, purgeLegacySessions } from './services/security';
 
 function App() {
   const [showScorecard, setShowScorecard] = useState(false);
@@ -16,10 +16,9 @@ function App() {
 
   useEffect(() => {
     const checkToken = async () => {
-      // Purge legacy client-only session keys
-      purgeClientSession();
+      // Purge only legacy versions, preserve valid active session
+      purgeLegacySessions();
 
-      // Authoritative server-side verification
       const isValid = await verifySessionWithServer();
       setIsAuthenticated(isValid);
       setIsCheckingAuth(false);
@@ -28,7 +27,7 @@ function App() {
     checkToken();
   }, []);
 
-  // Continuous background session heartbeat: re-verifies session validity with server
+  // Continuous background session heartbeat: re-verifies session validity with server periodically
   useEffect(() => {
     if (!isAuthenticated) return;
 
@@ -36,28 +35,16 @@ function App() {
       const isValid = await verifySessionWithServer();
       if (!isValid) {
         setIsAuthenticated(false);
-        window.location.reload();
       }
     };
 
-    const interval = setInterval(enforceActiveSession, 30000);
-    window.addEventListener('focus', enforceActiveSession);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        enforceActiveSession();
-      }
-    });
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('focus', enforceActiveSession);
-    };
+    const interval = setInterval(enforceActiveSession, 60000);
+    return () => clearInterval(interval);
   }, [isAuthenticated]);
 
   const handleLockSite = async () => {
     await logoutSession();
     setIsAuthenticated(false);
-    window.location.reload();
   };
 
   const handleUnlock = () => {

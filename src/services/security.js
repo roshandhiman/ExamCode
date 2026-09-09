@@ -4,7 +4,44 @@
 
 export const SESSION_TOKEN_KEY = 'examcode_auth_session_v6';
 
-// Verify password securely against Serverless Backend API (Plaintext password never stored in frontend)
+// Store token in both sessionStorage and localStorage for browser resilience (e.g. Brave shields)
+export function setStoredToken(token) {
+  try {
+    sessionStorage.setItem(SESSION_TOKEN_KEY, token);
+    localStorage.setItem(SESSION_TOKEN_KEY, token);
+  } catch {}
+}
+
+export function getStoredToken() {
+  try {
+    return sessionStorage.getItem(SESSION_TOKEN_KEY) || localStorage.getItem(SESSION_TOKEN_KEY) || null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearStoredToken() {
+  try {
+    sessionStorage.removeItem(SESSION_TOKEN_KEY);
+    localStorage.removeItem(SESSION_TOKEN_KEY);
+  } catch {}
+}
+
+// Purge ONLY legacy session keys (v5, v4, v3, v2) — NEVER active session
+export function purgeLegacySessions() {
+  try {
+    sessionStorage.removeItem('examcode_auth_session_v5');
+    sessionStorage.removeItem('examcode_auth_session_v4');
+    sessionStorage.removeItem('examcode_auth_session_v3');
+    sessionStorage.removeItem('examcode_auth_session_v2');
+    sessionStorage.removeItem('examcode_secure_token');
+    localStorage.removeItem('examcode_auth_session_v5');
+    localStorage.removeItem('examcode_auth_session_v4');
+    localStorage.removeItem('examcode_secure_token');
+  } catch {}
+}
+
+// Verify password securely against Serverless Backend API
 export async function authenticatePassword(enteredPassword) {
   if (!enteredPassword || typeof enteredPassword !== 'string') {
     return { success: false, error: 'Password is required' };
@@ -21,9 +58,7 @@ export async function authenticatePassword(enteredPassword) {
     const data = await res.json().catch(() => ({}));
     if (res.ok && data.success) {
       if (data.token) {
-        try {
-          sessionStorage.setItem(SESSION_TOKEN_KEY, data.token);
-        } catch (e) {}
+        setStoredToken(data.token);
       }
       return { success: true, token: data.token };
     }
@@ -32,7 +67,7 @@ export async function authenticatePassword(enteredPassword) {
       success: false, 
       error: data.error || 'Incorrect password. Access denied.' 
     };
-  } catch (e) {
+  } catch {
     return { 
       success: false, 
       error: 'Unable to connect to auth service. Please verify your connection.' 
@@ -45,7 +80,7 @@ export async function authenticatePassword(enteredPassword) {
 // Returns false if token is forged, expired, missing, or altered via DevTools.
 export async function verifySessionWithServer(explicitToken) {
   try {
-    const token = explicitToken || (typeof window !== 'undefined' ? sessionStorage.getItem(SESSION_TOKEN_KEY) : null);
+    const token = explicitToken || getStoredToken();
     const headers = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -65,11 +100,11 @@ export async function verifySessionWithServer(explicitToken) {
       }
     }
 
-    // Server rejected session: purge client storage
-    purgeClientSession();
+    // Server rejected session: clear current token
+    clearStoredToken();
     return false;
-  } catch (e) {
-    // If completely offline or network fails, do not unlock!
+  } catch {
+    // If network temporarily errors, don't unlock
     return false;
   }
 }
@@ -82,25 +117,17 @@ export async function logoutSession() {
       credentials: 'include'
     }).catch(() => {});
   } finally {
-    purgeClientSession();
+    clearStoredToken();
+    purgeLegacySessions();
   }
 }
 
-// Purge all tokens and legacy sessions from storage
-export function purgeClientSession() {
-  try {
-    sessionStorage.removeItem(SESSION_TOKEN_KEY);
-    sessionStorage.removeItem('examcode_auth_session_v5');
-    sessionStorage.removeItem('examcode_auth_session_v4');
-    sessionStorage.removeItem('examcode_auth_session_v3');
-    sessionStorage.removeItem('examcode_auth_session_v2');
-    sessionStorage.removeItem('examcode_secure_token');
-    localStorage.removeItem('examcode_secure_token');
-    localStorage.removeItem('examcode_auth_session_v4');
-  } catch (e) {}
-}
-
-// Export for compatibility: Delegates directly to server verification
+// Export for compatibility
 export async function validateSessionToken(token) {
   return await verifySessionWithServer(token);
+}
+
+export function purgeClientSession() {
+  clearStoredToken();
+  purgeLegacySessions();
 }
