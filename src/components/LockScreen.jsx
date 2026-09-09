@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Flame, Lock, KeyRound, Eye, EyeOff, ShieldAlert, Loader, Sparkles, RefreshCw } from 'lucide-react';
-import { authenticatePassword } from '../services/security';
+import { authenticatePassword, SESSION_TOKEN_KEY } from '../services/security';
 
 const MEMES = [
   {
@@ -99,16 +99,19 @@ export default function LockScreen({ onUnlock }) {
         setMemeIndex(1);
 
         const troll = TROLL_MESSAGES[Math.floor(Math.random() * TROLL_MESSAGES.length)];
-        if (nextAttempts >= 5) {
+        if (result.error && (result.error.includes('configured') || result.error.includes('service'))) {
+          setErrorMessage(result.error);
+        } else if (nextAttempts >= 5) {
           setLockoutUntil(Date.now() + 30000);
           setErrorMessage(`🚨 5 Failed Attempts! System locked for 30s. ${troll}`);
         } else {
-          setErrorMessage(`${troll} (Attempt ${nextAttempts})`);
+          setErrorMessage(`${result.error || troll} (Attempt ${nextAttempts})`);
         }
       }
     } catch (err) {
+      console.error('Auth error:', err);
       setError(true);
-      setErrorMessage('Authentication error. Try again! 🤔');
+      setErrorMessage(err?.message || 'Authentication error. Try again! 🤔');
     } finally {
       setLoading(false);
     }
