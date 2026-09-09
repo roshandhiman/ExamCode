@@ -118,9 +118,9 @@ function localExecutorPlugin() {
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', async () => {
           try {
-            const { password } = JSON.parse(body);
+            const { password } = JSON.parse(body || '{}');
             const crypto = await import('crypto');
-            const AUTH_SALT = 'examCODE_s4lt_v4_epoch99';
+            const { createSignedToken } = await import('./api/_auth.js');
 
             const serverPass = process.env.APP_PASSWORD || process.env.VITE_APP_PASSWORD;
             let isValid = false;
@@ -132,9 +132,8 @@ function localExecutorPlugin() {
 
             res.setHeader('Content-Type', 'application/json');
             if (isValid) {
-              const timestamp = Date.now();
-              const tokenSignature = crypto.createHmac('sha256', AUTH_SALT).update(`auth_${timestamp}_v4`).digest('hex');
-              const token = Buffer.from(JSON.stringify({ t: timestamp, v: 'v4', s: tokenSignature })).toString('base64');
+              const token = createSignedToken();
+              res.setHeader('Set-Cookie', `examcode_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${7 * 24 * 3600}`);
               return res.end(JSON.stringify({ success: true, token }));
             } else {
               res.statusCode = 401;
@@ -146,6 +145,38 @@ function localExecutorPlugin() {
             return res.end(JSON.stringify({ error: e.message }));
           }
         });
+      });
+
+      server.middlewares.use('/api/verify', async (req, res) => {
+        const { extractToken, verifySignedToken } = await import('./api/_auth.js');
+        const token = extractToken(req);
+        const isValid = token ? verifySignedToken(token) : false;
+
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+
+        if (isValid) {
+          return res.end(JSON.stringify({ authenticated: true, timestamp: Date.now() }));
+        }
+
+        res.statusCode = 401;
+        res.setHeader('Set-Cookie', 'examcode_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0');
+        return res.end(JSON.stringify({ authenticated: false, error: 'Invalid or expired session' }));
+      });
+
+      server.middlewares.use('/api/logout', (req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Set-Cookie', 'examcode_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0');
+        return res.end(JSON.stringify({ success: true }));
+      });
+
+      server.middlewares.use('/api/session-status', async (req, res) => {
+        const { extractToken, verifySignedToken } = await import('./api/_auth.js');
+        const token = extractToken(req);
+        const valid = token ? verifySignedToken(token) : false;
+
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({ epoch: 'v5', valid, serverTime: Date.now() }));
       });
     }
   };

@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Flame, Lock, KeyRound, Eye, EyeOff, ShieldAlert, Loader, Sparkles, RefreshCw } from 'lucide-react';
-import { authenticatePassword, SESSION_TOKEN_KEY } from '../services/security';
+import { authenticatePassword } from '../services/security';
 
 const MEMES = [
   {
     title: "Bro trying to Inspect Element 💻💀",
     url: "https://media.giphy.com/media/LmN8OYiY4m0X85K0Zz/giphy.gif",
-    caption: "Bro typing `sessionStorage.setItem('site_auth', true)` like a master hacker 😂"
+    caption: "Bro trying to hack via DevTools console like a master hacker 😂"
   },
   {
     title: "Hahaha You Thought You Could Bypass? 🤣",
     url: "https://media.giphy.com/media/10JhviFuU2gWD6/giphy.gif",
-    caption: "Serverless + Salted SHA-256 says: NO WAY MUNNA! 💀"
+    caption: "Serverless HMAC-SHA256 says: NO WAY MUNNA! 💀"
   },
   {
     title: "Cheers to everyone trying to hack this 🥂🍾",
@@ -332,7 +332,7 @@ export default function LockScreen({ onUnlock }) {
         </form>
 
         <div style={{ marginTop: '1.4rem', fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.35)' }}>
-          🔒 Impossible to bypass • Cryptographically Salted SHA-256 🛡️
+          🔒 Server-Authoritative Cryptographic Authentication 🛡️
         </div>
       </div>
     </div>

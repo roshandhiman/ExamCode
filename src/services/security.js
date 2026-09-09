@@ -1,29 +1,10 @@
 // Cryptographic Security Service for examCODE
-// Protects against Source Code Inspection, Rainbow Tables, Bypass, and Session Hijacking
+// All session validations are Authoritative & Server-Side Verified via /api/verify.
+// Client inspect scripts, storage forging, and fake tokens are completely blocked.
 
-export const SESSION_TOKEN_KEY = 'examcode_auth_session_v4';
-const AUTH_SALT = 'examCODE_s4lt_v4_epoch99';
+export const SESSION_TOKEN_KEY = 'examcode_auth_session_v6';
 
-// Compute SHA-256 hash using native Web Crypto API
-export async function computeSha256(str) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(str);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-// Constant-time string comparison to prevent timing attacks
-function constantTimeCompare(a, b) {
-  if (a.length !== b.length) return false;
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return result === 0;
-}
-
-// Verify password securely against Serverless Backend API (Plaintext password never stored or bundled in frontend)
+// Verify password securely against Serverless Backend API (Plaintext password never stored in frontend)
 export async function authenticatePassword(enteredPassword) {
   if (!enteredPassword || typeof enteredPassword !== 'string') {
     return { success: false, error: 'Password is required' };
@@ -33,13 +14,20 @@ export async function authenticatePassword(enteredPassword) {
     const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // Send & receive HttpOnly cookies
       body: JSON.stringify({ password: enteredPassword.trim() })
     });
 
     const data = await res.json().catch(() => ({}));
-    if (res.ok && data.success && data.token) {
+    if (res.ok && data.success) {
+      if (data.token) {
+        try {
+          sessionStorage.setItem(SESSION_TOKEN_KEY, data.token);
+        } catch (e) {}
+      }
       return { success: true, token: data.token };
     }
+
     return { 
       success: false, 
       error: data.error || 'Incorrect password. Access denied.' 
@@ -52,23 +40,67 @@ export async function authenticatePassword(enteredPassword) {
   }
 }
 
-// Validate whether a stored session token is genuine, active, and matches current security epoch
-export async function validateSessionToken(token) {
-  if (!token || typeof token !== 'string') return false;
+// Server-Authoritative Session Verification:
+// Communicates with backend /api/verify to validate cryptographic HMAC signature.
+// Returns false if token is forged, expired, missing, or altered via DevTools.
+export async function verifySessionWithServer(explicitToken) {
   try {
-    const decoded = JSON.parse(atob(token));
-    // Verify token version v4 to guarantee complete logout of all previous sessions
-    if (!decoded.t || !decoded.s || decoded.v !== 'v4') return false;
+    const token = explicitToken || (typeof window !== 'undefined' ? sessionStorage.getItem(SESSION_TOKEN_KEY) : null);
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
 
-    // Check expiration: maximum 7 days active session
-    const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
-    if (Date.now() - decoded.t > MAX_AGE_MS) return false;
+    const res = await fetch('/api/verify', {
+      method: 'GET',
+      credentials: 'include',
+      headers,
+      cache: 'no-store'
+    });
 
-    // Validate signature presence
-    if (typeof decoded.s !== 'string' || decoded.s.length < 16) return false;
+    if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (data.authenticated) {
+        return true;
+      }
+    }
 
-    return true;
+    // Server rejected session: purge client storage
+    purgeClientSession();
+    return false;
   } catch (e) {
+    // If completely offline or network fails, do not unlock!
     return false;
   }
+}
+
+// Secure Logout: cleans server-side HttpOnly cookie and browser storage
+export async function logoutSession() {
+  try {
+    await fetch('/api/logout', {
+      method: 'POST',
+      credentials: 'include'
+    }).catch(() => {});
+  } finally {
+    purgeClientSession();
+  }
+}
+
+// Purge all tokens and legacy sessions from storage
+export function purgeClientSession() {
+  try {
+    sessionStorage.removeItem(SESSION_TOKEN_KEY);
+    sessionStorage.removeItem('examcode_auth_session_v5');
+    sessionStorage.removeItem('examcode_auth_session_v4');
+    sessionStorage.removeItem('examcode_auth_session_v3');
+    sessionStorage.removeItem('examcode_auth_session_v2');
+    sessionStorage.removeItem('examcode_secure_token');
+    localStorage.removeItem('examcode_secure_token');
+    localStorage.removeItem('examcode_auth_session_v4');
+  } catch (e) {}
+}
+
+// Export for compatibility: Delegates directly to server verification
+export async function validateSessionToken(token) {
+  return await verifySessionWithServer(token);
 }

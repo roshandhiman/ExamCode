@@ -2,14 +2,14 @@
 // Runs 100% on Node.js backend. Plaintext password is NEVER sent or exposed in client bundles.
 
 import crypto from 'crypto';
-
-const AUTH_SALT = process.env.AUTH_SALT || 'examCODE_s4lt_v4_epoch99';
+import { createSignedToken } from './_auth.js';
 
 export default async function handler(req, res) {
+  const origin = req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -46,14 +46,24 @@ export default async function handler(req, res) {
     const isValid = (passBuf.length === serverBuf.length) && crypto.timingSafeEqual(passBuf, serverBuf);
 
     if (isValid) {
-      const timestamp = Date.now();
-      const tokenSignature = crypto.createHmac('sha256', AUTH_SALT).update(`auth_${timestamp}_v4`).digest('hex');
-      const token = Buffer.from(JSON.stringify({ t: timestamp, v: 'v4', s: tokenSignature })).toString('base64');
+      const token = createSignedToken();
 
+      // Set tamper-proof HttpOnly cookie. DevTools scripts and browser JS cannot access or alter HttpOnly cookies.
+      const isProd = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
+      const cookieFlags = [
+        `examcode_session=${token}`,
+        'Path=/',
+        'HttpOnly',
+        'SameSite=Lax',
+        `Max-Age=${7 * 24 * 60 * 60}`, // 7 days
+        ...(isProd ? ['Secure'] : [])
+      ].join('; ');
+
+      res.setHeader('Set-Cookie', cookieFlags);
       return res.status(200).json({ success: true, token });
     }
 
-    // Delay slightly to prevent rapid brute-force attacks
+    // Delay slightly to mitigate brute-force guessing
     await new Promise(resolve => setTimeout(resolve, 350));
     return res.status(401).json({ success: false, error: 'Invalid password. Access denied.' });
   } catch (err) {

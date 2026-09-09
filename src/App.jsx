@@ -7,7 +7,7 @@ import Admin from './pages/Admin';
 import OopNotes from './pages/OopNotes';
 import ScorecardModal from './components/ScorecardModal';
 import LockScreen from './components/LockScreen';
-import { validateSessionToken, SESSION_TOKEN_KEY } from './services/security';
+import { verifySessionWithServer, logoutSession, purgeClientSession } from './services/security';
 
 function App() {
   const [showScorecard, setShowScorecard] = useState(false);
@@ -16,63 +16,46 @@ function App() {
 
   useEffect(() => {
     const checkToken = async () => {
-      // FORCE GLOBAL LOGOUT: Purge all legacy sessions
-      try {
-        sessionStorage.removeItem('examcode_secure_token');
-        sessionStorage.removeItem('examcode_auth_session_v2');
-        sessionStorage.removeItem('examcode_auth_session_v3');
-        localStorage.removeItem('examcode_secure_token');
-      } catch (e) {}
+      // Purge legacy client-only session keys
+      purgeClientSession();
 
-      const token = sessionStorage.getItem(SESSION_TOKEN_KEY);
-      if (token) {
-        const isValid = await validateSessionToken(token);
-        setIsAuthenticated(isValid);
-        if (!isValid) {
-          sessionStorage.removeItem(SESSION_TOKEN_KEY);
-        }
-      } else {
-        setIsAuthenticated(false);
-      }
+      // Authoritative server-side verification
+      const isValid = await verifySessionWithServer();
+      setIsAuthenticated(isValid);
       setIsCheckingAuth(false);
     };
+
     checkToken();
   }, []);
 
-  // Continuous background session heartbeat: instantly logs out and reloads if session is invalidated
+  // Continuous background session heartbeat: re-verifies session validity with server
   useEffect(() => {
     if (!isAuthenticated) return;
 
     const enforceActiveSession = async () => {
-      const token = sessionStorage.getItem(SESSION_TOKEN_KEY);
-      if (!token) {
-        setIsAuthenticated(false);
-        window.location.reload();
-        return;
-      }
-      const isValid = await validateSessionToken(token);
+      const isValid = await verifySessionWithServer();
       if (!isValid) {
-        sessionStorage.clear();
         setIsAuthenticated(false);
         window.location.reload();
       }
     };
 
-    const interval = setInterval(enforceActiveSession, 2000);
+    const interval = setInterval(enforceActiveSession, 30000);
     window.addEventListener('focus', enforceActiveSession);
-    document.addEventListener('visibilitychange', enforceActiveSession);
-    window.addEventListener('storage', enforceActiveSession);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        enforceActiveSession();
+      }
+    });
 
     return () => {
       clearInterval(interval);
       window.removeEventListener('focus', enforceActiveSession);
-      document.removeEventListener('visibilitychange', enforceActiveSession);
-      window.removeEventListener('storage', enforceActiveSession);
     };
   }, [isAuthenticated]);
 
-  const handleLockSite = () => {
-    sessionStorage.removeItem(SESSION_TOKEN_KEY);
+  const handleLockSite = async () => {
+    await logoutSession();
     setIsAuthenticated(false);
     window.location.reload();
   };
