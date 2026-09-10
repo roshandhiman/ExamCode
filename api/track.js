@@ -24,7 +24,8 @@ export default async function handler(req, res) {
       event = 'visit',
       visitorId = 'anon',
       screen = '',
-      referrer = ''
+      referrer = '',
+      name = ''
     } = body || {};
 
     // Capture real client IP and geolocation headers from Vercel edge
@@ -49,6 +50,7 @@ export default async function handler(req, res) {
       device: userAgent,
       screen,
       visitorId,
+      name: (name || '').trim() || 'Anonymous',
       referrer
     };
 

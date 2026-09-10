@@ -14,6 +14,22 @@ function getOrCreateVisitorId() {
   }
 }
 
+export function getUserName() {
+  try {
+    return localStorage.getItem('examcode_user_name') || '';
+  } catch {
+    return '';
+  }
+}
+
+export function setUserName(name) {
+  try {
+    if (name && typeof name === 'string') {
+      localStorage.setItem('examcode_user_name', name.trim());
+    }
+  } catch {}
+}
+
 // Log initial site visit (Only fires once per user / browser)
 export function logSiteVisitOnce() {
   if (typeof window === 'undefined') return;
@@ -24,7 +40,6 @@ export function logSiteVisitOnce() {
     const lastLogged = localStorage.getItem('examcode_visit_logged_date');
 
     if (lastLogged === today) {
-      // Already recorded for today: skip
       return;
     }
 
@@ -33,12 +48,14 @@ export function logSiteVisitOnce() {
     const visitorId = getOrCreateVisitorId();
     const screen = `${window.screen?.width || 0}x${window.screen?.height || 0}`;
     const referrer = document.referrer || 'Direct';
+    const name = getUserName() || 'Guest';
 
     const payload = JSON.stringify({
       event: 'SITE_VISIT',
       visitorId,
       screen,
-      referrer
+      referrer,
+      name
     });
 
     if (navigator.sendBeacon) {
@@ -54,18 +71,17 @@ export function logSiteVisitOnce() {
   } catch {}
 }
 
-// Log successful portal login (Fires once per unlocked login session)
-export function logLoginOnce() {
+// Log successful portal login with name
+export function logLoginOnce(explicitName) {
   if (typeof window === 'undefined') return;
 
   try {
-    const sessionLogged = sessionStorage.getItem('examcode_login_logged');
-    if (sessionLogged) {
-      // Already logged for this session: skip
+    const name = (explicitName || getUserName() || '').trim();
+    const sessionKey = `examcode_login_logged_${name || 'anon'}`;
+    if (sessionStorage.getItem(sessionKey)) {
       return;
     }
-
-    sessionStorage.setItem('examcode_login_logged', 'true');
+    sessionStorage.setItem(sessionKey, 'true');
 
     const visitorId = getOrCreateVisitorId();
     const screen = `${window.screen?.width || 0}x${window.screen?.height || 0}`;
@@ -73,7 +89,8 @@ export function logLoginOnce() {
     const payload = JSON.stringify({
       event: 'LOGIN_SUCCESS',
       visitorId,
-      screen
+      screen,
+      name: name || 'Anonymous'
     });
 
     if (navigator.sendBeacon) {
@@ -88,3 +105,33 @@ export function logLoginOnce() {
     }
   } catch {}
 }
+
+// Log name submission
+export function logNameSubmitted(name) {
+  if (typeof window === 'undefined' || !name) return;
+
+  try {
+    setUserName(name);
+    const visitorId = getOrCreateVisitorId();
+    const screen = `${window.screen?.width || 0}x${window.screen?.height || 0}`;
+
+    const payload = JSON.stringify({
+      event: 'NAME_ENTERED',
+      visitorId,
+      screen,
+      name: name.trim()
+    });
+
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/track', payload);
+    } else {
+      fetch('/api/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+        keepalive: true
+      }).catch(() => {});
+    }
+  } catch {}
+}
+

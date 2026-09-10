@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Flame, Award, Settings, CheckCircle2, ChevronDown, Lock, BookOpen } from 'lucide-react';
 import { getPracticePapers, getUserProgress, getActivePaperId, setActivePaperId } from '../data/questions';
 
-export default function Header({ onOpenScorecard, onLockSite }) {
+export default function Header({ onOpenScorecard, onLockSite, userName }) {
   const navigate = useNavigate();
   const location = useLocation();
   const papers = getPracticePapers();
@@ -59,41 +59,53 @@ export default function Header({ onOpenScorecard, onLockSite }) {
           </span>
         </Link>
 
-        {/* Paper selector dropdown */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '0.4rem', 
-          background: 'rgba(255, 255, 255, 0.05)', 
-          border: '1px solid var(--accent-primary)',
-          borderRadius: '20px',
-          padding: '0.2rem 0.6rem 0.2rem 0.8rem',
-          fontSize: '0.85rem'
-        }}>
-          <span style={{ color: 'var(--accent-primary)', fontWeight: '700' }}>{currentPaper.day}:</span>
+        {/* Paper Switcher Dropdown */}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           <select 
-            value={currentPaper.id}
+            value={activeId}
             onChange={handlePaperChange}
             style={{
-              background: 'transparent',
+              backgroundColor: 'var(--bg-card)',
               color: '#fff',
-              border: 'none',
-              outline: 'none',
+              border: '1px solid var(--border-color)',
+              borderRadius: '8px',
+              padding: '0.45rem 2.2rem 0.45rem 0.85rem',
+              fontSize: '0.88rem',
               fontWeight: '600',
               cursor: 'pointer',
-              fontSize: '0.85rem'
+              outline: 'none',
+              appearance: 'none'
             }}
           >
             {papers.map(p => (
-              <option key={p.id} value={p.id} style={{ background: '#1c1c1f', color: '#fff' }}>
-                {p.title} ({p.questions.length} Qs • {p.totalMarks}M)
+              <option key={p.id} value={p.id}>
+                {p.day}: {p.title}
               </option>
             ))}
           </select>
+          <ChevronDown size={14} style={{ position: 'absolute', right: '10px', pointerEvents: 'none', color: 'var(--text-muted)' }} />
         </div>
       </div>
 
       <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+        {/* Student Name Badge */}
+        {userName && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            fontSize: '0.85rem',
+            fontWeight: '700',
+            color: '#fff',
+            backgroundColor: 'rgba(255, 161, 22, 0.12)',
+            border: '1px solid rgba(255, 161, 22, 0.35)',
+            borderRadius: '8px',
+            padding: '0.4rem 0.8rem'
+          }}>
+            <span style={{ color: 'var(--accent-primary)' }}>👤</span> {userName}
+          </div>
+        )}
+
         {/* Live Score Pill */}
         <div 
           onClick={onOpenScorecard}
@@ -117,13 +129,13 @@ export default function Header({ onOpenScorecard, onLockSite }) {
           </span>
           <span style={{ 
             fontSize: '0.75rem', 
-            backgroundColor: fullSolvedCount === 15 ? 'var(--success)' : 'rgba(255,255,255,0.1)',
-            color: fullSolvedCount === 15 ? '#000' : 'var(--text-muted)',
+            backgroundColor: fullSolvedCount === currentPaper.questions.length ? 'var(--success)' : 'rgba(255,255,255,0.1)',
+            color: fullSolvedCount === currentPaper.questions.length ? '#000' : 'var(--text-muted)',
             padding: '0.1rem 0.4rem',
             borderRadius: '999px',
             fontWeight: '600'
           }}>
-            {fullSolvedCount}/15 Solved
+            {fullSolvedCount}/{currentPaper.questions.length} Solved
           </span>
         </div>
 

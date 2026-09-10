@@ -8,12 +8,14 @@ import OopNotes from './pages/OopNotes';
 import ScorecardModal from './components/ScorecardModal';
 import LockScreen from './components/LockScreen';
 import { verifySessionWithServer, logoutSession, purgeLegacySessions, initAntiTamperGuard } from './services/security';
-import { logSiteVisitOnce, logLoginOnce } from './services/tracker';
+import { logSiteVisitOnce, logLoginOnce, getUserName } from './services/tracker';
+import NameModal from './components/NameModal';
 
 function App() {
   const [showScorecard, setShowScorecard] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [userName, setUserNameState] = useState(getUserName());
 
   useEffect(() => {
     // Initialize anti-tampering inspection guard
@@ -28,8 +30,10 @@ function App() {
 
       const isValid = await verifySessionWithServer();
       setIsAuthenticated(isValid);
-      if (isValid) {
-        logLoginOnce();
+      const currentName = getUserName();
+      setUserNameState(currentName);
+      if (isValid && currentName) {
+        logLoginOnce(currentName);
       }
       setIsCheckingAuth(false);
     };
@@ -59,7 +63,16 @@ function App() {
 
   const handleUnlock = () => {
     setIsAuthenticated(true);
-    logLoginOnce();
+    const currentName = getUserName();
+    setUserNameState(currentName);
+    if (currentName) {
+      logLoginOnce(currentName);
+    }
+  };
+
+  const handleNameSubmitted = (name) => {
+    setUserNameState(name);
+    logLoginOnce(name);
   };
 
   if (isCheckingAuth) {
@@ -86,6 +99,7 @@ function App() {
     <BrowserRouter>
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg-main)' }}>
         <Header 
+          userName={userName}
           onOpenScorecard={() => setShowScorecard(true)} 
           onLockSite={handleLockSite}
         />
@@ -104,6 +118,12 @@ function App() {
         {showScorecard && (
           <ScorecardModal onClose={() => setShowScorecard(false)} />
         )}
+
+        {/* Modal asking name right after login */}
+        <NameModal 
+          isOpen={!userName} 
+          onSubmitName={handleNameSubmitted} 
+        />
       </div>
     </BrowserRouter>
   );
