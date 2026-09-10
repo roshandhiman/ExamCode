@@ -1,8 +1,10 @@
 // High-Speed Multi-Tier Code Execution Engine
 // Primary: Judge0 CE (Ultra-fast parallel execution ~0.05-0.1s per testcase)
-// Fallback: Wandbox OpenJDK 22 (Reliable, high-compatibility backup)
+// Fallback 1: Piston v2 (emkc.org – highly reliable, free, no auth)
+// Fallback 2: Wandbox OpenJDK 22 (Reliable, high-compatibility backup)
 
 const JUDGE0_API_URL = 'https://ce.judge0.com/submissions?wait=true';
+const PISTON_API_URL = 'https://emkc.org/api/v2/piston/execute';
 const WANDBOX_API_URL = 'https://wandbox.org/api/compile.json';
 
 import { getStoredToken } from './security';
@@ -24,11 +26,40 @@ export const executeCode = async (language, code, stdin = "") => {
                 return judge0Result;
             }
         } catch (e) {
-            console.warn("Judge0 execution error, falling back to Wandbox:", e);
+            console.warn("Judge0 execution error, falling back:", e);
         }
 
-        // 2. Fallback to Wandbox OpenJDK 22
-        return await executeViaWandbox(code, stdin);
+        // 2. Try Piston v2 (emkc.org) — very reliable free API
+        try {
+            const pistonResult = await executeViaPiston(code, stdin);
+            if (pistonResult && !pistonResult.shouldFallback) {
+                return pistonResult;
+            }
+        } catch (e) {
+            console.warn("Piston v2 execution error, falling back to Wandbox:", e);
+        }
+
+        // 3. Fallback to Wandbox OpenJDK 22
+        try {
+            const wandboxResult = await executeViaWandbox(code, stdin);
+            if (wandboxResult && !wandboxResult.shouldFallback) {
+                return wandboxResult;
+            }
+        } catch (e) {
+            console.warn("Wandbox execution error:", e);
+        }
+
+        // All engines failed — retry Judge0 once more
+        try {
+            const retryResult = await executeViaJudge0(code, stdin);
+            if (retryResult && !retryResult.shouldFallback) {
+                return retryResult;
+            }
+        } catch (e) {
+            // ignore
+        }
+
+        return { message: 'All execution servers are temporarily busy. Please click Run again in a few seconds.' };
     }
 
     return { message: `Language "${language}" is not supported for remote execution.` };
@@ -136,6 +167,68 @@ async function executeViaJudge0(code, stdin) {
     }
 }
 
+// Piston v2 (emkc.org) — Reliable free execution API
+async function executeViaPiston(code, stdin) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    try {
+        // Strip public from class declarations to prevent file name mismatch
+        const fixedCode = code.replace(/\bpublic\s+class\b/g, 'class');
+
+        const response = await fetch(PISTON_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                language: 'java',
+                version: '15.0.2',
+                files: [{ name: 'Main.java', content: fixedCode }],
+                stdin: stdin || '',
+                compile_timeout: 10000,
+                run_timeout: 5000
+            }),
+            signal: controller.signal
+        });
+
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+            return { shouldFallback: true };
+        }
+
+        const data = await response.json();
+
+        // Check compile stage
+        if (data.compile && data.compile.code !== 0) {
+            return {
+                compile: {
+                    code: 1,
+                    stderr: data.compile.stderr || data.compile.output || 'Compilation Error'
+                }
+            };
+        }
+
+        // Check run stage
+        if (data.run) {
+            return {
+                compile: { code: 0 },
+                run: {
+                    code: data.run.code || 0,
+                    stdout: data.run.stdout || '',
+                    stderr: data.run.stderr || ''
+                }
+            };
+        }
+
+        return { shouldFallback: true };
+    } catch (err) {
+        clearTimeout(timeout);
+        return { shouldFallback: true };
+    }
+}
+
 // Fallback: Wandbox OpenJDK 22
 async function executeViaWandbox(code, stdin) {
     const controller = new AbortController();
@@ -162,7 +255,7 @@ async function executeViaWandbox(code, stdin) {
         clearTimeout(timeout);
 
         if (!response.ok) {
-            return { message: `Execution server returned HTTP ${response.status}. Please try again.` };
+            return { shouldFallback: true };
         }
 
         const data = await response.json();
@@ -196,9 +289,8 @@ async function executeViaWandbox(code, stdin) {
     } catch (error) {
         clearTimeout(timeout);
         if (error.name === 'AbortError') {
-            return { message: 'Execution timed out (20s limit). Please check for infinite loops.' };
+            return { shouldFallback: true };
         }
-        console.error("Execution error:", error);
-        return { message: 'Code execution service is temporarily busy. Please click Run again.' };
+        return { shouldFallback: true };
     }
 }
