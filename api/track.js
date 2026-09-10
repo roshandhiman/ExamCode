@@ -53,7 +53,9 @@ export default async function handler(req, res) {
     };
 
     // Google Apps Script Webhook URL (configured in env or fallback)
-    const webhookUrl = process.env.GOOGLE_LOG_WEBHOOK_URL || process.env.DOCS_WEBHOOK_URL;
+    const webhookUrl = process.env.GOOGLE_LOG_WEBHOOK_URL || 
+      process.env.DOCS_WEBHOOK_URL || 
+      'https://script.google.com/macros/s/AKfycbzzt0Eo4SJxmsjOW5mbGm8jCNbrPrYZME6Lwg01_H6hZ7jgNMYRXYbG2M796ZWXJMPv6Q/exec';
 
     if (webhookUrl && webhookUrl.startsWith('http')) {
       // Fire-and-forget to Google Sheets / Docs webhook
