@@ -1,7 +1,6 @@
 // High-Speed, High-Reliability Code Execution Engine
 // Primary: Paiza.io (Instant ~1.5-2.5s execution, no rate limits, supports high concurrency)
-// Fallback 1: Judge0 CE with Polling (Reliable execution ~2-5s)
-// Fallback 2: Wandbox OpenJDK (Secondary backup)
+// Fallback: Judge0 CE with Polling (Reliable execution ~2-5s)
 
 import { getStoredToken } from './security';
 
@@ -19,17 +18,28 @@ export const executeCode = async (language, code, stdin = "") => {
     }
 
     if (language === 'java') {
-        // 1. Try Paiza.io first (Ultra-reliable, handles 100+ concurrent users, free)
+        // Attempt 1: Paiza.io
         try {
             const paizaResult = await executeViaPaiza(code, stdin);
             if (paizaResult && !paizaResult.shouldFallback) {
                 return paizaResult;
             }
         } catch (e) {
-            console.warn("Paiza execution error, falling back to Judge0:", e);
+            console.warn("Paiza attempt 1 error:", e);
         }
 
-        // 2. Fallback to Judge0 CE (Poll-based, robust against queue delays)
+        // Attempt 2: Immediate retry on Paiza after brief backoff (solves burst concurrency)
+        try {
+            await new Promise(r => setTimeout(r, 400));
+            const paizaRetry = await executeViaPaiza(code, stdin);
+            if (paizaRetry && !paizaRetry.shouldFallback) {
+                return paizaRetry;
+            }
+        } catch (e) {
+            console.warn("Paiza attempt 2 error:", e);
+        }
+
+        // Attempt 3: Judge0 CE with Polling
         try {
             const judge0Result = await executeViaJudge0(code, stdin);
             if (judge0Result && !judge0Result.shouldFallback) {
@@ -39,7 +49,7 @@ export const executeCode = async (language, code, stdin = "") => {
             console.warn("Judge0 execution error:", e);
         }
 
-        return { message: 'Execution server is busy. Please try clicking Run again in a few seconds.' };
+        return { message: 'Execution server is busy. Please click Run again in a few seconds.' };
     }
 
     return { message: `Language "${language}" is not supported for remote execution.` };
@@ -55,7 +65,7 @@ export const executeCodeParallel = async (language, code, stdinList) => {
 // Paiza.io Execution Engine (Super high availability & speed)
 async function executeViaPaiza(code, stdin) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 16000);
+    const timeout = setTimeout(() => controller.abort(), 20000);
 
     try {
         // Paiza needs public class stripped or named Main
@@ -86,9 +96,9 @@ async function executeViaPaiza(code, stdin) {
             return { shouldFallback: true };
         }
 
-        // Poll for completion (usually finishes in 1-3 iterations ~1-2s)
-        for (let i = 0; i < 20; i++) {
-            await new Promise(r => setTimeout(r, 600));
+        // Poll for completion (up to 30 attempts, starts after 400ms)
+        for (let i = 0; i < 30; i++) {
+            await new Promise(r => setTimeout(r, 500));
 
             const pollRes = await fetch(`${PAIZA_DETAILS_URL}?id=${runId}&api_key=guest`, {
                 signal: controller.signal
@@ -134,10 +144,10 @@ async function executeViaPaiza(code, stdin) {
     }
 }
 
-// Judge0 CE Java Execution (Poll-based with up to 15s wait)
+// Judge0 CE Java Execution (Poll-based with up to 25s wait)
 async function executeViaJudge0(code, stdin) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20000);
+    const timeout = setTimeout(() => controller.abort(), 25000);
 
     try {
         // Step 1: Submit code to queue (non-blocking)
@@ -166,8 +176,8 @@ async function executeViaJudge0(code, stdin) {
         }
 
         // Step 2: Poll token until status is final
-        for (let attempt = 0; attempt < 15; attempt++) {
-            await new Promise(r => setTimeout(r, 1200));
+        for (let attempt = 0; attempt < 20; attempt++) {
+            await new Promise(r => setTimeout(r, 1000));
 
             const checkRes = await fetch(`${JUDGE0_SUBMIT_URL}/${token}?base64_encoded=false`, {
                 signal: controller.signal
