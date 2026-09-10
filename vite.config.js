@@ -178,6 +178,11 @@ function localExecutorPlugin() {
         res.setHeader('Content-Type', 'application/json');
         return res.end(JSON.stringify({ epoch: 'v5', valid, serverTime: Date.now() }));
       });
+
+      server.middlewares.use('/api/track', (req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        return res.end(JSON.stringify({ success: true, local: true }));
+      });
     }
   };
 }

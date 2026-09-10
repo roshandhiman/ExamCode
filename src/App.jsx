@@ -8,6 +8,7 @@ import OopNotes from './pages/OopNotes';
 import ScorecardModal from './components/ScorecardModal';
 import LockScreen from './components/LockScreen';
 import { verifySessionWithServer, logoutSession, purgeLegacySessions, initAntiTamperGuard } from './services/security';
+import { logSiteVisitOnce, logLoginOnce } from './services/tracker';
 
 function App() {
   const [showScorecard, setShowScorecard] = useState(false);
@@ -18,12 +19,18 @@ function App() {
     // Initialize anti-tampering inspection guard
     initAntiTamperGuard();
 
+    // Track visitor opening the website (only once per device per day)
+    logSiteVisitOnce();
+
     const checkToken = async () => {
       // Purge only legacy versions, preserve valid active session
       purgeLegacySessions();
 
       const isValid = await verifySessionWithServer();
       setIsAuthenticated(isValid);
+      if (isValid) {
+        logLoginOnce();
+      }
       setIsCheckingAuth(false);
     };
 
@@ -52,6 +59,7 @@ function App() {
 
   const handleUnlock = () => {
     setIsAuthenticated(true);
+    logLoginOnce();
   };
 
   if (isCheckingAuth) {
