@@ -1,8 +1,21 @@
-// Vercel Serverless Function: Secure Password Authentication
+// Vercel Serverless Function: Secure Password Authentication & IP Blacklist Gate
 // Runs 100% on Node.js backend. Plaintext password is NEVER sent or exposed in client bundles.
 
 import crypto from 'crypto';
 import { createSignedToken } from './_auth.js';
+
+// Blocklist Configuration
+const BLOCKED_IPS = [
+  '104.28.213.161'
+];
+
+function getClientIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  return req.socket?.remoteAddress || req.connection?.remoteAddress || '127.0.0.1';
+}
 
 export default async function handler(req, res) {
   const origin = req.headers.origin || '*';
@@ -17,6 +30,19 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // 1. IP Ban Enforcement Check
+  const clientIp = getClientIp(req);
+  if (BLOCKED_IPS.includes(clientIp)) {
+    return res.status(403).json({
+      success: false,
+      blocked: true,
+      ip: clientIp,
+      targetName: 'Akul Gupta',
+      phone: '9646085409',
+      error: 'You dont have access to use this. Contact 9646085409 on WhatsApp to access this.'
+    });
   }
 
   try {

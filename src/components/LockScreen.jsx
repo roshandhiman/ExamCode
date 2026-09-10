@@ -44,7 +44,7 @@ const TROLL_MESSAGES = [
   "Ask Roshan nicely for the password bro 😏🔑"
 ];
 
-export default function LockScreen({ onUnlock }) {
+export default function LockScreen({ onUnlock, onBlockDetected }) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(false);
@@ -84,6 +84,11 @@ export default function LockScreen({ onUnlock }) {
 
     try {
       const result = await authenticatePassword(password.trim());
+      if (result.blocked && onBlockDetected) {
+        onBlockDetected(result);
+        return;
+      }
+
       if (result.success && result.token) {
         sessionStorage.setItem(SESSION_TOKEN_KEY, result.token);
         setAttempts(0);

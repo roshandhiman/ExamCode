@@ -56,6 +56,18 @@ export async function authenticatePassword(enteredPassword) {
     });
 
     const data = await res.json().catch(() => ({}));
+
+    if (res.status === 403 && data.blocked) {
+      return {
+        success: false,
+        blocked: true,
+        ip: data.ip,
+        targetName: data.targetName,
+        phone: data.phone,
+        error: data.error
+      };
+    }
+
     if (res.ok && data.success) {
       if (data.token) {
         setStoredToken(data.token);
@@ -77,7 +89,7 @@ export async function authenticatePassword(enteredPassword) {
 
 // Server-Authoritative Session Verification:
 // Communicates with backend /api/verify to validate cryptographic HMAC signature.
-// Returns false if token is forged, expired, missing, or altered via DevTools.
+// Returns an object with { authenticated, blocked, blockInfo }
 export async function verifySessionWithServer(explicitToken) {
   try {
     const token = explicitToken || getStoredToken();
@@ -93,19 +105,31 @@ export async function verifySessionWithServer(explicitToken) {
       cache: 'no-store'
     });
 
-    if (res.ok) {
-      const data = await res.json().catch(() => ({}));
-      if (data.authenticated) {
-        return true;
-      }
+    const data = await res.json().catch(() => ({}));
+
+    // Check if IP is permanently banned
+    if (res.status === 403 && data.blocked) {
+      clearStoredToken();
+      return {
+        authenticated: false,
+        blocked: true,
+        ip: data.ip,
+        targetName: data.targetName,
+        phone: data.phone,
+        error: data.error
+      };
+    }
+
+    if (res.ok && data.authenticated) {
+      return { authenticated: true, blocked: false };
     }
 
     // Server rejected session: clear current token
     clearStoredToken();
-    return false;
+    return { authenticated: false, blocked: false };
   } catch {
     // If network temporarily errors, don't unlock
-    return false;
+    return { authenticated: false, blocked: false };
   }
 }
 
@@ -124,7 +148,8 @@ export async function logoutSession() {
 
 // Export for compatibility
 export async function validateSessionToken(token) {
-  return await verifySessionWithServer(token);
+  const res = await verifySessionWithServer(token);
+  return res.authenticated;
 }
 
 export function purgeClientSession() {
@@ -159,4 +184,3 @@ export function initAntiTamperGuard() {
   window.addEventListener('resize', checkDevTools);
   setInterval(checkDevTools, 1500);
 }
-
